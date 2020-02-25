@@ -64,7 +64,7 @@ for (int i = 0; i < 10; i++) {
 ```
 - Фигурные скобки для формирования блоков команд ставятся *всюду одинаково*: левая скобка на одной строке с инициатором блока (шапкой функции, условным оператором, циклом), правая скобка - на следующей строке после последней команды блока:
 ```java
-Status foo( Object bar ) {
+Status foo(Object bar) {
 	if (bar == null) {
 		b = new Object(...);
 		b.value = 0;
@@ -82,7 +82,7 @@ enum Status {
 - *Общие правила*: все переменные должны именоваться так, чтобы по названию угадывалась их семантика. Не должно быть объектов с абстрактными многозначными *в контексте программы* именами.
 	*Пример как не надо делать*:
 ```java
-void printTwoWeirdNumbers( int[] array ) {
+void printTwoWeirdNumbers(int[] array) {
 	int cnt1 = 0, cnt2  = 0;
 	for (int i = 0; i < array.length; i++)
 		if (array[i] % 2 == 0)
@@ -94,7 +94,7 @@ void printTwoWeirdNumbers( int[] array ) {
 ```
 *Вот так оптимально*:	
 ```java
-void printEvenOddCount( int[] array ) {
+void printEvenOddCount(int[] array) {
 	int evenCount = 0, oddCount = 0;
 	for (int i = 0; i < array.length; i++)
 		if (array[i] % 2 == 0)
