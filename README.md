@@ -101,6 +101,6 @@ void printEvenOddCount( int[] array ) {
 			evenCount++;
 		else
 			oddCount++;
-		System.out.println(...); // печатаем количества
+	System.out.println(...); // печатаем количества
 }
 ```
