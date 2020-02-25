@@ -92,7 +92,7 @@ void printEvenOddCount( int[] array ) {
 	System.out.println(...); // печатаем количества
 }
 ```
-	*Вот так оптимально*:
+*Вот так оптимально*:	
 ```java
 void printEvenOddCount( int[] array ) {
 	int evenCount = 0, oddCount = 0;
