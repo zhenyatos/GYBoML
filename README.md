@@ -35,5 +35,72 @@
 1) Один коммит должен содержать одно целостное осмысленное добавление новой функциональности. Не надо делать несколько коммитов в 
 ветке, реализуя некоторую функциональность (по типу 'Updated a.cpp' -> 'Updated b.cpp' -> 'Updated README.txt'). Обычно, одна ветка функциональности - это один коммит. Для "сплющивания" нескольких **последовательных**(!) коммитов в один используется 
 git rebase -i COMMIT_SHA, где COMMIT_SHA - хэш коммита, идущего **перед первым** в серии сплющиваемых коммитов.
-Если не понятно - подробнее [тут](https://htmlacademy.ru/blog/useful/git/how-to-squash-commits-and-why-it-is-needed
+Если не понятно - подробнее [тут](https://htmlacademy.ru/blog/useful/git/how-to-squash-commits-and-why-it-is-needed)
 
+## Стандарт кодирования
+- Классы именуем по принципу: **каждое слово** с заглавной буквы:
+	* class MainActivity
+	* class BaseWeapon
+- Последнее слово в имени класса обозначает категорию объектов, к которым он относится:
+	* class MainActivity
+	* class FirstLevel
+	* class WoodDefense
+- Функции и переменные именуем в camel-case:
+	* Object getYourBombsOffMyLawn()
+	* void setWeaponToViking(Gamer viking)
+	* int bombsCount
+- Аргументы функций при написании реализаций и при вызове не отделяем пробелами:
+	* int getGamersCount(Forest f)
+	* int gamersCount = getGamersCount(forest)
+- Все вложенные по смыслу инструкции смещаем относительно родительских на четыре пробела (во всех IDEA-подобных IDE по умолчанию осуществляется нажатием Tab):
+```java
+for (int i = 0; i < 10; i++) {
+	a[i] += i;
+	if (a[i] == 0) {
+	    a[i] = -1;
+	    break;
+	}
+}
+```
+- Фигурные скобки для формирования блоков команд ставятся *всюду одинаково*: левая скобка на одной строке с инициатором блока (шапкой функции, условным оператором, циклом), правая скобка - на следующей строке после последней команды блока:
+```java
+Status foo( Object bar ) {
+	if (bar == null) {
+		b = new Object(...);
+		b.value = 0;
+	}
+}
+```
+- Все флаги оформляем в enum заглавными буквами:
+```java
+enum Status {
+	OK(0),
+	BAD(1);
+	...
+}
+```
+- *Общие правила*: все переменные должны именоваться так, чтобы по названию угадывалась их семантика. Не должно быть объектов с абстрактными многозначными *в контексте программы* именами.
+	*Пример как не надо делать*:
+```java
+void printTwoWeirdNumbers( int[] array ) {
+	int cnt1 = 0, cnt2  = 0;
+	for (int i = 0; i < array.length; i++)
+		if (array[i] % 2 == 0)
+			cnt1++;
+		else
+			cnt2++;
+	System.out.println(...); // печатаем количества
+}
+```
+*Вот так оптимально*:	
+```java
+void printEvenOddCount( int[] array ) {
+	int evenCount = 0, oddCount = 0;
+	for (int i = 0; i < array.length; i++)
+		if (array[i] % 2 == 0)
+			evenCount++;
+		else
+			oddCount++;
+	System.out.println(...); // печатаем количества
+}
+```
