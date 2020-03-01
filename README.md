@@ -1,14 +1,6 @@
 # Get Your Bombs off My Lawn!
-
-# Участники проекта 
-* [Самутичев Евгений](https://github.com/zhenyatos) - тимлид
-* [Дамаскинский Константин](https://github.com/kystyn) - техлид
-* [Варисов Арсен](https://github.com/Jiija) 
-* [Петрунин Григорий](https://github.com/via8) 
-* [Соломатин Макар](https://github.com/MakarSolomatin)
-
-# Описание проекта
 Игра под платформу Android для двух игроков. Целью является уничтожение базы противника различным снарядыми и защита своей базы путем застройки разрушаемыми блоками. ![Игровой процесс](https://github.com/zhenyatos/GYBoML/blob/docworks-client/Documentation/gamedesign_image3.png)
+
 **Ключевые особенности:** 
 1. Пошаговая стратегическая игра с физикой в реальном времени 
 2. Easy to learn, hard to master
@@ -20,6 +12,7 @@ A two-player game for Android. The goal is the destruction of your opponent's ba
 1. Turn-based strategy with real-time physics
 2. Easy to learn, hard to master
 3. The nefariously ingenious exploding cow mechanic that won't leave anyone unmoved
+
 # Сравнение с похожими играми
 При создании мы вдохновлялись Angry Birds и Worms, рассмотрим подробнее чем же наш продукт отличается от указанных:
 | Продукт (Product)                                         | GYBoML | Angry Birds | Worms         |
@@ -126,3 +119,10 @@ void printEvenOddCount(int[] array) {
 	System.out.println(...); // печатаем количества
 }
 ```
+
+# Участники проекта 
+* [Самутичев Евгений](https://github.com/zhenyatos) - тимлид
+* [Дамаскинский Константин](https://github.com/kystyn) - техлид
+* [Варисов Арсен](https://github.com/Jiija) 
+* [Петрунин Григорий](https://github.com/via8) 
+* [Соломатин Макар](https://github.com/MakarSolomatin)
