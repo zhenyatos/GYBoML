@@ -7,6 +7,12 @@
 * [Петрунин Григорий](https://github.com/via8) 
 * [Соломатин Макар](https://github.com/MakarSolomatin)
 
+# Описание проекта
+Игра под платформу Android для двух игроков. Целью является уничтожение базы противника различным снарядыми и защита своей базы путем застройки разрушаемыми блоками. ![Игровой процесс](https://github.com/zhenyatos/GYBoML/blob/docworks-client/Documentation/gamedesign_image3.png)
+**Ключевые особенности:** 
+1. Пошаговая стратегическая игра с физикой в реальном времени 
+2. Easy to learn, hard to master
+3. Гениальная механика с взрывающейся коровой
 
 # Git workflow
 [Статья atlassian](https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow) и [статья на хабре](https://habr.com/ru/post/106912/)
