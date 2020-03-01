@@ -14,6 +14,12 @@
 2. Easy to learn, hard to master
 3. Гениальная механика со взрывающейся коровой которая интригует абсолютно всех
 
+A two-player game for Android. The goal is the destruction of your opponent's base by bomarding it with various missiles, and the protection of your own base via shielding it with constructions built by you with destructible blocks.
+
+**Key features:**
+1. Turn-based strategy with real-time physics
+2. Easy to learn, hard to master
+3. The nefariously ingenious exploding cow mechanic that won't leave anyone unmoved
 # Сравнение с похожими играми
 При создании мы вдохновлялись Angry Birds и Worms, рассмотрим подробнее чем же наш продукт отличается от указанных:
 | Продукт (Product)                                         | GYBoML | Angry Birds | Worms         |
