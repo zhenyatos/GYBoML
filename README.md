@@ -12,7 +12,7 @@
 **Ключевые особенности:** 
 1. Пошаговая стратегическая игра с физикой в реальном времени 
 2. Easy to learn, hard to master
-3. Гениальная механика со взрывающейся коровой
+3. Гениальная механика со взрывающейся коровой которая интригует абсолютно всех
 
 # Git workflow
 [Статья atlassian](https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow) и [статья на хабре](https://habr.com/ru/post/106912/)
