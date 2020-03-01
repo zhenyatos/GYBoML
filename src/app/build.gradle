@@ -1,6 +1,20 @@
 apply plugin: 'com.android.application'
 
 android {
+    signingConfigs {
+        release {
+            storeFile file('/home/konst/programsMe/sysProgram/GYBoML/src/app/keystore1.jks')
+            keyAlias = 'key1'
+            storePassword '111111'
+            keyPassword '222222'
+        }
+        debug {
+            storeFile file('/home/konst/programsMe/sysProgram/GYBoML/src/app/keystore.jks')
+            storePassword 'GYBoML'
+            keyAlias = 'key0'
+            keyPassword 'GYBoML'
+        }
+    }
     compileSdkVersion 29
     buildToolsVersion "29.0.3"
     defaultConfig {
