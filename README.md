@@ -1,12 +1,12 @@
 # Get Your Bombs off My Lawn!
-Игра под платформу Android для двух игроков. Целью является уничтожение базы противника различным снарядыми и защита своей базы путем застройки разрушаемыми блоками. ![Игровой процесс](https://github.com/zhenyatos/GYBoML/blob/docworks-client/Documentation/gamedesign_image3.png)
+Игра под платформу Android для двух игроков. Целью является уничтожение базы противника различным снарядами и защита своей базы путем застройки разрушаемыми блоками. ![Игровой процесс](https://github.com/zhenyatos/GYBoML/blob/docworks-client/Documentation/gamedesign_image3.png)
 
 **Ключевые особенности:** 
 1. Пошаговая стратегическая игра с физикой в реальном времени 
 2. Easy to learn, hard to master
 3. Гениальная механика со взрывающейся коровой которая интригует абсолютно всех
 
-A two-player game for Android. The goal is the destruction of your opponent's base by bomarding it with various missiles, and the protection of your own base via shielding it with constructions built by you with destructible blocks.
+A two-player game for Android. The goal is the destruction of your opponent's base by bombarding it with various missiles, and the protection of your own base by shielding it with constructions made of destructible blocks.
 
 **Key features:**
 1. Turn-based strategy with real-time physics
