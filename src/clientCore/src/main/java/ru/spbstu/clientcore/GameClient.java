@@ -70,15 +70,15 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
         float x = Gdx.input.getDeltaX() * SCALE;
         float y = Gdx.input.getDeltaY() * SCALE;
 
-        float leftEdgePos = camera.position.x - camera.viewportWidth / 2;
-        float rightEdgePos = leftEdgePos + camera.viewportWidth;
+        float leftEdgePos = camera.position.x - minWidth / 2;
+        float rightEdgePos = leftEdgePos + minWidth;
         if (leftEdgePos  - x < 0)
             x = leftEdgePos;
         else if (rightEdgePos - x > worldWidth)
             x = rightEdgePos - worldWidth;
 
-        float topEdgePos = camera.position.y + camera.viewportHeight / 2;
-        float bottomEdgePos = topEdgePos - camera.viewportHeight;
+        float topEdgePos = camera.position.y + minHeight / 2;
+        float bottomEdgePos = topEdgePos - minHeight;
         if (topEdgePos + y > worldHeight)
             y = worldHeight - topEdgePos;
         else if (bottomEdgePos + y < 0)
