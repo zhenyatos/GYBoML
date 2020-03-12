@@ -17,7 +17,7 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
     private static final float minHeight = minWidth / minRatio;
     private static final float worldScale = 1.0f; //how many cameras can fit into the gameplay area
     private static final float worldWidth = minWidth * worldScale;
-    private static final float worldHeight = minHeight * worldScale;
+    private static final float worldHeight = minHeight/* * worldScale*/;
     private static final float maxXRatio = 19.5f / 9f;
     private static final float maxYRatio = 4f / 3f;
 
@@ -35,8 +35,8 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
         batch = new SpriteBatch();
         backgroundTexture = new Texture("background.png");
         background = new Sprite(backgroundTexture);
-        float width = worldWidth * maxXRatio / minRatio;
-        float height = worldHeight * (1 / maxYRatio) / (1 / minRatio);
+        float width = worldWidth + minWidth * (maxXRatio / minRatio - 1);
+        float height = worldHeight + minHeight * (minRatio / maxYRatio - 1);
 
         background.setSize(width, height);
         background.setOrigin(0, 0);
