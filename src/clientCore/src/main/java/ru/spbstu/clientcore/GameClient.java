@@ -8,34 +8,29 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 
-public class gameClient extends ApplicationAdapter implements InputProcessor {
-    static final float SCALE = 1f / 20f; // 1 meter per 20 pixels
-    static final float minRatio = 3f / 2f;
-    static final float minWidth = 50;
-    static final float minHeight = minWidth / minRatio;
-    static final float worldScale = 1.0f; //how many cameras can fit into the safe game area
-    static final float worldWidth = minWidth * worldScale;
-    static final float worldHeight = minHeight * worldScale;
-    static final float maxXRatio = 19.5f / 9f;
-    static final float maxYRatio = 4f / 3f;
+public class GameClient extends ApplicationAdapter implements InputProcessor {
+    private static final float SCALE = 1f / 20f; // 1 meter per 20 pixels
+    private static final float minRatio = 3f / 2f;
+    private static final float minWidth = 50;
+    private static final float minHeight = minWidth / minRatio;
+    private static final float worldScale = 1.0f; //how many cameras can fit into the gameplay area
+    private static final float worldWidth = minWidth * worldScale;
+    private static final float worldHeight = minHeight * worldScale;
+    private static final float maxXRatio = 19.5f / 9f;
+    private static final float maxYRatio = 4f / 3f;
 
-    Stage stage;
-    SpriteBatch batch;
-    Texture backgroundTexture;
-    Sprite background;
-    OrthographicCamera camera;
-    ExtendViewport viewport;
+    private SpriteBatch batch;
+    private Texture backgroundTexture;
+    private Sprite background;
+    private OrthographicCamera camera;
+    private ExtendViewport viewport;
 
 
     @Override
     public void create () {
         Gdx.input.setInputProcessor(this);
-
-        ///stage = new Stage(new ExtendViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), camera));
-
 
         batch = new SpriteBatch();
         backgroundTexture = new Texture("background.png");
@@ -51,7 +46,6 @@ public class gameClient extends ApplicationAdapter implements InputProcessor {
         viewport = new ExtendViewport(camera.viewportWidth, camera.viewportHeight, camera);
         camera.position.set(camera.viewportWidth / 2, camera.viewportHeight / 2, 0);
         camera.update();
-        //backgroundRegion = new TextureRegion(background, 20, 20, 50, 50);
     }
 
     @Override
@@ -98,9 +92,7 @@ public class gameClient extends ApplicationAdapter implements InputProcessor {
 
     @Override
     public void resize(int width, int height) {
-        //viewport.update(width, height, false);
-
-        //batch.setProjectionMatrix(camera.combined);
+        viewport.update(width, height, false);
     }
 
     public boolean keyDown (int keycode) {return true;}
