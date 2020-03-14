@@ -2,13 +2,22 @@ package main.java.ru.spbstu.clientcore;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 /**
  * The GameClient class handles rendering, camera movement,
@@ -27,21 +36,28 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
     private static final float maxXRatio = 19.5f / 9f;
     private static final float maxYRatio = 4f / 3f;
 
+    private MessageSender toServerMessageSender;
     private SpriteBatch batch;
     private Texture backgroundTexture;
     private Sprite background;
     private OrthographicCamera camera;
     private ExtendViewport viewport;
-
+    private Stage stageForUI;
+    private Table table;
 
     /**
      * This is the method that is called on client's creation.
      * It loads the graphical resources, and sets up the sprites, background,
-     * viewport and camera.
+     * viewport, camera, UI etc.
      */
     @Override
     public void create() {
-        Gdx.input.setInputProcessor(this);
+        stageForUI = new Stage(new ScreenViewport());
+        InputMultiplexer inputMultiplexer = new InputMultiplexer();
+        inputMultiplexer.addProcessor(stageForUI);
+        inputMultiplexer.addProcessor(this);
+        Gdx.input.setInputProcessor(inputMultiplexer);
+        setUpUI();
 
         batch = new SpriteBatch();
         backgroundTexture = new Texture("bg_scheme.png");
@@ -72,6 +88,9 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
         batch.begin();
         background.draw(batch);
         batch.end();
+
+        stageForUI.act(Gdx.graphics.getDeltaTime());
+        stageForUI.draw();
     }
 
     /**
@@ -82,6 +101,7 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
     public void dispose() {
         batch.dispose();
         backgroundTexture.dispose();
+        stageForUI.dispose();
     }
 
     /** Called when a finger or the mouse was dragged.
@@ -123,6 +143,32 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
     @Override
     public void resize(int width, int height) {
         viewport.update(width, height, false);
+        stageForUI.getViewport().update(width, height, false);
+    }
+
+    /** This function sets up the UI. The name speaks for itself, really.
+     * Creates the UI table and creates the layout of the UI elements.
+     */
+    private void setUpUI() {
+        table = new Table();
+        table.setFillParent(true);
+        stageForUI.addActor(table);
+
+        //table.setDebug(true);
+        Skin skin = new Skin(Gdx.files.internal("skin/flat-earth-ui.json"));
+        Button endTurnButton = new TextButton("End Turn", skin, "default");
+        endTurnButton.addListener(new InputListener() {
+            @Override
+            public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
+                //toServerMessageSender.nextTurnMessage(); method stub
+            }
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                return true;
+            }
+        });
+        table.add(endTurnButton).width(200).height(100);
+        table.right().bottom();
     }
 
     public boolean keyDown(int keycode) {return true;}
