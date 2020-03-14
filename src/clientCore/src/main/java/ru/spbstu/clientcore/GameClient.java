@@ -60,7 +60,7 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
         setUpUI();
 
         batch = new SpriteBatch();
-        backgroundTexture = new Texture("bg_scheme.png");
+        backgroundTexture = new Texture("background.png");
         background = new Sprite(backgroundTexture);
         float width = worldWidth + minWidth * (maxXRatio / minRatio - 1);
         float height = worldHeight + minHeight * (minRatio / maxYRatio - 1);
