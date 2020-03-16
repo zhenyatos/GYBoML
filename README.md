@@ -1,5 +1,5 @@
 # Get Your Bombs off My Lawn!
-Игра под платформу Android для двух игроков. Целью является уничтожение базы противника различным снарядами и защита своей базы путем застройки разрушаемыми блоками. ![Игровой процесс](https://github.com/zhenyatos/GYBoML/blob/docworks-client/Documentation/gamedesign_image3.png)
+Игра под платформу Android для двух игроков. Целью является уничтожение базы противника различным снарядами и защита своей базы путем застройки разрушаемыми блоками. ![Игровой процесс](Documentation/gamedesign_image3.png)
 
 **Ключевые особенности:** 
 1. Пошаговая стратегическая игра с физикой в реальном времени 
@@ -13,6 +13,11 @@ A two-player game for Android. The goal is the destruction of your opponent's ba
 2. Easy to learn, hard to master
 3. The nefariously ingenious exploding cow mechanic that won't leave anyone unmoved
 
+# Инструкция по установке и запуску (для пользователя)
+
+Для установки актуальной версии скачайте приложение в формате apk из прикреплённых файлов к последнему релизу.
+При установке Вам потребуется дать разрешение на установку приложений от сторонних (не Play market) источников. Можете смело делать это: наша программа чиста и не содержит вредоносных частей.
+
 # Сравнение с похожими играми
 При создании мы вдохновлялись Angry Birds и Worms, рассмотрим подробнее чем же наш продукт отличается от указанных:
 | Продукт (Product)                                         | GYBoML | Angry Birds | Worms         |
@@ -22,6 +27,21 @@ A two-player game for Android. The goal is the destruction of your opponent's ba
 | наличие внутриигровой экономики (in-game economy)         |    +   |      -      |       -       |
 | крутая физика (cool physics)                              |    +   |      +      |       -       |
 | вариативность игрового процесса (variativity in gameplay) |    +   |      -      |       +       |
+
+
+# Инструкция по установке для разработчиков
+Для скачивания исходного кода последнего релиза Вам потребуется:
+* В терминале (windows: git bash, unix: bash) выполнить команды:
+	- git remote add origin https://github.com/zhenyatos/GYBoML/
+	- git pull origin master
+
+## Сборка клиентского приложения
+* В Android Studio открыть директорий client и собрать проект, либо собрать из консоли скрипт build.gradle
+
+## Сборка серверного приложения
+* В Intellij Idea открыть директорий core и собрать проект, либо собрать из консоли с помощью команды javac
+
+Актуальная версия кода лежит в ветке develop. Тем не менее, будьте осторожны: некоторые фичи могут быть нестабильными
 
 # Git workflow
 [Статья atlassian](https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow) и [статья на хабре](https://habr.com/ru/post/106912/)
