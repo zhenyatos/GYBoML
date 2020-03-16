@@ -13,6 +13,11 @@ A two-player game for Android. The goal is the destruction of your opponent's ba
 2. Easy to learn, hard to master
 3. The nefariously ingenious exploding cow mechanic that won't leave anyone unmoved
 
+# Инструкция по установке и запуску (для пользователя)
+
+Для установки актуальной версии скачайте приложение в формате apk из прикреплённых файлов к последнему релизу.
+При установке Вам потребуется дать разрешение на установку приложений от сторонних (не Play market) источников. Можете смело делать это: наша программа чиста и не содержит вредоносных частей.
+
 # Сравнение с похожими играми
 При создании мы вдохновлялись Angry Birds и Worms, рассмотрим подробнее чем же наш продукт отличается от указанных:
 | Продукт (Product)                                         | GYBoML | Angry Birds | Worms         |
