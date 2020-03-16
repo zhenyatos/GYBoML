@@ -1,2 +1,2 @@
-include 'app', 'clientCore'
+include 'app'
 rootProject.name='gyboml'
