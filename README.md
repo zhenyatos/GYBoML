@@ -28,6 +28,21 @@ A two-player game for Android. The goal is the destruction of your opponent's ba
 | крутая физика (cool physics)                              |    +   |      +      |       -       |
 | вариативность игрового процесса (variativity in gameplay) |    +   |      -      |       +       |
 
+
+# Инструкция по установке для разработчиков
+Для скачивания исходного кода последнего релиза Вам потребуется:
+* В терминале (windows: git bash, unix: bash) выполнить команды:
+	- git remote add origin https://github.com/zhenyatos/GYBoML/
+	- git pull origin master
+
+## Сборка клиентского приложения
+* В Android Studio открыть директорий client и собрать проект, либо собрать из консоли скрипт build.gradle
+
+## Сборка серверного приложения
+* В Intellij Idea открыть директорий core и собрать проект, либо собрать из консоли с помощью команды javac
+
+Актуальная версия кода лежит в ветке develop. Тем не менее, будьте осторожны: некоторые фичи могут быть нестабильными
+
 # Git workflow
 [Статья atlassian](https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow) и [статья на хабре](https://habr.com/ru/post/106912/)
 
