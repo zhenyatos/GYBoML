@@ -1,25 +1,44 @@
 package ru.spbstu.gyboml.core;
 
+/**
+ * Class represents player in game.
+ * */
 public class Player {
-    private boolean myTurn;
-    private int numOfPoints;
 
-    Player(int initPoints, boolean isFirst) {
-        numOfPoints = initPoints;
-        myTurn = isFirst;
+    // is now my turn
+    private boolean isTurn;
+
+    // current number of points
+    private int points;
+
+    /**
+     * Class constructor.
+     * @param initialPoints - initial number of points
+     * @param isTurn - initial turn
+     * */
+    public Player(int initialPoints, boolean isTurn) {
+        points = initialPoints;
+        this.isTurn = isTurn;
     }
 
-    // Passing turn, returns true if successful
-    boolean passTurn(Player other) {
-        if (myTurn) {
-            myTurn = false;
-            other.myTurn = true;
+    /**
+     * Pass turn to other player.
+     * @param other - link to other player
+     * @return true if turn passed, false otherwise
+     * */
+    public boolean passTurn(Player other) {
+        if (isTurn) {
+            isTurn = false;
+            other.isTurn = true;
             return true;
         }
         return false;
     }
 
-    boolean isMyTurn() {
-        return myTurn;
+    /**
+     * @return true if it is my turn, false otherwise
+     * */
+    public boolean isMyTurn() {
+        return isTurn;
     }
 }
