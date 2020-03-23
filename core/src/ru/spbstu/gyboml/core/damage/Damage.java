@@ -1,7 +1,5 @@
 package ru.spbstu.gyboml.core.damage;
 
-import ru.spbstu.gyboml.core.Effect;
-
 import java.util.ArrayList;
 import java.util.List;
 
