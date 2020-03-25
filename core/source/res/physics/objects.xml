@@ -20,7 +20,7 @@
 		</fixture>
 	</body>
 
-	<body name="cannon_p1">
+	<body name="tower_p1_cannon">
 		<is_dynamic/>
 		<linear_damping>0</linear_damping>
 		<angular_damping>0</angular_damping>
@@ -57,7 +57,7 @@
 		</fixture>
 	</body>
 
-	<body name="cannon_p2">
+	<body name="tower_p2_cannon">
 		<is_dynamic/>
 		<linear_damping>0</linear_damping>
 		<angular_damping>0</angular_damping>
@@ -182,7 +182,7 @@
 		</fixture>
 	</body>
 
-	<body name="tower_p1">
+	<body name="tower_p1_base">
 		<is_dynamic/>
 		<linear_damping>0</linear_damping>
 		<angular_damping>0</angular_damping>
@@ -240,7 +240,7 @@
 		</fixture>
 	</body>
 
-	<body name="tower_p2">
+	<body name="tower_p2_base">
 		<is_dynamic/>
 		<linear_damping>0</linear_damping>
 		<angular_damping>0</angular_damping>
