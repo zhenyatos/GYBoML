@@ -1,7 +1,8 @@
 package ru.spbstu.gyboml.client;
 
 import ru.spbstu.gyboml.client.generating.ConnectionGenerator;
-import ru.spbstu.gyboml.client.handling.ConnectionHandler;
+import ru.spbstu.gyboml.client.generating.PassTurnGenerator;
+import ru.spbstu.gyboml.client.handling.PlayerUpdateHandler;
 import ru.spbstu.gyboml.core.Player;
 import ru.spbstu.gyboml.core.net.ControllerInterface;
 import ru.spbstu.gyboml.core.net.handling.HandlerManager;
@@ -48,7 +49,7 @@ public class Controller implements Runnable, ControllerInterface {
         this.handlerManager = new HandlerManager(this);
 
         // fill in handler map
-        this.handlerManager.putHandler(PacketType.CONNECTION_RESPONSE, new ConnectionHandler());
+        this.handlerManager.putHandler(PacketType.PLAYER_UPDATE, new PlayerUpdateHandler());
 
         this.officeInput = new OfficeInput(socket, handlerManager, inputQueue);
         this.officeOutput = new OfficeOutput(socket, outputQueue);
@@ -93,10 +94,11 @@ public class Controller implements Runnable, ControllerInterface {
                 officeOutput.interrupt();
                 handlerManager.interrupt();
                 socket.close();
-            }
-
-            if (input.equals("req")) {
+            } else if (input.equals("req")) {
                 ConnectionGenerator generator = new ConnectionGenerator();
+                generator.generate(null, serverAddress, port, this);
+            } else if (input.equals("pass")) {
+                PassTurnGenerator generator = new PassTurnGenerator();
                 generator.generate(null, serverAddress, port, this);
             }
         }

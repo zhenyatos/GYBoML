@@ -8,6 +8,7 @@ import ru.spbstu.gyboml.core.net.packing.PacketType;
 import ru.spbstu.gyboml.core.net.handling.Handler;
 import ru.spbstu.gyboml.core.net.handling.HandlerManager;
 import ru.spbstu.gyboml.server.handling.ConnectionHandler;
+import ru.spbstu.gyboml.server.handling.PassTurnHandler;
 
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -30,6 +31,9 @@ public class Controller implements Runnable, ControllerInterface {
 
     InetAddress firstAddress = null;
     InetAddress secondAddress = null;
+
+    int firstPort = 0;
+    int secondPort = 0;
 
     // offices
     OfficeInput officeInput;
@@ -72,6 +76,7 @@ public class Controller implements Runnable, ControllerInterface {
             socket = new DatagramSocket(port);
             handlerManager = new HandlerManager(this);
             handlerManager.putHandler(PacketType.CONNECTION_REQUEST, new ConnectionHandler());
+            handlerManager.putHandler(PacketType.PASS_TURN, new PassTurnHandler());
 
             officeInput = new OfficeInput(socket, handlerManager, inputQueue);
             officeOutput = new OfficeOutput(socket, outputQueue);
@@ -130,22 +135,24 @@ public class Controller implements Runnable, ControllerInterface {
         return secondPlayer;
     }
 
-    public void createFirstPlayer( InetAddress address ) {
+    public void createFirstPlayer( InetAddress address, int port ) {
         if (firstPlayer != null) {
             return;
         }
 
         firstPlayer = new Player(0, true);
         firstAddress = address;
+        firstPort = port;
     }
 
-    public void createSecondPlayer( InetAddress address ) {
+    public void createSecondPlayer( InetAddress address, int port ) {
         if (secondPlayer != null) {
             return;
         }
 
         secondPlayer = new Player(0, false);
         secondAddress = address;
+        secondPort = port;
     }
 
     @Override
@@ -157,4 +164,9 @@ public class Controller implements Runnable, ControllerInterface {
     public OfficeInput getOfficeInput() {
         return this.officeInput;
     }
+
+    public InetAddress getFirstAddress() {return firstAddress;}
+    public InetAddress getSecondAddress() {return secondAddress;}
+    public int getFirstPort() { return firstPort; }
+    public int getSecondPort() { return secondPort; }
 }

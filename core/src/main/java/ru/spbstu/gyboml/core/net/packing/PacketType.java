@@ -18,14 +18,14 @@ public enum PacketType {
      *
      * Can be sent only from server to client
      * */
-    CONNECTION_RESPONSE(1),
+    PLAYER_UPDATE(1),
 
     /**
-     * Change player turn message
+     * Pass  turn message.
      *
-     * It's semantic depends on whom this package is delivered (client->server or server->client)
+     * Can be sent only from client to server.
      */
-    CHANGE_TURN(2);
+    PASS_TURN(2);
 
     // identifier for serialization convenience
     private int id;
