@@ -6,10 +6,14 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="core" />
+        <module name="server" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="gyboml" target="1.5" />
+      <module name="core" target="1.8" />
+      <module name="server" target="1.8" />
+      <module name="server-project" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>
