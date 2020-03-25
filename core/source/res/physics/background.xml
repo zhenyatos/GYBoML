@@ -1,213 +1,69 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- created with http://www.physicseditor.de -->
-<bodydef version="1.0">
-    <bodies numBodies="1">
+<!-- created with https://www.codeandweb.com/physicseditor -->
+<bodydef>
+
+	<body name="bg_land">
+		<is_dynamic/>
+		<linear_damping>0</linear_damping>
+		<angular_damping>0</angular_damping>
+		<allow_sleep/>
+		<fixture>
+			<density>2</density>
+			<friction>0</friction>
+			<restitution>0</restitution>
+			<filter_category_bits>1</filter_category_bits>
+			<filter_mask_bits>65535</filter_mask_bits>
+			<filter_group_index>0</filter_group_index>
+			<polygon>523.0000, 364.0000, 1250.0000, 133.0000, 1539.0000, 341.0000, 1545.0000, 364.0000</polygon>
+		</fixture>
+		<fixture>
+			<density>2</density>
+			<friction>0</friction>
+			<restitution>0</restitution>
+			<filter_category_bits>1</filter_category_bits>
+			<filter_mask_bits>65535</filter_mask_bits>
+			<filter_group_index>0</filter_group_index>
+			<polygon>3208.0000, 363.0000, 2186.0000, 363.0000, 2192.0000, 340.0000, 2481.0000, 132.0000</polygon>
+		</fixture>
+		<fixture>
+			<density>2</density>
+			<friction>0</friction>
+			<restitution>0</restitution>
+			<filter_category_bits>1</filter_category_bits>
+			<filter_mask_bits>65535</filter_mask_bits>
+			<filter_group_index>0</filter_group_index>
+			<polygon>3731.0000, -1.0000, 3731.0000, 504.0000, 3295.0000, 363.0000, 3347.0000, 191.0000</polygon>
+			<polygon>3197.0000, 362.0000, 3347.0000, 191.0000, 3295.0000, 363.0000</polygon>
+		</fixture>
+		<fixture>
+			<density>2</density>
+			<friction>0</friction>
+			<restitution>0</restitution>
+			<filter_category_bits>1</filter_category_bits>
+			<filter_mask_bits>65535</filter_mask_bits>
+			<filter_group_index>0</filter_group_index>
+			<polygon>2.0000, 4.0000, 384.0000, 192.0000, 436.0000, 364.0000, 0.0000, 505.0000</polygon>
+			<polygon>534.0000, 363.0000, 436.0000, 364.0000, 384.0000, 192.0000</polygon>
+		</fixture>
+		<fixture>
+			<density>2</density>
+			<friction>0</friction>
+			<restitution>0</restitution>
+			<filter_category_bits>1</filter_category_bits>
+			<filter_mask_bits>65535</filter_mask_bits>
+			<filter_group_index>0</filter_group_index>
+			<polygon>2343.0000, 251.0000, 2122.0000, 194.0000, 1869.0000, 9.0000</polygon>
+			<polygon>2122.0000, 194.0000, 1975.0000, 168.0000, 1869.0000, 9.0000</polygon>
+			<polygon>1975.0000, 168.0000, 1762.0000, 169.0000, 1869.0000, 9.0000</polygon>
+			<polygon>1762.0000, 169.0000, 1587.0000, 211.0000, 1869.0000, 9.0000</polygon>
+			<polygon>1587.0000, 211.0000, 1398.0000, 269.0000, 1869.0000, 9.0000</polygon>
+		</fixture>
+	</body>
+
+	<metadata>
+		<format>1</format>
+		<ptm_ratio>32</ptm_ratio>
+	</metadata>
 
-        <body name="bg_land" dynamic="true" numFixtures="5">
-
-            <fixture
-                density="2"
-                friction="0"
-                restitution="0"
-                filter_categoryBits="1"
-                filter_groupIndex="0"
-                filter_maskBits="65535"
-                isSensor="false"
-                type="POLYGON"
-                numPolygons="1"
-                >
-
-
-                <polygon numVertexes="4">
-
-                    <vertex x="-322.0000" y="356.0000" />
-
-                    <vertex x="-328.0000" y="379.0000" />
-
-                    <vertex x="-617.0000" y="587.0000" />
-
-                    <vertex x="-1344.0000" y="356.0000" />
-
-                </polygon>
-
-
-            </fixture>
-
-            <fixture
-                density="2"
-                friction="0"
-                restitution="0"
-                filter_categoryBits="1"
-                filter_groupIndex="0"
-                filter_maskBits="65535"
-                isSensor="false"
-                type="POLYGON"
-                numPolygons="1"
-                >
-
-
-                <polygon numVertexes="4">
-
-                    <vertex x="614.0000" y="588.0000" />
-
-                    <vertex x="325.0000" y="380.0000" />
-
-                    <vertex x="319.0000" y="357.0000" />
-
-                    <vertex x="1341.0000" y="357.0000" />
-
-                </polygon>
-
-
-            </fixture>
-
-            <fixture
-                density="2"
-                friction="0"
-                restitution="0"
-                filter_categoryBits="1"
-                filter_groupIndex="0"
-                filter_maskBits="65535"
-                isSensor="false"
-                type="POLYGON"
-                numPolygons="2"
-                >
-
-
-                <polygon numVertexes="4">
-
-                    <vertex x="1480.0000" y="529.0000" />
-
-                    <vertex x="1428.0000" y="357.0000" />
-
-                    <vertex x="1864.0000" y="216.0000" />
-
-                    <vertex x="1864.0000" y="721.0000" />
-
-                </polygon>
-
-                <polygon numVertexes="3">
-
-                    <vertex x="1428.0000" y="357.0000" />
-
-                    <vertex x="1480.0000" y="529.0000" />
-
-                    <vertex x="1330.0000" y="358.0000" />
-
-                </polygon>
-
-
-            </fixture>
-
-            <fixture
-                density="2"
-                friction="0"
-                restitution="0"
-                filter_categoryBits="1"
-                filter_groupIndex="0"
-                filter_maskBits="65535"
-                isSensor="false"
-                type="POLYGON"
-                numPolygons="2"
-                >
-
-
-                <polygon numVertexes="4">
-
-                    <vertex x="-1867.0000" y="215.0000" />
-
-                    <vertex x="-1431.0000" y="356.0000" />
-
-                    <vertex x="-1483.0000" y="528.0000" />
-
-                    <vertex x="-1865.0000" y="716.0000" />
-
-                </polygon>
-
-                <polygon numVertexes="3">
-
-                    <vertex x="-1483.0000" y="528.0000" />
-
-                    <vertex x="-1431.0000" y="356.0000" />
-
-                    <vertex x="-1333.0000" y="357.0000" />
-
-                </polygon>
-
-
-            </fixture>
-
-            <fixture
-                density="2"
-                friction="0"
-                restitution="0"
-                filter_categoryBits="1"
-                filter_groupIndex="0"
-                filter_maskBits="65535"
-                isSensor="false"
-                type="POLYGON"
-                numPolygons="5"
-                >
-
-
-                <polygon numVertexes="3">
-
-                    <vertex x="2.0000" y="711.0000" />
-
-                    <vertex x="255.0000" y="526.0000" />
-
-                    <vertex x="476.0000" y="469.0000" />
-
-                </polygon>
-
-                <polygon numVertexes="3">
-
-                    <vertex x="2.0000" y="711.0000" />
-
-                    <vertex x="108.0000" y="552.0000" />
-
-                    <vertex x="255.0000" y="526.0000" />
-
-                </polygon>
-
-                <polygon numVertexes="3">
-
-                    <vertex x="2.0000" y="711.0000" />
-
-                    <vertex x="-105.0000" y="551.0000" />
-
-                    <vertex x="108.0000" y="552.0000" />
-
-                </polygon>
-
-                <polygon numVertexes="3">
-
-                    <vertex x="2.0000" y="711.0000" />
-
-                    <vertex x="-280.0000" y="509.0000" />
-
-                    <vertex x="-105.0000" y="551.0000" />
-
-                </polygon>
-
-                <polygon numVertexes="3">
-
-                    <vertex x="2.0000" y="711.0000" />
-
-                    <vertex x="-469.0000" y="451.0000" />
-
-                    <vertex x="-280.0000" y="509.0000" />
-
-                </polygon>
-
-
-            </fixture>
-
-        </body>
-
-    </bodies>
-    <metadata>
-        <format>1</format>
-        <ptm_ratio></ptm_ratio>
-    </metadata>
 </bodydef>
+
