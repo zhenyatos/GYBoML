@@ -1,4 +1,17 @@
+plugins {
+    id "application"
+}
 apply plugin: 'java-library'
+apply plugin : "java"
+ext {
+    javaMainClass = "MainTest"
+}
+
+application {
+    mainClassName = javaMainClass
+}
+
+
 sourceSets {
     main {
         java {
@@ -33,5 +46,3 @@ dependencies {
             'org.junit.vintage:junit-vintage-engine:5.4.2'
     )
 }
-
-
