@@ -12,7 +12,7 @@ import ru.spbstu.gyboml.core.PlayerType;
 import ru.spbstu.gyboml.core.Tower;
 
 public class PhysicalTower extends Tower {
-    final String PATH = "./res/physics/objects.xml";
+    private final String PATH = "source/res/physics/objects.xml";
     private Body tower;
     private Body cannon;
 

@@ -12,7 +12,7 @@ import ru.spbstu.gyboml.core.PlayerType;
 import ru.spbstu.gyboml.core.destructible.Castle;
 
 public class PhysicalCastle extends Castle {
-    final String PATH = "./res/physics/objects.xml";
+    private final String PATH = "source/res/physics/objects.xml";
     private Body front;
     private Body tower;
 

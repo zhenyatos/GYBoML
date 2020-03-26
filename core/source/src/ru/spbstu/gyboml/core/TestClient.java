@@ -2,6 +2,7 @@ package ru.spbstu.gyboml.core;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -14,6 +15,10 @@ import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.scenes.scene2d.Event;
+import com.badlogic.gdx.scenes.scene2d.EventListener;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 
 import ru.spbstu.gyboml.core.physical.Background;
@@ -42,6 +47,7 @@ public class TestClient extends ApplicationAdapter {
     private Box2DDebugRenderer debugRenderer;
     private ExtendViewport viewport;
     private Background background;
+    private InputListener inputListener;
 
     @Override
     public void create () {
@@ -91,17 +97,20 @@ public class TestClient extends ApplicationAdapter {
         }
     }
 
+    private Body test;
     private void createTestedObjects() {
         float width = worldWidth + minWidth * (maxXRatio / minRatio - 1);
         float height = worldHeight + minHeight * (minRatio / maxYRatio - 1);
 
         background = new Background(world,
                 0 - (width - worldWidth) / 2,0 - (height - worldHeight) / 2, SCALE);
+
+        test = createBox(2, 2, 15, 30, 0);
     }
     private Body createBox(float hx, float hy, float x, float y, float angle) {
 
         BodyDef bodyDef = new BodyDef();
-        bodyDef.type = BodyDef.BodyType.StaticBody;
+        bodyDef.type = BodyDef.BodyType.DynamicBody;
 
         FixtureDef fixtureDef = new FixtureDef();
 
@@ -125,5 +134,4 @@ public class TestClient extends ApplicationAdapter {
             world.destroyBody(ground);
         ground = createBox(worldWidth, 1, 0, 0, 0);
     }
-
 }
