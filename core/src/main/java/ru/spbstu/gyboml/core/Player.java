@@ -1,9 +1,11 @@
 package ru.spbstu.gyboml.core;
 
+import java.io.Serializable;
+
 /**
  * Class represents player in game.
  * */
-public class Player {
+public class Player implements Serializable {
 
     // is now my turn
     private boolean isTurn;

@@ -1,9 +1,14 @@
 package ru.spbstu.gyboml.server;
 
 import ru.spbstu.gyboml.core.Player;
-import ru.spbstu.gyboml.core.packing.PacketType;
-import ru.spbstu.gyboml.server.handling.Handler;
-import ru.spbstu.gyboml.server.handling.HandlerManager;
+import ru.spbstu.gyboml.core.net.ControllerInterface;
+import ru.spbstu.gyboml.core.net.office.OfficeInput;
+import ru.spbstu.gyboml.core.net.office.OfficeOutput;
+import ru.spbstu.gyboml.core.net.packing.PacketType;
+import ru.spbstu.gyboml.core.net.handling.Handler;
+import ru.spbstu.gyboml.core.net.handling.HandlerManager;
+import ru.spbstu.gyboml.server.handling.ConnectionHandler;
+import ru.spbstu.gyboml.server.handling.PassTurnHandler;
 
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -15,7 +20,7 @@ import java.util.*;
  * Class controls all server-side computations.
  * It can be interpreted as single game session.
  */
-public class Controller implements Runnable {
+public class Controller implements Runnable, ControllerInterface {
 
     // server port (TODO: move this in Godfather)
     public static final int port = 4445;
@@ -26,6 +31,9 @@ public class Controller implements Runnable {
 
     InetAddress firstAddress = null;
     InetAddress secondAddress = null;
+
+    int firstPort = 0;
+    int secondPort = 0;
 
     // offices
     OfficeInput officeInput;
@@ -67,6 +75,9 @@ public class Controller implements Runnable {
 
             socket = new DatagramSocket(port);
             handlerManager = new HandlerManager(this);
+            handlerManager.putHandler(PacketType.CONNECTION_REQUEST, new ConnectionHandler());
+            handlerManager.putHandler(PacketType.PASS_TURN, new PassTurnHandler());
+
             officeInput = new OfficeInput(socket, handlerManager, inputQueue);
             officeOutput = new OfficeOutput(socket, outputQueue);
         } catch (SocketException error) {
@@ -106,10 +117,12 @@ public class Controller implements Runnable {
         }
     }
 
+    @Override
     public Queue<DatagramPacket> getInputQueue() {
         return this.inputQueue;
     }
 
+    @Override
     public Queue<DatagramPacket> getOutputQueue() {
         return this.outputQueue;
     }
@@ -122,25 +135,38 @@ public class Controller implements Runnable {
         return secondPlayer;
     }
 
-    public void createFirstPlayer( InetAddress address ) {
+    public void createFirstPlayer( InetAddress address, int port ) {
         if (firstPlayer != null) {
             return;
         }
 
         firstPlayer = new Player(0, true);
         firstAddress = address;
+        firstPort = port;
     }
 
-    public void createSecondPlayer( InetAddress address ) {
+    public void createSecondPlayer( InetAddress address, int port ) {
         if (secondPlayer != null) {
             return;
         }
 
         secondPlayer = new Player(0, false);
         secondAddress = address;
+        secondPort = port;
     }
 
+    @Override
     public OfficeOutput getOfficeOutput() {
         return this.officeOutput;
     }
+    
+    @Override
+    public OfficeInput getOfficeInput() {
+        return this.officeInput;
+    }
+
+    public InetAddress getFirstAddress() {return firstAddress;}
+    public InetAddress getSecondAddress() {return secondAddress;}
+    public int getFirstPort() { return firstPort; }
+    public int getSecondPort() { return secondPort; }
 }

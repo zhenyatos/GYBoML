@@ -1,8 +1,8 @@
 package ru.spbstu.gyboml.core.destructible;
 
-import org.jetbrains.annotations.NotNull;
 import ru.spbstu.gyboml.core.damage.Effect;
 import ru.spbstu.gyboml.core.damage.Damage;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
