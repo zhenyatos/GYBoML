@@ -13,6 +13,7 @@
     <bytecodeTargetLevel>
       <module name="core" target="1.8" />
       <module name="server" target="1.8" />
+      <module name="server-project" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>
