@@ -8,16 +8,17 @@ import com.codeandweb.physicseditor.PhysicsShapeCache;
 
 import java.io.File;
 
+import ru.spbstu.gyboml.core.Constants;
 import ru.spbstu.gyboml.core.PlayerType;
 import ru.spbstu.gyboml.core.Tower;
 
 public class PhysicalTower extends Tower {
-    private final String PATH = "source/res/physics/objects.xml";
+    private final String PATH = "physics/objects.xml";
     private Body tower;
     private Body cannon;
 
     public PhysicalTower(Position pos, PlayerType playerType, World world) {
-        File file = new File(PATH);
+        File file = new File(Constants.RES_PATH + PATH);
         FileHandle fileHandle = new FileHandle(file);
 
         PhysicsShapeCache physicsShapeCache = new PhysicsShapeCache(fileHandle);

@@ -8,13 +8,16 @@ import com.codeandweb.physicseditor.PhysicsShapeCache;
 
 import java.io.File;
 
+import ru.spbstu.gyboml.core.Constants;
+
 public class Background {
     private final Body body;
-    public Background(World world, float x, float y, float SCALE) {
-        File file = new File("source/res/physics/background.xml");
+    private final String PATH = "physics/background.xml";
+    public Background(Position pos, World world) {
+        File file = new File(Constants.RES_PATH + PATH);
         PhysicsShapeCache physicsBodies = new PhysicsShapeCache(new FileHandle(file));
-        body = physicsBodies.createBody("bg_land", world, SCALE, SCALE);
-        body.setTransform(x, y, 0);
+        body = physicsBodies.createBody("bg_land", world, pos.scale, pos.scale);
+        body.setTransform(pos.x, pos.y, 0);
         body.setType(BodyDef.BodyType.StaticBody);
     }
 

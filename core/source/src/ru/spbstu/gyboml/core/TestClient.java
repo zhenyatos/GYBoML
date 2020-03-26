@@ -22,6 +22,8 @@ import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 
 import ru.spbstu.gyboml.core.physical.Background;
+import ru.spbstu.gyboml.core.physical.PhysicalCastle;
+import ru.spbstu.gyboml.core.physical.Position;
 
 
 public class TestClient extends ApplicationAdapter {
@@ -47,7 +49,7 @@ public class TestClient extends ApplicationAdapter {
     private Box2DDebugRenderer debugRenderer;
     private ExtendViewport viewport;
     private Background background;
-    private InputListener inputListener;
+    private Body test;
 
     @Override
     public void create () {
@@ -97,16 +99,20 @@ public class TestClient extends ApplicationAdapter {
         }
     }
 
-    private Body test;
     private void createTestedObjects() {
         float width = worldWidth + minWidth * (maxXRatio / minRatio - 1);
         float height = worldHeight + minHeight * (minRatio / maxYRatio - 1);
 
-        background = new Background(world,
-                0 - (width - worldWidth) / 2,0 - (height - worldHeight) / 2, SCALE);
+        background = new Background(
+                new Position(0 - (width - worldWidth) / 2,0 - (height - worldHeight) / 2, SCALE),
+                world);
+
+        PhysicalCastle castle = new PhysicalCastle(10,
+                new Position(15.f, 10.f, SCALE), PlayerType.FIRST_PLAYER, world);
 
         test = createBox(2, 2, 15, 30, 0);
     }
+
     private Body createBox(float hx, float hy, float x, float y, float angle) {
 
         BodyDef bodyDef = new BodyDef();
