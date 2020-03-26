@@ -15,10 +15,7 @@
   <modules>
     <module>server</module>
     <module>core</module>
-<<<<<<< HEAD
     <module>net-client</module>
-=======
->>>>>>> develop
   </modules>
 
   <!-- testing framework -->
@@ -45,10 +42,5 @@
             </configuration>
         </plugin>
     </plugins>
-  </build>
-  
-<<<<<<< HEAD
+  </build> 
 </project>
-=======
-</project>
->>>>>>> develop
