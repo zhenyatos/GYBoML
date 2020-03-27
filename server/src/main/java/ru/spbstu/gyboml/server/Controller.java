@@ -159,7 +159,7 @@ public class Controller implements Runnable, ControllerInterface {
     public OfficeOutput getOfficeOutput() {
         return this.officeOutput;
     }
-    
+
     @Override
     public OfficeInput getOfficeInput() {
         return this.officeInput;

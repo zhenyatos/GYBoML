@@ -6,10 +6,10 @@
 
   <!-- project info block -->
   <groupId>ru.spbstu.gyboml</groupId>
-  <artifactId>server-project</artifactId>
+  <artifactId>gyboml</artifactId>
   <packaging>pom</packaging>  
   <version>1.0-SNAPSHOT</version>  
-  <name>server-project</name>
+  <name>gyboml</name>
 
   <!-- child modules -->
   <modules>
