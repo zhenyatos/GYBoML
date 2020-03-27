@@ -38,7 +38,6 @@ import ru.spbstu.gyboml.core.physical.PhysicalCastle;
 import ru.spbstu.gyboml.core.physical.PhysicalTower;
 import ru.spbstu.gyboml.core.physical.Position;
 
-
 /**
  * The GameClient class handles rendering, camera movement,
  * user input and the creation and disposal of graphic resources
@@ -296,9 +295,12 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
         Button endTurnButton = new TextButton("End Turn", skin, "default");
         endTurnButton.addListener(new InputListener() {
             @Override
-            public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
-                //toServerMessageSender.nextTurnMessage(); method stub
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                toServerMessageSender.nextTurnMessage();
+                //PassTurnGenerator generator = new PassTurnGenerator();
+                //generator.generate(null, serverAddress, port, this);
             }
+
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 return true;
