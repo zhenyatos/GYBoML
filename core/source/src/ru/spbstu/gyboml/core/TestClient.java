@@ -23,6 +23,7 @@ import com.badlogic.gdx.utils.viewport.ExtendViewport;
 
 import ru.spbstu.gyboml.core.physical.Background;
 import ru.spbstu.gyboml.core.physical.PhysicalCastle;
+import ru.spbstu.gyboml.core.physical.PhysicalTower;
 import ru.spbstu.gyboml.core.physical.Position;
 
 
@@ -103,14 +104,9 @@ public class TestClient extends ApplicationAdapter {
         float width = worldWidth + minWidth * (maxXRatio / minRatio - 1);
         float height = worldHeight + minHeight * (minRatio / maxYRatio - 1);
 
-        background = new Background(
-                new Position(0 - (width - worldWidth) / 2,0 - (height - worldHeight) / 2, SCALE),
-                world);
+        PhysicalTower tower = new PhysicalTower(new Position(15.f, 0.f, SCALE/2),
+                PlayerType.FIRST_PLAYER, world);
 
-        PhysicalCastle castle = new PhysicalCastle(10,
-                new Position(15.f, 10.f, SCALE), PlayerType.FIRST_PLAYER, world);
-
-        test = createBox(2, 2, 15, 30, 0);
     }
 
     private Body createBox(float hx, float hy, float x, float y, float angle) {
