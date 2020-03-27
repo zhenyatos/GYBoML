@@ -1,4 +1,4 @@
-package main.java.ru.spbstu.clientcore;
+package main.java.ru.spbstu.gyboml.clientcore;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
@@ -18,6 +18,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+
+//import ru.spbstu.gyboml.
 
 /**
  * The GameClient class handles rendering, camera movement,
@@ -159,9 +161,12 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
         Button endTurnButton = new TextButton("End Turn", skin, "default");
         endTurnButton.addListener(new InputListener() {
             @Override
-            public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
-                //toServerMessageSender.nextTurnMessage(); method stub
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                toServerMessageSender.nextTurnMessage();
+                //PassTurnGenerator generator = new PassTurnGenerator();
+                //generator.generate(null, serverAddress, port, this);
             }
+
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 return true;
