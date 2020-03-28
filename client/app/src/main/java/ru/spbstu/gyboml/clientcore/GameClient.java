@@ -1,4 +1,4 @@
-package main.java.ru.spbstu.clientcore;
+package main.java.ru.spbstu.gyboml.clientcore;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
@@ -9,6 +9,8 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -18,6 +20,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+
+// imported from core
+import ru.spbstu.gyboml.core.physical.Background;
+import ru.spbstu.gyboml.core.physical.Position;
+
 
 /**
  * The GameClient class handles rendering, camera movement,
@@ -35,8 +42,10 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
     private static final float worldHeight = minHeight;
     private static final float maxXRatio = 19.5f / 9f;
     private static final float maxYRatio = 4f / 3f;
+    private static final float gravityAccelerationX = 0f;
+    private static final float gravityAccelerationY = -10f;
 
-    private MessageSender toServerMessageSender;
+    //private MessageSender toServerMessageSender;
     private SpriteBatch batch;
     private Texture backgroundTexture;
     private Sprite background;
@@ -44,6 +53,7 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
     private ExtendViewport viewport;
     private Stage stageForUI;
     private Table table;
+    private World world;
 
     /**
      * This is the method that is called on client's creation.
@@ -59,11 +69,18 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
         Gdx.input.setInputProcessor(inputMultiplexer);
         setUpUI();
 
+
         batch = new SpriteBatch();
         backgroundTexture = new Texture("background.png");
         background = new Sprite(backgroundTexture);
         float width = worldWidth + minWidth * (maxXRatio / minRatio - 1);
         float height = worldHeight + minHeight * (minRatio / maxYRatio - 1);
+
+        world = new World(new Vector2(gravityAccelerationX, gravityAccelerationY), true);
+        Position backgroundPosition = new Position(0 - (width - worldWidth) / 2,0 - (height - worldHeight) / 2, 1);
+
+        // crashes
+        // Background physicalBackground = new Background(backgroundPosition, world);
 
         background.setSize(width, height);
         background.setOrigin(0, 0);

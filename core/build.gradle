@@ -43,13 +43,7 @@ project(":source") {
     apply plugin: "java-library"
 
     dependencies {
-        api "com.badlogicgames.gdx:gdx-backend-lwjgl:$gdxVersion"
-        api "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
-        api "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-desktop"
-        api "com.badlogicgames.gdx:gdx:$gdxVersion"
-        api "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
-        compile 'org.jetbrains:annotations:16.0.2'
-        implementation "com.codeandweb.physicseditor:gdx-pe-loader:1.1.0"
+
     }
 
 }
