@@ -47,7 +47,7 @@ public class PhysicalTower extends Tower {
             cannon.setTransform(pos.x + (40.f * pos.scale), pos.y + (800.f * pos.scale), 0);
             Vector2 jointPos = new Vector2(cannon.getPosition().x + 80.f * pos.scale, cannon.getPosition().y + 45.f * pos.scale);
             revoluteJointDef.initialize(cannon, tower, jointPos);
-            revoluteJointDef.motorSpeed = -(float)Math.PI * 2;
+            revoluteJointDef.motorSpeed = -(float)Math.PI;
             revoluteJointDef.upperAngle = 0.0f;
             revoluteJointDef.lowerAngle = -(float)Math.PI / 3;
         }
@@ -55,13 +55,13 @@ public class PhysicalTower extends Tower {
             cannon.setTransform(pos.x - (40.f * pos.scale), pos.y + (800.f * pos.scale), 0);
             Vector2 jointPos = new Vector2(cannon.getPosition().x + 140.f * pos.scale, cannon.getPosition().y + 45.f * pos.scale);
             revoluteJointDef.initialize(cannon, tower, jointPos);
-            revoluteJointDef.motorSpeed = (float)Math.PI * 2;
+            revoluteJointDef.motorSpeed = (float)Math.PI;
             revoluteJointDef.upperAngle = (float)Math.PI / 3;
             revoluteJointDef.lowerAngle = 0.0f;
         }
 
 
-        revoluteJointDef.maxMotorTorque = 100;
+        revoluteJointDef.maxMotorTorque = 50 / pos.scale;
         revoluteJointDef.enableMotor = true;
         revoluteJointDef.enableLimit = true;
         joint = (RevoluteJoint)world.createJoint(revoluteJointDef);

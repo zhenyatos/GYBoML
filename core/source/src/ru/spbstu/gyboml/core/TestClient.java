@@ -2,11 +2,8 @@ package ru.spbstu.gyboml.core;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -15,14 +12,9 @@ import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.scenes.scene2d.Event;
-import com.badlogic.gdx.scenes.scene2d.EventListener;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 
 import ru.spbstu.gyboml.core.physical.Background;
-import ru.spbstu.gyboml.core.physical.PhysicalCastle;
 import ru.spbstu.gyboml.core.physical.PhysicalTower;
 import ru.spbstu.gyboml.core.physical.Position;
 
@@ -50,8 +42,8 @@ public class TestClient extends ApplicationAdapter {
     private Box2DDebugRenderer debugRenderer;
     private ExtendViewport viewport;
     private Background background;
-    private PhysicalTower tower_p1;
-    private PhysicalTower tower_p2;
+    private PhysicalTower towerP1;
+    private PhysicalTower towerP2;
     private Body test;
 
     @Override
@@ -100,13 +92,13 @@ public class TestClient extends ApplicationAdapter {
 
             world.step(STEP_TIME, VELOCITY_ITERATIONS, POSITION_ITERATIONS);
 
-            if ((tower_p1.getJoint().getJointAngle() >= tower_p1.getJoint().getUpperLimit() && tower_p1.getJoint().getMotorSpeed() > 0)||
-                (tower_p1.getJoint().getJointAngle() <= tower_p1.getJoint().getLowerLimit() && tower_p1.getJoint().getMotorSpeed() < 0))
-                tower_p1.getJoint().setMotorSpeed(-tower_p1.getJoint().getMotorSpeed());
+            if ((towerP1.getJoint().getJointAngle() >= towerP1.getJoint().getUpperLimit() && towerP1.getJoint().getMotorSpeed() > 0)||
+                (towerP1.getJoint().getJointAngle() <= towerP1.getJoint().getLowerLimit() && towerP1.getJoint().getMotorSpeed() < 0))
+                towerP1.getJoint().setMotorSpeed(-towerP1.getJoint().getMotorSpeed());
 
-            if ((tower_p2.getJoint().getJointAngle() >= tower_p2.getJoint().getUpperLimit() && tower_p2.getJoint().getMotorSpeed() > 0)||
-                (tower_p2.getJoint().getJointAngle() <= tower_p2.getJoint().getLowerLimit() && tower_p2.getJoint().getMotorSpeed() < 0))
-                tower_p2.getJoint().setMotorSpeed(-tower_p2.getJoint().getMotorSpeed());
+            if ((towerP2.getJoint().getJointAngle() >= towerP2.getJoint().getUpperLimit() && towerP2.getJoint().getMotorSpeed() > 0)||
+                (towerP2.getJoint().getJointAngle() <= towerP2.getJoint().getLowerLimit() && towerP2.getJoint().getMotorSpeed() < 0))
+                towerP2.getJoint().setMotorSpeed(-towerP2.getJoint().getMotorSpeed());
         }
     }
 
@@ -114,15 +106,15 @@ public class TestClient extends ApplicationAdapter {
         float width = worldWidth + minWidth * (maxXRatio / minRatio - 1);
         float height = worldHeight + minHeight * (minRatio / maxYRatio - 1);
 
-        tower_p1 = new PhysicalTower(new Position((worldWidth / 2 - 20.f) / 2, 0.f, SCALE/2),
+        towerP1 = new PhysicalTower(new Position((worldWidth / 2 - 20.f) / 2, 0.f, SCALE/1.5f),
                 PlayerType.FIRST_PLAYER, world);
-        tower_p2 = new PhysicalTower(new Position((worldWidth / 2 + 20.f) / 2, 0.f, SCALE/2),
+        towerP2 = new PhysicalTower(new Position((worldWidth / 2 + 20.f) / 2, 0.f, SCALE/1.5f),
                 PlayerType.SECOND_PLAYER, world);
 
-        System.out.println(tower_p1.getJoint().getLowerLimit());
-        System.out.println(tower_p1.getJoint().getUpperLimit());
-        System.out.println(tower_p1.getJoint().getJointAngle());
-        System.out.println(tower_p1.getJoint().getMotorSpeed());
+        System.out.println(towerP1.getJoint().getLowerLimit());
+        System.out.println(towerP1.getJoint().getUpperLimit());
+        System.out.println(towerP1.getJoint().getJointAngle());
+        System.out.println(towerP1.getJoint().getMotorSpeed());
     }
 
     private Body createBox(float hx, float hy, float x, float y, float angle) {
