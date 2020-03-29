@@ -50,6 +50,8 @@ public class TestClient extends ApplicationAdapter {
     private Box2DDebugRenderer debugRenderer;
     private ExtendViewport viewport;
     private Background background;
+    private PhysicalTower tower_p1;
+    private PhysicalTower tower_p2;
     private Body test;
 
     @Override
@@ -97,6 +99,14 @@ public class TestClient extends ApplicationAdapter {
             accumulator -= STEP_TIME;
 
             world.step(STEP_TIME, VELOCITY_ITERATIONS, POSITION_ITERATIONS);
+
+            if ((tower_p1.getJoint().getJointAngle() >= tower_p1.getJoint().getUpperLimit() && tower_p1.getJoint().getMotorSpeed() > 0)||
+                (tower_p1.getJoint().getJointAngle() <= tower_p1.getJoint().getLowerLimit() && tower_p1.getJoint().getMotorSpeed() < 0))
+                tower_p1.getJoint().setMotorSpeed(-tower_p1.getJoint().getMotorSpeed());
+
+            if ((tower_p2.getJoint().getJointAngle() >= tower_p2.getJoint().getUpperLimit() && tower_p2.getJoint().getMotorSpeed() > 0)||
+                (tower_p2.getJoint().getJointAngle() <= tower_p2.getJoint().getLowerLimit() && tower_p2.getJoint().getMotorSpeed() < 0))
+                tower_p2.getJoint().setMotorSpeed(-tower_p2.getJoint().getMotorSpeed());
         }
     }
 
@@ -104,9 +114,15 @@ public class TestClient extends ApplicationAdapter {
         float width = worldWidth + minWidth * (maxXRatio / minRatio - 1);
         float height = worldHeight + minHeight * (minRatio / maxYRatio - 1);
 
-        PhysicalTower tower = new PhysicalTower(new Position(15.f, 0.f, SCALE/2),
+        tower_p1 = new PhysicalTower(new Position((worldWidth / 2 - 20.f) / 2, 0.f, SCALE/2),
                 PlayerType.FIRST_PLAYER, world);
+        tower_p2 = new PhysicalTower(new Position((worldWidth / 2 + 20.f) / 2, 0.f, SCALE/2),
+                PlayerType.SECOND_PLAYER, world);
 
+        System.out.println(tower_p1.getJoint().getLowerLimit());
+        System.out.println(tower_p1.getJoint().getUpperLimit());
+        System.out.println(tower_p1.getJoint().getJointAngle());
+        System.out.println(tower_p1.getJoint().getMotorSpeed());
     }
 
     private Body createBox(float hx, float hy, float x, float y, float angle) {

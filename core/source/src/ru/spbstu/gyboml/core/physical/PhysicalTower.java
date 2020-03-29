@@ -20,10 +20,14 @@ import ru.spbstu.gyboml.core.Tower;
 
 public class PhysicalTower extends Tower {
     private final String PATH = "physics/objects.xml";
+    private PlayerType playerType;
     private Body tower;
     private Body cannon;
+    private RevoluteJoint joint;
 
     public PhysicalTower(Position pos, PlayerType playerType, World world) {
+        this.playerType = playerType;
+
         File file = new File(Constants.RES_PATH + PATH);
         FileHandle fileHandle = new FileHandle(file);
 
@@ -34,22 +38,36 @@ public class PhysicalTower extends Tower {
 
         // Tower doesn't move => static
         tower.setType(BodyDef.BodyType.StaticBody);
-        // Cannon can move, but doesn't interact => kinematic
+        // Cannon can move, but doesn't interact => dynamic
         cannon.setType(BodyDef.BodyType.DynamicBody);
-        cannon.setGravityScale(0.f);
 
         tower.setTransform(pos.x, pos.y, 0);
-        cannon.setTransform(pos.x + (40.f * pos.scale), pos.y + (740.f * pos.scale), 0);
+        RevoluteJointDef revoluteJointDef = new RevoluteJointDef();
+        if (playerType == PlayerType.FIRST_PLAYER) {
+            cannon.setTransform(pos.x + (40.f * pos.scale), pos.y + (800.f * pos.scale), 0);
+            Vector2 jointPos = new Vector2(cannon.getPosition().x + 80.f * pos.scale, cannon.getPosition().y + 45.f * pos.scale);
+            revoluteJointDef.initialize(cannon, tower, jointPos);
+            revoluteJointDef.motorSpeed = -(float)Math.PI * 2;
+            revoluteJointDef.upperAngle = 0.0f;
+            revoluteJointDef.lowerAngle = -(float)Math.PI / 3;
+        }
+        else {
+            cannon.setTransform(pos.x - (40.f * pos.scale), pos.y + (800.f * pos.scale), 0);
+            Vector2 jointPos = new Vector2(cannon.getPosition().x + 140.f * pos.scale, cannon.getPosition().y + 45.f * pos.scale);
+            revoluteJointDef.initialize(cannon, tower, jointPos);
+            revoluteJointDef.motorSpeed = (float)Math.PI * 2;
+            revoluteJointDef.upperAngle = (float)Math.PI / 3;
+            revoluteJointDef.lowerAngle = 0.0f;
+        }
 
-        RevoluteJointDef jointDef = new RevoluteJointDef();
-        jointDef.initialize(tower, cannon, new Vector2(pos.x + (40.f * pos.scale), pos.y + (770.f * pos.scale)));
-        jointDef.type = JointDef.JointType.RevoluteJoint;
-        jointDef.collideConnected = false;
-        jointDef.motorSpeed = -100.f * pos.scale;
-        jointDef.enableMotor = true;
-        jointDef.enableLimit = false;
-        jointDef.maxMotorTorque = 100000;
 
-        RevoluteJoint joint = (RevoluteJoint)world.createJoint(jointDef);
+        revoluteJointDef.maxMotorTorque = 100;
+        revoluteJointDef.enableMotor = true;
+        revoluteJointDef.enableLimit = true;
+        joint = (RevoluteJoint)world.createJoint(revoluteJointDef);
+    }
+
+    public RevoluteJoint getJoint() {
+        return joint;
     }
 }
