@@ -2,3 +2,5 @@
 /target
 /build
 *.class
+/.idea
+/.settings
