@@ -10,9 +10,10 @@ import com.badlogic.gdx.physics.box2d.JointDef;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.physics.box2d.joints.RevoluteJoint;
 import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
-import com.codeandweb.physicseditor.PhysicsShapeCache;
+import ru.spbstu.gyboml.core.util.PhysicsShapeCache;
 
 import java.io.File;
+import java.io.InputStream;
 
 import ru.spbstu.gyboml.core.Constants;
 import ru.spbstu.gyboml.core.PlayerType;
@@ -24,10 +25,9 @@ public class PhysicalTower extends Tower {
     private Body cannon;
 
     public PhysicalTower(Position pos, PlayerType playerType, World world) {
-        File file = new File(Constants.RES_PATH + PATH);
-        FileHandle fileHandle = new FileHandle(file);
+        InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(PATH);
 
-        PhysicsShapeCache physicsShapeCache = new PhysicsShapeCache(fileHandle);
+        PhysicsShapeCache physicsShapeCache = new PhysicsShapeCache(is);
         String playerName = (playerType == PlayerType.FIRST_PLAYER) ? "_p1_" : "_p2_";
         tower = physicsShapeCache.createBody("tower" + playerName + "base", world, pos.scale, pos.scale);
         cannon = physicsShapeCache.createBody("tower" + playerName + "cannon", world, pos.scale, pos.scale);

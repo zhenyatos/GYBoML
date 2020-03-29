@@ -4,9 +4,10 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.World;
-import com.codeandweb.physicseditor.PhysicsShapeCache;
+import ru.spbstu.gyboml.core.util.PhysicsShapeCache;
 
 import java.io.File;
+import java.io.InputStream;
 
 import ru.spbstu.gyboml.core.Constants;
 import ru.spbstu.gyboml.core.PlayerType;
@@ -19,10 +20,9 @@ public class PhysicalCastle extends Castle {
 
     public PhysicalCastle(int HP, Position pos, PlayerType playerType, World world) {
         super(HP);
-        File file = new File(Constants.RES_PATH + PATH);
-        FileHandle fileHandle = new FileHandle(file);
+        InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(PATH);
 
-        PhysicsShapeCache physicsShapeCache = new PhysicsShapeCache(fileHandle);
+        PhysicsShapeCache physicsShapeCache = new PhysicsShapeCache(is);
         String playerName = (playerType == PlayerType.FIRST_PLAYER) ? "_p1_" : "_p2_";
         front = physicsShapeCache.createBody("castle" + playerName + "front", world, pos.scale, pos.scale);
         tower = physicsShapeCache.createBody("castle" + playerName + "tower", world, pos.scale, pos.scale);

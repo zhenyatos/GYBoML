@@ -79,8 +79,7 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
         world = new World(new Vector2(gravityAccelerationX, gravityAccelerationY), true);
         Position backgroundPosition = new Position(0 - (width - worldWidth) / 2,0 - (height - worldHeight) / 2, 1);
 
-        // crashes
-        // Background physicalBackground = new Background(backgroundPosition, world);
+         Background physicalBackground = new Background(backgroundPosition, world);
 
         background.setSize(width, height);
         background.setOrigin(0, 0);
