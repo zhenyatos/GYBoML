@@ -1,11 +1,15 @@
-package main.java.ru.spbstu.gyboml;
+package ru.spbstu.gyboml;
 
 import android.os.Bundle;
 
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
 
+<<<<<<< HEAD
 import main.java.ru.spbstu.gyboml.clientcore.GameClient;
+=======
+import ru.spbstu.gyboml.clientcore.GameClient;
+>>>>>>> Migrate from maven to gradle
 
 public class MainActivity extends AndroidApplication {
 
