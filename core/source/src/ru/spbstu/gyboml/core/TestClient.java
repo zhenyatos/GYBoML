@@ -106,15 +106,10 @@ public class TestClient extends ApplicationAdapter {
         float width = worldWidth + minWidth * (maxXRatio / minRatio - 1);
         float height = worldHeight + minHeight * (minRatio / maxYRatio - 1);
 
-        towerP1 = new PhysicalTower(new Position((worldWidth / 2 - 20.f) / 2, 0.f, SCALE/1.5f),
+        towerP1 = new PhysicalTower(new Position((worldWidth / 2 - 20.f) / 2, 0.f, SCALE/2f),
                 PlayerType.FIRST_PLAYER, world);
-        towerP2 = new PhysicalTower(new Position((worldWidth / 2 + 20.f) / 2, 0.f, SCALE/1.5f),
+        towerP2 = new PhysicalTower(new Position((worldWidth / 2 + 20.f) / 2, 0.f, SCALE/2f),
                 PlayerType.SECOND_PLAYER, world);
-
-        System.out.println(towerP1.getJoint().getLowerLimit());
-        System.out.println(towerP1.getJoint().getUpperLimit());
-        System.out.println(towerP1.getJoint().getJointAngle());
-        System.out.println(towerP1.getJoint().getMotorSpeed());
     }
 
     private Body createBox(float hx, float hy, float x, float y, float angle) {
