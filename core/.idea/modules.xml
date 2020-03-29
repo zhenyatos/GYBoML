@@ -2,8 +2,12 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/core.iml" filepath="$PROJECT_DIR$/core.iml" />
-      <module fileurl="file://$PROJECT_DIR$/source/source.iml" filepath="$PROJECT_DIR$/source/source.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/GYBoML-core.iml" filepath="$PROJECT_DIR$/.idea/modules/GYBoML-core.iml" group="core" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/source/GYBoML-core-source.iml" filepath="$PROJECT_DIR$/.idea/modules/source/GYBoML-core-source.iml" group="core/source" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/MyGit-GYBoML-core.iml" filepath="$PROJECT_DIR$/.idea/modules/MyGit-GYBoML-core.iml" group="core" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/core.iml" filepath="$PROJECT_DIR$/.idea/modules/core.iml" group="core" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/source/core-source.iml" filepath="$PROJECT_DIR$/.idea/modules/source/core-source.iml" group="core/source" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/source/source.iml" filepath="$PROJECT_DIR$/.idea/modules/source/source.iml" group="core/source" />
     </modules>
   </component>
 </project>

@@ -94,7 +94,7 @@
 		</fixture>
 	</body>
 
-	<body name="cannonballl">
+	<body name="cannonball">
 		<is_dynamic/>
 		<linear_damping>0</linear_damping>
 		<angular_damping>0</angular_damping>
