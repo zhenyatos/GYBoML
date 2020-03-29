@@ -20,6 +20,11 @@ public class PassTurnHandler extends Handler {
         Player firstPlayer = controller.getFirstPlayer();
         Player secondPlayer = controller.getSecondPlayer();
 
+        if (firstPlayer == null || secondPlayer == null) {
+            System.out.println("[PassTurnHandler] Not enough players to pass turn");
+            return;
+        }
+
         byte success = 1;
         if (from.equals(controller.getFirstAddress()) && port == controller.getFirstPort()) {
             firstPlayer.passTurn(secondPlayer);
