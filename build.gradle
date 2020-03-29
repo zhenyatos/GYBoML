@@ -1,0 +1,13 @@
+configure(subprojects.findAll { it.name == 'core' || it.name == 'server' }) {
+    apply plugin: 'java'
+    apply plugin: 'maven'
+
+    repositories {
+        mavenCentral()
+    }
+
+
+    dependencies {
+        testCompile group: 'junit', name: 'junit', version:'4.12'
+    }
+}

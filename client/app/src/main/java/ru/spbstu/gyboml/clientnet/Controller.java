@@ -1,8 +1,8 @@
-package ru.spbstu.gyboml.client;
+package ru.spbstu.gyboml.clientnet;
 
-import ru.spbstu.gyboml.client.generating.ConnectionGenerator;
-import ru.spbstu.gyboml.client.generating.PassTurnGenerator;
-import ru.spbstu.gyboml.client.handling.PlayerUpdateHandler;
+import ru.spbstu.gyboml.clientnet.generating.ConnectionGenerator;
+import ru.spbstu.gyboml.clientnet.generating.PassTurnGenerator;
+import ru.spbstu.gyboml.clientnet.handling.PlayerUpdateHandler;
 import ru.spbstu.gyboml.core.Player;
 import ru.spbstu.gyboml.core.net.ControllerInterface;
 import ru.spbstu.gyboml.core.net.handling.HandlerManager;
@@ -18,7 +18,7 @@ import java.util.Scanner;
 /**
  * Client controller class.
  */
-public class Controller implements Runnable, ControllerInterface {
+public class Controller extends Thread implements ControllerInterface {
 
     // address of remote server
     private final InetAddress serverAddress;
@@ -106,6 +106,14 @@ public class Controller implements Runnable, ControllerInterface {
 
     public void setPlayer( Player player ) {
         myPlayer = player;
+    }
+
+    public InetAddress getServerAddress() {
+        return serverAddress;
+    }
+
+    public int getServerPort() {
+        return port;
     }
 
 }
