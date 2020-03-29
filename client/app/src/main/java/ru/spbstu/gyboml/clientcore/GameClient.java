@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -22,6 +23,14 @@ import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 // imported from core
+import java.util.ArrayList;
+import java.util.List;
+
+import main.java.ru.spbstu.gyboml.graphics.Drawable;
+import main.java.ru.spbstu.gyboml.graphics.GraphicalBackground;
+import main.java.ru.spbstu.gyboml.graphics.GraphicalCastle;
+import main.java.ru.spbstu.gyboml.graphics.GraphicalForeground;
+import main.java.ru.spbstu.gyboml.graphics.GraphicalTower;
 import ru.spbstu.gyboml.core.physical.Background;
 import ru.spbstu.gyboml.core.physical.Position;
 
@@ -33,7 +42,7 @@ import ru.spbstu.gyboml.core.physical.Position;
  * @since   2020-03-11
  */
 public class GameClient extends ApplicationAdapter implements InputProcessor {
-    private static final float SCALE = 1f / 20f;
+    private float SCALE;
     private static final float minRatio = 3f / 2f;
     private static final float minWidth = 50;
     private static final float minHeight = minWidth / minRatio;
@@ -42,13 +51,17 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
     private static final float worldHeight = minHeight;
     private static final float maxXRatio = 19.5f / 9f;
     private static final float maxYRatio = 4f / 3f;
+    private static final float canvasWidth = worldWidth + minWidth * (maxXRatio / minRatio - 1);
+    private static final float canvasHeight = worldHeight + minHeight * (minRatio / maxYRatio - 1);
     private static final float gravityAccelerationX = 0f;
     private static final float gravityAccelerationY = -10f;
 
     //private MessageSender toServerMessageSender;
     private SpriteBatch batch;
-    private Texture backgroundTexture;
-    private Sprite background;
+    private TextureAtlas background_1;
+    private TextureAtlas background_2;
+    private TextureAtlas objects;
+    private final List<Drawable> drawables = new ArrayList<>();
     private OrthographicCamera camera;
     private ExtendViewport viewport;
     private Stage stageForUI;
@@ -59,6 +72,8 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
      * This is the method that is called on client's creation.
      * It loads the graphical resources, and sets up the sprites, background,
      * viewport, camera, UI etc.
+     *
+     * The method body is a bit bloated at the moment, it will be refactored in the near future.
      */
     @Override
     public void create() {
@@ -69,21 +84,62 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
         Gdx.input.setInputProcessor(inputMultiplexer);
         setUpUI();
 
+        world = new World(new Vector2(gravityAccelerationX, gravityAccelerationY), true);
 
         batch = new SpriteBatch();
-        backgroundTexture = new Texture("background.png");
-        background = new Sprite(backgroundTexture);
-        float width = worldWidth + minWidth * (maxXRatio / minRatio - 1);
-        float height = worldHeight + minHeight * (minRatio / maxYRatio - 1);
+        background_1 = new TextureAtlas("sprites/background_1.txt");
+        background_2 = new TextureAtlas("sprites/background_2.txt");
+        objects = new TextureAtlas("sprites/objects.txt");
 
-        world = new World(new Vector2(gravityAccelerationX, gravityAccelerationY), true);
-        Position backgroundPosition = new Position(0 - (width - worldWidth) / 2,0 - (height - worldHeight) / 2, 1);
+        Sprite backgroundSky = background_1.createSprite("bg_sky");
+        Sprite backgroundDesert = background_1.createSprite("bg_desert");
+        Sprite backgroundLand = background_2.createSprite("bg_land");
+        SCALE = canvasWidth / backgroundSky.getWidth();
 
-         Background physicalBackground = new Background(backgroundPosition, world);
+        GraphicalBackground background = new GraphicalBackground(backgroundSky, backgroundDesert,
+                backgroundLand, SCALE);
 
-        background.setSize(width, height);
+
+
+        float backgroundX = 0 - (canvasWidth - worldWidth) / 2;
+        float backgroundY = 0 - (canvasHeight - worldHeight) / 2;
+
+        Position backgroundPosition = new Position(backgroundX, backgroundY, 1);
+
+        Background physicalBackground = new Background(backgroundPosition, world);
+
+        background.setSize(canvasWidth, canvasHeight);
         background.setOrigin(0, 0);
-        background.setPosition(0 - (width - worldWidth) / 2,0 - (height - worldHeight) / 2);
+        background.setPosition(backgroundX, backgroundY);
+        drawables.add(background);
+
+        GraphicalTower leftTower = new GraphicalTower(objects.createSprite("tower_p1"), SCALE);
+        leftTower.setOrigin(0, 0);
+        leftTower.setPosition(0, 5);
+        drawables.add(leftTower);
+
+        GraphicalCastle leftCastle = new GraphicalCastle(objects.createSprite("castle_p1_back"),
+                objects.createSprite("castle_p1_front"), objects.createSprite("castle_p1_tower"), SCALE, 100);
+        leftCastle.setOrigin(0, 0);
+        leftCastle.setPosition(0 + leftCastle.getWidth() + leftTower.getWidth(), 5);
+        drawables.add(leftCastle);
+
+        GraphicalTower rightTower = new GraphicalTower(objects.createSprite("tower_p2"), SCALE);
+        rightTower.setOrigin(0, 0);
+        rightTower.setPosition(worldWidth - rightTower.getWidth(), 5);
+        drawables.add(rightTower);
+
+        GraphicalCastle rightCastle = new GraphicalCastle(objects.createSprite("castle_p2_back"),
+                objects.createSprite("castle_p2_front"), objects.createSprite("castle_p2_tower"), SCALE, 100);
+        rightCastle.setOrigin(0, 0);
+        rightCastle.setPosition(worldWidth - rightTower.getWidth() - rightCastle.getWidth() * 2, 5);
+        drawables.add(rightCastle);
+
+        GraphicalForeground graphicalForeground = new GraphicalForeground(background_2.createSprite("bg_front"), SCALE);
+        graphicalForeground.setSize(canvasWidth, canvasHeight);
+        graphicalForeground.setOrigin(0, 0);
+        graphicalForeground.setPosition(backgroundX, backgroundY);
+        drawables.add(graphicalForeground);
 
         camera = new OrthographicCamera(minWidth, minHeight);
         viewport = new ExtendViewport(camera.viewportWidth, camera.viewportHeight, camera);
@@ -102,7 +158,8 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
 
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
-        background.draw(batch);
+        for (Drawable object : drawables)
+            object.draw(batch);
         batch.end();
 
         stageForUI.act(Gdx.graphics.getDeltaTime());
@@ -116,7 +173,9 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
     @Override
     public void dispose() {
         batch.dispose();
-        backgroundTexture.dispose();
+        background_1.dispose();
+        background_2.dispose();
+        objects.dispose();
         stageForUI.dispose();
     }
 
