@@ -1,3 +1,4 @@
+/*
 package ru.spbstu.gyboml;
 
 import org.junit.Test;
@@ -18,3 +19,4 @@ public class EventSystemTest {
     EventSystem eventSystem;
 }
 
+*/
