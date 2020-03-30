@@ -3,15 +3,12 @@ package main.java.ru.spbstu.gyboml.graphics;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 
-import ru.spbstu.gyboml.core.destructible.Castle;
-
-public class GraphicalCastle extends Castle implements Drawable{
+public class GraphicalCastle implements Drawable{
     private final Sprite front;
     private final Sprite back;
     private final Sprite tower;
 
     public GraphicalCastle(Sprite back, Sprite front, Sprite tower, float scale, int HP) {
-        super(HP);
         front.setSize(front.getWidth() * scale, front.getHeight() * scale);
         back.setSize(back.getWidth() * scale, back.getHeight() * scale);
         tower.setSize(tower.getWidth() * scale, tower.getHeight() * scale);

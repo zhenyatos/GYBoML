@@ -3,9 +3,7 @@ package main.java.ru.spbstu.gyboml.graphics;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 
-import ru.spbstu.gyboml.core.Tower;
-
-public class GraphicalTower extends Tower implements Drawable {
+public class GraphicalTower implements Drawable {
     private final Sprite tower;
 
     public GraphicalTower(Sprite tower, float scale) {

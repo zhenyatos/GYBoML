@@ -1,15 +1,13 @@
 package ru.spbstu.gyboml.core.physical;
-import com.badlogic.gdx.files.FileHandle;
+
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.World;
 import ru.spbstu.gyboml.core.util.PhysicsShapeCache;
 
-import java.io.File;
 import java.io.InputStream;
 
-import ru.spbstu.gyboml.core.Constants;
 import ru.spbstu.gyboml.core.PlayerType;
 import ru.spbstu.gyboml.core.destructible.Castle;
 
