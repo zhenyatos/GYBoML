@@ -1,30 +1,29 @@
 package ru.spbstu.gyboml.core.physical;
 
-import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.Joint;
-import com.badlogic.gdx.physics.box2d.JointDef;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.physics.box2d.joints.RevoluteJoint;
 import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
 import ru.spbstu.gyboml.core.util.PhysicsShapeCache;
 
-import java.io.File;
 import java.io.InputStream;
 
-import ru.spbstu.gyboml.core.Constants;
 import ru.spbstu.gyboml.core.PlayerType;
 import ru.spbstu.gyboml.core.Tower;
 
 public class PhysicalTower extends Tower {
     private final String PATH = "physics/objects.xml";
+    private PlayerType playerType;
     private Body tower;
     private Body cannon;
+    private RevoluteJoint joint;
+    private Movable sprite = null;
 
     public PhysicalTower(Position pos, PlayerType playerType, World world) {
+        this.playerType = playerType;
+
         InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(PATH);
 
         PhysicsShapeCache physicsShapeCache = new PhysicsShapeCache(is);
@@ -34,22 +33,48 @@ public class PhysicalTower extends Tower {
 
         // Tower doesn't move => static
         tower.setType(BodyDef.BodyType.StaticBody);
-        // Cannon can move, but doesn't interact => kinematic
+        // Cannon can move => dynamic
         cannon.setType(BodyDef.BodyType.DynamicBody);
-        cannon.setGravityScale(0.f);
 
         tower.setTransform(pos.x, pos.y, 0);
-        cannon.setTransform(pos.x + (40.f * pos.scale), pos.y + (740.f * pos.scale), 0);
+        RevoluteJointDef revoluteJointDef = new RevoluteJointDef();
+        if (playerType == PlayerType.FIRST_PLAYER) {
+            cannon.setTransform(pos.x + (40.f * pos.scale), pos.y + (800.f * pos.scale), 0);
+            Vector2 jointPos = new Vector2(cannon.getPosition().x + 80.f * pos.scale, cannon.getPosition().y + 45.f * pos.scale);
+            revoluteJointDef.initialize(cannon, tower, jointPos);
+            revoluteJointDef.motorSpeed = -(float)Math.PI;
+            revoluteJointDef.upperAngle = 0.0f;
+            revoluteJointDef.lowerAngle = -(float)Math.PI / 3;
+        }
+        else {
+            cannon.setTransform(pos.x - (40.f * pos.scale), pos.y + (800.f * pos.scale), 0);
+            Vector2 jointPos = new Vector2(cannon.getPosition().x + 140.f * pos.scale, cannon.getPosition().y + 45.f * pos.scale);
+            revoluteJointDef.initialize(cannon, tower, jointPos);
+            revoluteJointDef.motorSpeed = (float)Math.PI;
+            revoluteJointDef.upperAngle = (float)Math.PI / 3;
+            revoluteJointDef.lowerAngle = 0.0f;
+        }
 
-        RevoluteJointDef jointDef = new RevoluteJointDef();
-        jointDef.initialize(tower, cannon, new Vector2(pos.x + (40.f * pos.scale), pos.y + (770.f * pos.scale)));
-        jointDef.type = JointDef.JointType.RevoluteJoint;
-        jointDef.collideConnected = false;
-        jointDef.motorSpeed = -100.f * pos.scale;
-        jointDef.enableMotor = true;
-        jointDef.enableLimit = false;
-        jointDef.maxMotorTorque = 100000;
+        revoluteJointDef.maxMotorTorque = 50 / pos.scale;
+        revoluteJointDef.enableMotor = true;
+        revoluteJointDef.enableLimit = true;
+        joint = (RevoluteJoint)world.createJoint(revoluteJointDef);
+    }
 
-        RevoluteJoint joint = (RevoluteJoint)world.createJoint(jointDef);
+    public RevoluteJoint getJoint() { return joint; }
+
+    public Vector2 getTowerPosition() { return tower.getPosition(); }
+
+    public Vector2 getCannonPosition() { return cannon.getPosition(); }
+
+    public float getCannonAngle() { return cannon.getAngle(); }
+
+    public void setMovableSprite(Movable sprite) { this.sprite = sprite; }
+
+    public void updateMovableSprite() {
+        if (this.sprite != null) {
+            sprite.setMovablePartPosition(cannon.getPosition());
+            sprite.setMovablePartAngle((float) Math.toDegrees(cannon.getAngle()));
+        }
     }
 }
