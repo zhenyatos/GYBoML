@@ -1,0 +1,10 @@
+
+# Default ignored files
+workspace.xml
+assetWizardSettings.xml
+gradle.xml
+modules.xml
+caches
+libraries
+# Uncomment next line if keeping position of elements in Navigation Editor is not relevant for you
+navEditor.xml

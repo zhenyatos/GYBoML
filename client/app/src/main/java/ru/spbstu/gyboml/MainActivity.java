@@ -1,11 +1,11 @@
-package ru.spbstu.gyboml;
+package main.java.ru.spbstu.gyboml;
 
 import android.os.Bundle;
 
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
 
-import ru.spbstu.gyboml.clientcore.GameClient;
+import main.java.ru.spbstu.gyboml.clientcore.GameClient;
 
 public class MainActivity extends AndroidApplication {
 

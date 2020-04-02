@@ -1,4 +1,4 @@
-package ru.spbstu.gyboml.utils;
+package main.java.ru.spbstu.gyboml.utils;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;

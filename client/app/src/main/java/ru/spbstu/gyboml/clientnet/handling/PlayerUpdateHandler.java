@@ -1,6 +1,6 @@
-package ru.spbstu.gyboml.clientnet.handling;
+package main.java.ru.spbstu.gyboml.clientnet.handling;
 
-import ru.spbstu.gyboml.clientnet.Controller;
+import main.java.ru.spbstu.gyboml.clientnet.Controller;
 import ru.spbstu.gyboml.core.Player;
 import ru.spbstu.gyboml.core.net.ControllerInterface;
 import ru.spbstu.gyboml.core.net.handling.Handler;

@@ -1,0 +1,55 @@
+plugins {
+    id "application"
+}
+apply plugin: 'java-library'
+apply plugin : "java"
+ext {
+    javaMainClass = "MainTest"
+}
+
+application {
+    mainClassName = javaMainClass
+}
+
+
+sourceSets {
+    main {
+        java {
+            srcDir 'src'
+        }
+        resources {
+            srcDir 'res'
+        }
+    }
+
+    test {
+        java {
+            srcDir 'test'
+        }
+
+    }
+}
+
+test {
+    useJUnitPlatform()
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'androidx.appcompat:appcompat:1.0.2'
+    testImplementation(
+            'junit:junit:4.12',
+            'org.junit.jupiter:junit-jupiter-api:5.4.2'
+    )
+    testRuntime(
+            'org.junit.jupiter:junit-jupiter-engine:5.4.2',
+            'org.junit.vintage:junit-vintage-engine:5.4.2'
+    )
+    api "com.badlogicgames.gdx:gdx-backend-lwjgl:$gdxVersion"
+    api "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
+    api "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-desktop"
+    api "com.badlogicgames.gdx:gdx:$gdxVersion"
+    api "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
+    compile 'org.jetbrains:annotations:16.0.2'
+    implementation "com.codeandweb.physicseditor:gdx-pe-loader:1.1.0"
+}

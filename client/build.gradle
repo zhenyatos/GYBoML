@@ -14,9 +14,7 @@ buildscript {
     }
 }
 
-
 allprojects {
-
     version = '1.0'
     ext {
         appName = "gyboml"
@@ -42,6 +40,13 @@ subprojects {
     apply plugin: "android"
 
     configurations { natives }
+
+    android {
+        compileOptions {
+            sourceCompatibility JavaVersion.VERSION_1_8
+            targetCompatibility JavaVersion.VERSION_1_8
+        }
+    }
 
     dependencies {
         api "com.badlogicgames.gdx:gdx-backend-android:$gdxVersion"

@@ -34,12 +34,11 @@ A two-player game for Android. The goal is the destruction of your opponent's ba
 * В терминале (windows: git bash, unix: bash) выполнить команды:
 
 ``` bash
-	git remote add origin https://github.com/zhenyatos/GYBoML/
-	git pull origin master
+	git clone https://github.com/zhenyatos/GYBoML/
 ```
 
 ## Сборка клиентского приложения
-* Загрузить с [сайта](https://developer.android.com/studio) приложение Android Studio и установить его
+* Загрузить по [ссылке](https://developer.android.com/studio) Android Studio
 * В Android Studio:
 	- Files...
 	- Open...
@@ -49,7 +48,7 @@ A two-player game for Android. The goal is the destruction of your opponent's ba
 
 ## Сборка серверного приложения
 ### Просмотр и отладка кода
-* Загрузить с [сайта](https://www.jetbrains.com/ru-ru/idea/download/) приложение Intellij IDEA и установить его
+* Загрузить по [ссылке](https://www.jetbrains.com/ru-ru/idea/download/) Intellij Idea
 * В Intellij Idea:
 	- Files...
 	- Open...
@@ -60,7 +59,7 @@ A two-player game for Android. The goal is the destruction of your opponent's ba
 
 ### Сборка JAR-файлов для сетевого клиента и сервера
 
-* Скачать утилиту [maven](https://maven.apache.org/download.cgi) для своей операционной системы и установить её
+* Установить утилиту [maven](https://maven.apache.org/download.cgi) для своей операционной системы
 * Добавить в переменную окружения *PATH* адрес директория *apache_<version>/bin*
 * Убедиться, что существует переменная окружения *JAVA_HOME*, указывающая на адрес JDK не старше 8
 * Перейти в корень проекта

@@ -1,4 +1,4 @@
-package ru.spbstu.gyboml.interfaces;
+package main.java.ru.spbstu.gyboml.interfaces;
 
 public interface Defense {
     void setDurability(float durability);
