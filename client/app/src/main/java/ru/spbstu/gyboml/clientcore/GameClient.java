@@ -1,4 +1,4 @@
-package ru.spbstu.gyboml.clientcore;
+package main.java.ru.spbstu.gyboml.clientcore;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
@@ -22,7 +22,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
-<<<<<<< HEAD
 // imported from core
 import java.util.ArrayList;
 import java.util.List;
@@ -38,12 +37,10 @@ import ru.spbstu.gyboml.core.physical.PhysicalBackground;
 import ru.spbstu.gyboml.core.physical.PhysicalCastle;
 import ru.spbstu.gyboml.core.physical.PhysicalTower;
 import ru.spbstu.gyboml.core.physical.Position;
-=======
-import ru.spbstu.gyboml.clientnet.Controller;
+import main.java.ru.spbstu.gyboml.clientnet.Controller;
 
-import ru.spbstu.gyboml.clientnet.generating.ConnectionGenerator;
+import main.java.ru.spbstu.gyboml.clientnet.generating.ConnectionGenerator;
 import ru.spbstu.gyboml.clientnet.generating.PassTurnGenerator;
->>>>>>> Migrate from maven to gradle
 
 /**
  * The GameClient class handles rendering, camera movement,
@@ -77,7 +74,7 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
     PhysicalTower physicalTowerP1;
     PhysicalTower physicalTowerP2;
 
-    //private MessageSender toServerMessageSender;
+    private MessageSender toServerMessageSender;
     private SpriteBatch batch;
     private TextureAtlas background1;
     private TextureAtlas background2;

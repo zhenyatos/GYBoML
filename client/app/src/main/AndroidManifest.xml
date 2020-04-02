@@ -24,8 +24,4 @@
             </intent-filter>
         </activity>
     </application>
-<<<<<<< HEAD
-
-=======
->>>>>>> Migrate from maven to gradle
 </manifest>

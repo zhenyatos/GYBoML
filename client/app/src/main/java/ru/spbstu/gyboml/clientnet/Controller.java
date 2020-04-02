@@ -1,8 +1,8 @@
-package ru.spbstu.gyboml.clientnet;
+package main.java.ru.spbstu.gyboml.clientnet;
 
-import ru.spbstu.gyboml.clientnet.generating.ConnectionGenerator;
-import ru.spbstu.gyboml.clientnet.generating.PassTurnGenerator;
-import ru.spbstu.gyboml.clientnet.handling.PlayerUpdateHandler;
+import main.java.ru.spbstu.gyboml.clientnet.generating.ConnectionGenerator;
+import main.java.ru.spbstu.gyboml.clientnet.generating.PassTurnGenerator;
+import main.java.ru.spbstu.gyboml.clientnet.handling.PlayerUpdateHandler;
 import ru.spbstu.gyboml.core.Player;
 import ru.spbstu.gyboml.core.net.ControllerInterface;
 import ru.spbstu.gyboml.core.net.handling.HandlerManager;

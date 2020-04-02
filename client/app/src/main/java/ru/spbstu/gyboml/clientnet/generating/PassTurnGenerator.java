@@ -1,6 +1,6 @@
-package ru.spbstu.gyboml.clientnet.generating;
+package main.java.ru.spbstu.gyboml.clientnet.generating;
 
-import ru.spbstu.gyboml.clientnet.Controller;
+import main.java.ru.spbstu.gyboml.clientnet.Controller;
 import ru.spbstu.gyboml.core.net.ControllerInterface;
 import ru.spbstu.gyboml.core.net.generating.Generator;
 import ru.spbstu.gyboml.core.net.office.OfficeOutput;
