@@ -84,23 +84,7 @@ public class Controller extends Thread implements ControllerInterface {
         boolean running = true;
         Scanner scanner = new Scanner(System.in);
 
-        while (running && !isInterrupted()) {
-            System.out.print("control> ");
-            String input = scanner.nextLine();
-
-            if (input.equals("q")) {
-                running = false;
-                officeInput.interrupt();
-                officeOutput.interrupt();
-                handlerManager.interrupt();
-                socket.close();
-            } else if (input.equals("req")) {
-                ConnectionGenerator generator = new ConnectionGenerator();
-                generator.generate(null, serverAddress, port, this);
-            } else if (input.equals("pass")) {
-                PassTurnGenerator generator = new PassTurnGenerator();
-                generator.generate(null, serverAddress, port, this);
-            }
+        while (isInterrupted()) {
         }
     }
 

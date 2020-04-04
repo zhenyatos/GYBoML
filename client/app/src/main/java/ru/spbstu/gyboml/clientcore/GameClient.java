@@ -22,6 +22,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
+import main.java.ru.spbstu.gyboml.clientnet.Controller;
+
+import main.java.ru.spbstu.gyboml.clientnet.generating.ConnectionGenerator;
+import main.java.ru.spbstu.gyboml.clientnet.generating.PassTurnGenerator;
 // imported from core
 import java.util.ArrayList;
 import java.util.List;
@@ -319,7 +323,7 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
         endTurnButton.addListener(new InputListener() {
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                toServerMessageSender.nextTurnMessage();
+                //toServerMessageSender.nextTurnMessage();
                 PassTurnGenerator generator = new PassTurnGenerator();
                 generator.generate(null, controller.getServerAddress(), controller.getServerPort(), controller);
             }
