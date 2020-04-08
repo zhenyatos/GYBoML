@@ -20,6 +20,11 @@ public class PassTurnHandler extends Handler {
         Player firstPlayer = controller.getFirstPlayer();
         Player secondPlayer = controller.getSecondPlayer();
 
+        if (firstPlayer == null || secondPlayer == null) {
+            System.out.println("[PassTurnHandler] Not enough players to pass turn");
+            return;
+        }
+
         byte success = 1;
         if (from.equals(controller.getFirstAddress()) && port == controller.getFirstPort()) {
             firstPlayer.passTurn(secondPlayer);
@@ -35,8 +40,9 @@ public class PassTurnHandler extends Handler {
     }
 
     private void generatePlayersResponse( Controller controller, byte success ) {
-        Player firstPlayer = controller.getFirstPlayer();
-        Player secondPlayer = controller.getSecondPlayer();
+        // kystyn commented it out because it is not used
+        //Player firstPlayer = controller.getFirstPlayer();
+        //Player secondPlayer = controller.getSecondPlayer();
 
         generatePlayerResponse(controller, controller.getFirstPlayer(), controller.getFirstAddress(), controller.getFirstPort(), success);
         generatePlayerResponse(controller, controller.getSecondPlayer(), controller.getSecondAddress(), controller.getSecondPort(), success);

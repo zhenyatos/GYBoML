@@ -1,4 +1,4 @@
-package ru.spbstu.gyboml.core.packing;
+package ru.spbstu.gyboml.core.net.packing;
 
 import java.io.Serializable;
 

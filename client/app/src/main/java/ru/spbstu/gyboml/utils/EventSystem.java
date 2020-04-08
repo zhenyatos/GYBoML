@@ -1,4 +1,4 @@
-package ru.spbstu.gyboml.utils;
+package main.java.ru.spbstu.gyboml.utils;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
@@ -13,7 +13,6 @@ public class EventSystem {
 
     private EventSystem() {
         connections = new HashMap<>();
-        logger = Logger.get();
     }
 
     public boolean connect(Object sender, String signal, Object receiver, String slot) {

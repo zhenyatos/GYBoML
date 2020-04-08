@@ -22,6 +22,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
+import main.java.ru.spbstu.gyboml.clientnet.Controller;
+
+import main.java.ru.spbstu.gyboml.clientnet.generating.ConnectionGenerator;
+import main.java.ru.spbstu.gyboml.clientnet.generating.PassTurnGenerator;
 // imported from core
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +41,6 @@ import ru.spbstu.gyboml.core.physical.PhysicalBackground;
 import ru.spbstu.gyboml.core.physical.PhysicalCastle;
 import ru.spbstu.gyboml.core.physical.PhysicalTower;
 import ru.spbstu.gyboml.core.physical.Position;
-
 
 /**
  * The GameClient class handles rendering, camera movement,
@@ -71,7 +74,7 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
     PhysicalTower physicalTowerP1;
     PhysicalTower physicalTowerP2;
 
-    //private MessageSender toServerMessageSender;
+    private MessageSender toServerMessageSender;
     private SpriteBatch batch;
     private TextureAtlas background1;
     private TextureAtlas background2;
@@ -83,6 +86,11 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
     private Table table;
     private World world;
     private Box2DDebugRenderer debugRenderer;
+
+    private Controller controller = null;
+    private final String serverName = "34.91.65.96";
+    private final int serverPort = 4445;
+
 
     /**
      * This is the method that is called on client's creation.
@@ -180,6 +188,19 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
         viewport = new ExtendViewport(camera.viewportWidth, camera.viewportHeight, camera);
         camera.position.set(camera.viewportWidth / 2, camera.viewportHeight / 2, 0);
         camera.update();
+    
+        // create game net controller
+        try {
+            controller = new Controller(serverName, serverPort);
+        } catch (Exception error) {
+            System.out.println(error);
+
+        }
+        controller.start();
+
+        // establish connection to server
+        ConnectionGenerator generator = new ConnectionGenerator();
+        generator.generate(null, controller.getServerAddress(), controller.getServerPort(), controller);
     }
 
     private void stepWorld() {
@@ -239,6 +260,7 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
         background2.dispose();
         objects.dispose();
         stageForUI.dispose();
+        controller.interrupt();
     }
 
     /** Called when a finger or the mouse was dragged.
@@ -296,9 +318,12 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
         Button endTurnButton = new TextButton("End Turn", skin, "default");
         endTurnButton.addListener(new InputListener() {
             @Override
-            public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
-                //toServerMessageSender.nextTurnMessage(); method stub
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                //toServerMessageSender.nextTurnMessage();
+                PassTurnGenerator generator = new PassTurnGenerator();
+                generator.generate(null, controller.getServerAddress(), controller.getServerPort(), controller);
             }
+
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 return true;
