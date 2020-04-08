@@ -41,10 +41,6 @@ import ru.spbstu.gyboml.core.physical.PhysicalBackground;
 import ru.spbstu.gyboml.core.physical.PhysicalCastle;
 import ru.spbstu.gyboml.core.physical.PhysicalTower;
 import ru.spbstu.gyboml.core.physical.Position;
-import main.java.ru.spbstu.gyboml.clientnet.Controller;
-
-import main.java.ru.spbstu.gyboml.clientnet.generating.ConnectionGenerator;
-import ru.spbstu.gyboml.clientnet.generating.PassTurnGenerator;
 
 /**
  * The GameClient class handles rendering, camera movement,

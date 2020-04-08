@@ -1,6 +1,5 @@
 /out
 /target
-*.iml
 /build
 *.class
 /.idea
