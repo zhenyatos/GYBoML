@@ -32,12 +32,15 @@ import java.util.List;
 
 import main.java.ru.spbstu.gyboml.graphics.Drawable;
 import main.java.ru.spbstu.gyboml.graphics.GraphicalBackground;
+import main.java.ru.spbstu.gyboml.graphics.GraphicalBlock;
 import main.java.ru.spbstu.gyboml.graphics.GraphicalCannon;
 import main.java.ru.spbstu.gyboml.graphics.GraphicalCastle;
 import main.java.ru.spbstu.gyboml.graphics.GraphicalForeground;
 import main.java.ru.spbstu.gyboml.graphics.GraphicalTower;
 import ru.spbstu.gyboml.core.PlayerType;
+import ru.spbstu.gyboml.core.destructible.Material;
 import ru.spbstu.gyboml.core.physical.PhysicalBackground;
+import ru.spbstu.gyboml.core.physical.PhysicalBlock;
 import ru.spbstu.gyboml.core.physical.PhysicalCastle;
 import ru.spbstu.gyboml.core.physical.PhysicalTower;
 import ru.spbstu.gyboml.core.physical.Position;
@@ -68,11 +71,15 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
     private static final int VELOCITY_ITERATIONS = 6;
     private static final int POSITION_ITERATIONS = 2;
     private float accumulator = 0;
+
+    // TODO: wrap in single container
     PhysicalBackground physicalBackground;
     PhysicalCastle physicalCastleP1;
     PhysicalCastle physicalCastleP2;
     PhysicalTower physicalTowerP1;
     PhysicalTower physicalTowerP2;
+    ArrayList<PhysicalBlock> physicalBlocksP1;
+    ArrayList<PhysicalBlock> physicalBlocksP2;
 
     private MessageSender toServerMessageSender;
     private SpriteBatch batch;
@@ -132,11 +139,21 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
         float towerP2X = backgroundX + 3064 * SCALE;    // 3064 = 3734 - 450 - 220 (bg resolution - towerP1X indent - tower width)
         float towerP2Y = backgroundY + 360 * SCALE;
 
+        final float BLOCKS_SCALE = SCALE * 0.35f;
+        float blockP1X = castleP1X + (240 + 60) * SCALE;
+        float blockP1Y = castleP1Y + 240 * SCALE;
+        float blockP2X = castleP2X - 60 * SCALE - 200 * BLOCKS_SCALE;
+        float blockP2Y = castleP2Y + 240 * SCALE;
+
         physicalBackground = new PhysicalBackground(new Position(backgroundX, backgroundY, SCALE), world);
         physicalCastleP1 = new PhysicalCastle(100, new Position(castleP1X, castleP1Y, SCALE), PlayerType.FIRST_PLAYER, world);
         physicalCastleP2 = new PhysicalCastle(100, new Position(castleP2X, castleP2Y, SCALE), PlayerType.SECOND_PLAYER, world);
         physicalTowerP1 = new PhysicalTower(new Position(towerP1X, towerP1Y, SCALE), PlayerType.FIRST_PLAYER, world);
         physicalTowerP2 = new PhysicalTower(new Position(towerP2X, towerP2Y, SCALE), PlayerType.SECOND_PLAYER, world);
+        physicalBlocksP1 = new ArrayList<>();
+        physicalBlocksP2 = new ArrayList<>();
+        physicalBlocksP1.add(new PhysicalBlock(Material.WOOD, new Position(blockP1X, blockP1Y, BLOCKS_SCALE ), world));
+        physicalBlocksP2.add(new PhysicalBlock(Material.WOOD, new Position(blockP2X, blockP2Y, BLOCKS_SCALE ), world));
 
         GraphicalBackground graphicalBackground = new GraphicalBackground(backgroundSky, backgroundDesert, backgroundLand, SCALE);
         graphicalBackground.setSize(canvasWidth, canvasHeight);
@@ -178,6 +195,18 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
         graphicalCastleP2.setPosition(physicalCastleP2.getPosition().x, physicalCastleP2.getPosition().y);
         drawables.add(graphicalCastleP2);
 
+        GraphicalBlock graphicalBlockP1 = new GraphicalBlock(objects.createSprite("block_wood"), objects.createSprite("block_wood_damaged"), BLOCKS_SCALE);
+        graphicalBlockP1.setOrigin(0,0);
+        graphicalBlockP1.setPosition(physicalBlocksP1.get(0).getPosition().x, physicalBlocksP1.get(0).getPosition().y);
+        drawables.add(graphicalBlockP1);
+        physicalBlocksP1.get(0).setMovableSprite(graphicalBlockP1);
+
+        GraphicalBlock graphicalBlockP2 = new GraphicalBlock(objects.createSprite("block_wood"), objects.createSprite("block_wood_damaged"), BLOCKS_SCALE);
+        graphicalBlockP2.setOrigin(0,0);
+        graphicalBlockP2.setPosition(physicalBlocksP2.get(0).getPosition().x, physicalBlocksP2.get(0).getPosition().y);
+        drawables.add(graphicalBlockP2);
+        physicalBlocksP2.get(0).setMovableSprite(graphicalBlockP2);
+
         GraphicalForeground graphicalForeground = new GraphicalForeground(background2.createSprite("bg_front"), SCALE);
         graphicalForeground.setSize(canvasWidth, canvasHeight);
         graphicalForeground.setOrigin(0, 0);
@@ -216,6 +245,11 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
             // temp debug stuff
             physicalTowerP1.updateMovableSprite();
             physicalTowerP2.updateMovableSprite();
+            for (PhysicalBlock block : physicalBlocksP1)
+                block.updateMovableSprite();
+            for (PhysicalBlock block : physicalBlocksP2)
+                block.updateMovableSprite();
+
             if ((physicalTowerP1.getJoint().getJointAngle() >= physicalTowerP1.getJoint().getUpperLimit() && physicalTowerP1.getJoint().getMotorSpeed() > 0)||
                 (physicalTowerP1.getJoint().getJointAngle() <= physicalTowerP1.getJoint().getLowerLimit() && physicalTowerP1.getJoint().getMotorSpeed() < 0))
                 physicalTowerP1.getJoint().setMotorSpeed(-physicalTowerP1.getJoint().getMotorSpeed());
