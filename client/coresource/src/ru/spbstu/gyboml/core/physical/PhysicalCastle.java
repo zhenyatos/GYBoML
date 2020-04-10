@@ -4,20 +4,22 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.World;
+
+import ru.spbstu.gyboml.core.destructible.Destructible;
+import ru.spbstu.gyboml.core.destructible.Material;
 import ru.spbstu.gyboml.core.util.PhysicsShapeCache;
 
 import java.io.InputStream;
 
 import ru.spbstu.gyboml.core.PlayerType;
-import ru.spbstu.gyboml.core.destructible.Castle;
 
-public class PhysicalCastle extends Castle {
-    private final String PATH = "physics/objects.xml";
+public class PhysicalCastle extends Destructible {
+    private static final String PATH = "physics/objects.xml";
     private Body front;
     private Body tower;
 
     public PhysicalCastle(int HP, Position pos, PlayerType playerType, World world) {
-        super(HP);
+        super(HP, Material.STONE);
         InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(PATH);
 
         PhysicsShapeCache physicsShapeCache = new PhysicsShapeCache(is);

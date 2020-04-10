@@ -7,17 +7,18 @@ import com.badlogic.gdx.physics.box2d.World;
 
 import java.io.InputStream;
 
-import ru.spbstu.gyboml.core.destructible.Block;
+import ru.spbstu.gyboml.core.destructible.Destructible;
 import ru.spbstu.gyboml.core.destructible.Material;
 import ru.spbstu.gyboml.core.util.PhysicsShapeCache;
 
-public class PhysicalBlock extends Block implements Updatable {
-    private final String PATH = "physics/objects.xml";
+public class PhysicalBlock extends Destructible implements Updatable {
+    private static final int BASE_HP = 100;
+    private static final String PATH = "physics/objects.xml";
     private Body body;
     private Movable sprite;
 
     public PhysicalBlock(Material material, Position pos, World world) {
-        super(material);
+        super((int)(BASE_HP * material.getDefenceRatio()), material);
         InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(PATH);
 
         PhysicsShapeCache physicsShapeCache = new PhysicsShapeCache(is);

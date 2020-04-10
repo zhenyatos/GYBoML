@@ -11,9 +11,8 @@ import ru.spbstu.gyboml.core.util.PhysicsShapeCache;
 import java.io.InputStream;
 
 import ru.spbstu.gyboml.core.PlayerType;
-import ru.spbstu.gyboml.core.Tower;
 
-public class PhysicalTower extends Tower implements Updatable {
+public class PhysicalTower implements Updatable {
     private final String PATH = "physics/objects.xml";
     private PlayerType playerType;
     private Body tower;
