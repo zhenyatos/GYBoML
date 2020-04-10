@@ -31,21 +31,21 @@ public class PhysicalBlock extends Destructible implements Physical, Movable {
     public Vector2 getPosition() { return body.getPosition(); }
 
     @Override
-    public Vector2 getUpdatablePosition() { return body.getPosition(); }
+    public Vector2 getMovablePartPosition() { return body.getPosition(); }
 
     @Override
-    public float getUpdatableAngle() { return body.getAngle(); }
+    public float getMovablePartAngle() { return body.getAngle(); }
 
     @Override
-    public void setMovableSprite(Updatable sprite) {
+    public void setUpdatableSprite(Updatable sprite) {
         this.sprite = sprite;
     }
 
     @Override
-    public void updateMovableSprite() {
+    public void updateSprite() {
         if (this.sprite != null) {
-            sprite.setMovablePartPosition(body.getPosition());
-            sprite.setMovablePartAngle((float) Math.toDegrees(body.getAngle()));
+            sprite.setUpdatablePartPosition(body.getPosition());
+            sprite.setUpdatablePartAngle((float) Math.toDegrees(body.getAngle()));
         }
     }
 }

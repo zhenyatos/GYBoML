@@ -7,6 +7,6 @@ import com.badlogic.gdx.math.Vector2;
  * which need their sprites positions to be updated.
  */
 public interface Updatable {
-   void setMovablePartPosition(Vector2 position);
-   void setMovablePartAngle(float angle);
+   void setUpdatablePartPosition(Vector2 position);
+   void setUpdatablePartAngle(float angle);
 }

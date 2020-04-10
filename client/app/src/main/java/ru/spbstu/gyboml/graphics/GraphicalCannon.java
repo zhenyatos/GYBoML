@@ -50,8 +50,8 @@ public class GraphicalCannon implements Drawable, Updatable {
     }
 
     @Override
-    public void setMovablePartPosition(Vector2 position) { cannon.setPosition(position.x, position.y); }
+    public void setUpdatablePartPosition(Vector2 position) { cannon.setPosition(position.x, position.y); }
 
     @Override
-    public void setMovablePartAngle(float angle) { cannon.setRotation(angle); }
+    public void setUpdatablePartAngle(float angle) { cannon.setRotation(angle); }
 }

@@ -201,17 +201,17 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
 
         GraphicalCannon graphicalCannonP1 = new GraphicalCannon(objects.createSprite("cannon_p1"), SCALE);
         graphicalCannonP1.setOrigin(0, 0);
-        graphicalCannonP1.setPosition(physicalTowerP1.getUpdatablePosition().x, physicalTowerP1.getUpdatablePosition().y);
-        graphicalCannonP1.setRotation(physicalTowerP1.getUpdatableAngle());
+        graphicalCannonP1.setPosition(physicalTowerP1.getMovablePartPosition().x, physicalTowerP1.getMovablePartPosition().y);
+        graphicalCannonP1.setRotation(physicalTowerP1.getMovablePartAngle());
         drawables.add(graphicalCannonP1);
-        physicalTowerP1.setMovableSprite(graphicalCannonP1);
+        physicalTowerP1.setUpdatableSprite(graphicalCannonP1);
 
         GraphicalCannon graphicalCannonP2 = new GraphicalCannon(objects.createSprite("cannon_p2"), SCALE);
         graphicalCannonP2.setOrigin(0, 0);
-        graphicalCannonP2.setPosition(physicalTowerP2.getUpdatablePosition().x, physicalTowerP2.getUpdatablePosition().y);
-        graphicalCannonP2.setRotation(physicalTowerP2.getUpdatableAngle());
+        graphicalCannonP2.setPosition(physicalTowerP2.getMovablePartPosition().x, physicalTowerP2.getMovablePartPosition().y);
+        graphicalCannonP2.setRotation(physicalTowerP2.getMovablePartAngle());
         drawables.add(graphicalCannonP2);
-        physicalTowerP2.setMovableSprite(graphicalCannonP2);
+        physicalTowerP2.setUpdatableSprite(graphicalCannonP2);
 
         GraphicalTower graphicalTowerP1 = new GraphicalTower(objects.createSprite("tower_p1"), SCALE);
         graphicalTowerP1.setOrigin(0, 0);
@@ -300,7 +300,7 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
             graphicalBlockP1.setOrigin(0,0);
             graphicalBlockP1.setPosition(block.getPosition().x, block.getPosition().y);
             drawables.add(graphicalBlockP1);
-            block.setMovableSprite(graphicalBlockP1);
+            block.setUpdatableSprite(graphicalBlockP1);
         }
 
         for (PhysicalBlock block : physicalBlocksP2) {
@@ -308,7 +308,7 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
             graphicalBlockP2.setOrigin(0,0);
             graphicalBlockP2.setPosition(block.getPosition().x, block.getPosition().y);
             drawables.add(graphicalBlockP2);
-            block.setMovableSprite(graphicalBlockP2);
+            block.setUpdatableSprite(graphicalBlockP2);
         }
     }
 
@@ -322,10 +322,10 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
 
             world.step(STEP_TIME, VELOCITY_ITERATIONS, POSITION_ITERATIONS);
 
-            // temp debug stuff
             for (Movable movable : movables)
-                movable.updateMovableSprite();
+                movable.updateSprite();
 
+            // temp debug stuff (demonstrating tower cannon rotation)
             if ((physicalTowerP1.getJoint().getJointAngle() >= physicalTowerP1.getJoint().getUpperLimit() && physicalTowerP1.getJoint().getMotorSpeed() > 0)||
                 (physicalTowerP1.getJoint().getJointAngle() <= physicalTowerP1.getJoint().getLowerLimit() && physicalTowerP1.getJoint().getMotorSpeed() < 0))
                 physicalTowerP1.getJoint().setMotorSpeed(-physicalTowerP1.getJoint().getMotorSpeed());

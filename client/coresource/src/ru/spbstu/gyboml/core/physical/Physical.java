@@ -10,6 +10,6 @@ public interface Physical {
     String PHYSICS_PATH_OBJECTS = "physics/objects.xml";
 
     Vector2 getPosition();
-    default Vector2 getUpdatablePosition() { return null; }
-    default float getUpdatableAngle() { return 0; }
+    default Vector2 getMovablePartPosition() { return null; }
+    default float getMovablePartAngle() { return 0; }
 }

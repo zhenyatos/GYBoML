@@ -66,21 +66,21 @@ public class PhysicalTower implements Physical, Movable {
     public Vector2 getPosition() { return tower.getPosition(); }
 
     @Override
-    public Vector2 getUpdatablePosition() { return cannon.getPosition(); }
+    public Vector2 getMovablePartPosition() { return cannon.getPosition(); }
 
     @Override
-    public float getUpdatableAngle() { return cannon.getAngle(); }
+    public float getMovablePartAngle() { return cannon.getAngle(); }
 
     @Override
-    public void setMovableSprite(Updatable sprite) {
+    public void setUpdatableSprite(Updatable sprite) {
         this.sprite = sprite;
     }
 
     @Override
-    public void updateMovableSprite() {
+    public void updateSprite() {
         if (this.sprite != null) {
-            sprite.setMovablePartPosition(cannon.getPosition());
-            sprite.setMovablePartAngle((float) Math.toDegrees(cannon.getAngle()));
+            sprite.setUpdatablePartPosition(cannon.getPosition());
+            sprite.setUpdatablePartAngle((float) Math.toDegrees(cannon.getAngle()));
         }
     }
 }

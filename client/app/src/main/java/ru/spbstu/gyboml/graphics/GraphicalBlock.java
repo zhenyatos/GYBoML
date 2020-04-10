@@ -60,8 +60,8 @@ public class GraphicalBlock implements Drawable, Updatable {
     }
 
     @Override
-    public void setMovablePartPosition(Vector2 position) { currentSprite.setPosition(position.x, position.y); }
+    public void setUpdatablePartPosition(Vector2 position) { currentSprite.setPosition(position.x, position.y); }
 
     @Override
-    public void setMovablePartAngle(float angle) { currentSprite.setRotation(angle); }
+    public void setUpdatablePartAngle(float angle) { currentSprite.setRotation(angle); }
 }
