@@ -10,10 +10,10 @@ import java.io.InputStream;
 import ru.spbstu.gyboml.core.util.PhysicsShapeCache;
 
 
-public class Background implements Physical {
+public class PhysicalBackground implements Physical {
     private final Body body;
 
-    public Background(Position pos, World world) {
+    public PhysicalBackground(Position pos, World world) {
         InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(PHYSICS_PATH_BACKGROUND);
 
         PhysicsShapeCache physicsBodies = new PhysicsShapeCache(is);

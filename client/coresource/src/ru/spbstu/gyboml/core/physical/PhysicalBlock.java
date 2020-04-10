@@ -11,13 +11,13 @@ import ru.spbstu.gyboml.core.destructible.Destructible;
 import ru.spbstu.gyboml.core.destructible.Material;
 import ru.spbstu.gyboml.core.util.PhysicsShapeCache;
 
-public class Block extends Destructible implements Physical, Updatable {
+public class PhysicalBlock extends Destructible implements Physical, Updatable {
     private static final int BASE_HP = 100;
 
     private Body body;
     private Movable sprite;
 
-    public Block(Material material, Position pos, World world) {
+    public PhysicalBlock(Material material, Position pos, World world) {
         super((int)(BASE_HP * material.getDefenceRatio()), material);
         InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(PHYSICS_PATH_OBJECTS);
 

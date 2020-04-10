@@ -39,10 +39,10 @@ import main.java.ru.spbstu.gyboml.graphics.GraphicalForeground;
 import main.java.ru.spbstu.gyboml.graphics.GraphicalTower;
 import ru.spbstu.gyboml.core.PlayerType;
 import ru.spbstu.gyboml.core.destructible.Material;
-import ru.spbstu.gyboml.core.physical.Background;
-import ru.spbstu.gyboml.core.physical.Block;
-import ru.spbstu.gyboml.core.physical.Castle;
-import ru.spbstu.gyboml.core.physical.Tower;
+import ru.spbstu.gyboml.core.physical.PhysicalBackground;
+import ru.spbstu.gyboml.core.physical.PhysicalBlock;
+import ru.spbstu.gyboml.core.physical.PhysicalCastle;
+import ru.spbstu.gyboml.core.physical.PhysicalTower;
 import ru.spbstu.gyboml.core.physical.Position;
 
 /**
@@ -73,13 +73,13 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
     private float accumulator = 0;
 
     // TODO: wrap in single container
-    Background background;
-    Castle castleP1;
-    Castle castleP2;
-    Tower towerP1;
-    Tower towerP2;
-    ArrayList<Block> blocksP1;
-    ArrayList<Block> blocksP2;
+    PhysicalBackground physicalBackground;
+    PhysicalCastle physicalCastleP1;
+    PhysicalCastle physicalCastleP2;
+    PhysicalTower physicalTowerP1;
+    PhysicalTower physicalTowerP2;
+    ArrayList<PhysicalBlock> blocksP1;
+    ArrayList<PhysicalBlock> blocksP2;
 
     private MessageSender toServerMessageSender;
     private SpriteBatch batch;
@@ -182,54 +182,54 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
         float blockP2X = castleP2X - 60 * SCALE - blockTextureWidth * BLOCKS_SCALE;
         float blockP2Y = castleP2Y + 240 * SCALE;
 
-        background = new Background(new Position(backgroundX, backgroundY, SCALE), world);
-        castleP1 = new Castle(100, new Position(castleP1X, castleP1Y, SCALE), PlayerType.FIRST_PLAYER, world);
-        castleP2 = new Castle(100, new Position(castleP2X, castleP2Y, SCALE), PlayerType.SECOND_PLAYER, world);
-        towerP1 = new Tower(new Position(towerP1X, towerP1Y, SCALE), PlayerType.FIRST_PLAYER, world);
-        towerP2 = new Tower(new Position(towerP2X, towerP2Y, SCALE), PlayerType.SECOND_PLAYER, world);
+        physicalBackground = new PhysicalBackground(new Position(backgroundX, backgroundY, SCALE), world);
+        physicalCastleP1 = new PhysicalCastle(100, new Position(castleP1X, castleP1Y, SCALE), PlayerType.FIRST_PLAYER, world);
+        physicalCastleP2 = new PhysicalCastle(100, new Position(castleP2X, castleP2Y, SCALE), PlayerType.SECOND_PLAYER, world);
+        physicalTowerP1 = new PhysicalTower(new Position(towerP1X, towerP1Y, SCALE), PlayerType.FIRST_PLAYER, world);
+        physicalTowerP2 = new PhysicalTower(new Position(towerP2X, towerP2Y, SCALE), PlayerType.SECOND_PLAYER, world);
         blocksP1 = new ArrayList<>();
         blocksP2 = new ArrayList<>();
-        blocksP1.add(new Block(Material.WOOD, new Position(blockP1X, blockP1Y, BLOCKS_SCALE ), world));
-        blocksP2.add(new Block(Material.WOOD, new Position(blockP2X, blockP2Y, BLOCKS_SCALE ), world));
+        blocksP1.add(new PhysicalBlock(Material.WOOD, new Position(blockP1X, blockP1Y, BLOCKS_SCALE ), world));
+        blocksP2.add(new PhysicalBlock(Material.WOOD, new Position(blockP2X, blockP2Y, BLOCKS_SCALE ), world));
 
         GraphicalBackground graphicalBackground = new GraphicalBackground(backgroundSky, backgroundDesert, backgroundLand, SCALE);
         graphicalBackground.setSize(canvasWidth, canvasHeight);
         graphicalBackground.setOrigin(0, 0);
-        graphicalBackground.setPosition(background.getPosition().x, background.getPosition().y);
+        graphicalBackground.setPosition(physicalBackground.getPosition().x, physicalBackground.getPosition().y);
         drawables.add(graphicalBackground);
 
         GraphicalCannon graphicalCannonP1 = new GraphicalCannon(objects.createSprite("cannon_p1"), SCALE);
         graphicalCannonP1.setOrigin(0, 0);
-        graphicalCannonP1.setPosition(towerP1.getUpdatablePosition().x, towerP1.getUpdatablePosition().y);
-        graphicalCannonP1.setRotation(towerP1.getUpdatableAngle());
+        graphicalCannonP1.setPosition(physicalTowerP1.getUpdatablePosition().x, physicalTowerP1.getUpdatablePosition().y);
+        graphicalCannonP1.setRotation(physicalTowerP1.getUpdatableAngle());
         drawables.add(graphicalCannonP1);
-        towerP1.setMovableSprite(graphicalCannonP1);
+        physicalTowerP1.setMovableSprite(graphicalCannonP1);
 
         GraphicalCannon graphicalCannonP2 = new GraphicalCannon(objects.createSprite("cannon_p2"), SCALE);
         graphicalCannonP2.setOrigin(0, 0);
-        graphicalCannonP2.setPosition(towerP2.getUpdatablePosition().x, towerP2.getUpdatablePosition().y);
-        graphicalCannonP2.setRotation(towerP2.getUpdatableAngle());
+        graphicalCannonP2.setPosition(physicalTowerP2.getUpdatablePosition().x, physicalTowerP2.getUpdatablePosition().y);
+        graphicalCannonP2.setRotation(physicalTowerP2.getUpdatableAngle());
         drawables.add(graphicalCannonP2);
-        towerP2.setMovableSprite(graphicalCannonP2);
+        physicalTowerP2.setMovableSprite(graphicalCannonP2);
 
         GraphicalTower graphicalTowerP1 = new GraphicalTower(objects.createSprite("tower_p1"), SCALE);
         graphicalTowerP1.setOrigin(0, 0);
-        graphicalTowerP1.setPosition(towerP1.getPosition().x, towerP1.getPosition().y);
+        graphicalTowerP1.setPosition(physicalTowerP1.getPosition().x, physicalTowerP1.getPosition().y);
         drawables.add(graphicalTowerP1);
 
         GraphicalTower graphicalTowerP2 = new GraphicalTower(objects.createSprite("tower_p2"), SCALE);
         graphicalTowerP2.setOrigin(0, 0);
-        graphicalTowerP2.setPosition(towerP2.getPosition().x, towerP2.getPosition().y);
+        graphicalTowerP2.setPosition(physicalTowerP2.getPosition().x, physicalTowerP2.getPosition().y);
         drawables.add(graphicalTowerP2);
 
         GraphicalCastle graphicalCastleP1 = new GraphicalCastle(objects.createSprite("castle_p1_back"), objects.createSprite("castle_p1_front"), objects.createSprite("castle_p1_tower"), SCALE, 100);
         graphicalCastleP1.setOrigin(0, 0);
-        graphicalCastleP1.setPosition(castleP1.getPosition().x, castleP1.getPosition().y);
+        graphicalCastleP1.setPosition(physicalCastleP1.getPosition().x, physicalCastleP1.getPosition().y);
         drawables.add(graphicalCastleP1);
 
         GraphicalCastle graphicalCastleP2 = new GraphicalCastle(objects.createSprite("castle_p2_back"), objects.createSprite("castle_p2_front"), objects.createSprite("castle_p2_tower"), SCALE, 100);
         graphicalCastleP2.setOrigin(0, 0);
-        graphicalCastleP2.setPosition(castleP2.getPosition().x, castleP2.getPosition().y);
+        graphicalCastleP2.setPosition(physicalCastleP2.getPosition().x, physicalCastleP2.getPosition().y);
         drawables.add(graphicalCastleP2);
 
         GraphicalBlock graphicalBlockP1 = new GraphicalBlock(objects.createSprite("block_wood"), objects.createSprite("block_wood_damaged"), BLOCKS_SCALE);
@@ -272,20 +272,20 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
 
             // temp debug stuff
             // TODO: wrap updateMovableSprite() method
-            towerP1.updateMovableSprite();
-            towerP2.updateMovableSprite();
-            for (Block block : blocksP1)
-                block.updateMovableSprite();
-            for (Block block : blocksP2)
-                block.updateMovableSprite();
+            physicalTowerP1.updateMovableSprite();
+            physicalTowerP2.updateMovableSprite();
+            for (PhysicalBlock physicalBlock : blocksP1)
+                physicalBlock.updateMovableSprite();
+            for (PhysicalBlock physicalBlock : blocksP2)
+                physicalBlock.updateMovableSprite();
 
-            if ((towerP1.getJoint().getJointAngle() >= towerP1.getJoint().getUpperLimit() && towerP1.getJoint().getMotorSpeed() > 0)||
-                (towerP1.getJoint().getJointAngle() <= towerP1.getJoint().getLowerLimit() && towerP1.getJoint().getMotorSpeed() < 0))
-                towerP1.getJoint().setMotorSpeed(-towerP1.getJoint().getMotorSpeed());
+            if ((physicalTowerP1.getJoint().getJointAngle() >= physicalTowerP1.getJoint().getUpperLimit() && physicalTowerP1.getJoint().getMotorSpeed() > 0)||
+                (physicalTowerP1.getJoint().getJointAngle() <= physicalTowerP1.getJoint().getLowerLimit() && physicalTowerP1.getJoint().getMotorSpeed() < 0))
+                physicalTowerP1.getJoint().setMotorSpeed(-physicalTowerP1.getJoint().getMotorSpeed());
 
-            if ((towerP2.getJoint().getJointAngle() >= towerP2.getJoint().getUpperLimit() && towerP2.getJoint().getMotorSpeed() > 0)||
-                (towerP2.getJoint().getJointAngle() <= towerP2.getJoint().getLowerLimit() && towerP2.getJoint().getMotorSpeed() < 0))
-                towerP2.getJoint().setMotorSpeed(-towerP2.getJoint().getMotorSpeed());
+            if ((physicalTowerP2.getJoint().getJointAngle() >= physicalTowerP2.getJoint().getUpperLimit() && physicalTowerP2.getJoint().getMotorSpeed() > 0)||
+                (physicalTowerP2.getJoint().getJointAngle() <= physicalTowerP2.getJoint().getLowerLimit() && physicalTowerP2.getJoint().getMotorSpeed() < 0))
+                physicalTowerP2.getJoint().setMotorSpeed(-physicalTowerP2.getJoint().getMotorSpeed());
         }
     }
 
