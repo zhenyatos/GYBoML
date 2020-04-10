@@ -22,7 +22,7 @@ public class PhysicalBlock extends Destructible implements Physical, Updatable {
         InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(PHYSICS_PATH_OBJECTS);
 
         PhysicsShapeCache physicsShapeCache = new PhysicsShapeCache(is);
-        body = physicsShapeCache.createBody("block_wood", world, location.scale, location.scale);
+        body = physicsShapeCache.createBody("block_" + material.getName(), world, location.scale, location.scale);
         body.setTransform(location.x, location.y, 0);
         body.setType(BodyDef.BodyType.DynamicBody);
     }
