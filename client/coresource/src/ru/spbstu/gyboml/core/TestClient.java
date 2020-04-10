@@ -14,8 +14,8 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 
-import ru.spbstu.gyboml.core.physical.PhysicalBackground;
-import ru.spbstu.gyboml.core.physical.PhysicalTower;
+import ru.spbstu.gyboml.core.physical.Background;
+import ru.spbstu.gyboml.core.physical.Tower;
 import ru.spbstu.gyboml.core.physical.Position;
 
 
@@ -41,7 +41,7 @@ public class TestClient extends ApplicationAdapter {
     private OrthographicCamera camera;
     private Box2DDebugRenderer debugRenderer;
     private ExtendViewport viewport;
-    private PhysicalBackground physicalBackground;
+    private Background background;
     private Body test;
 
     @Override
@@ -96,7 +96,7 @@ public class TestClient extends ApplicationAdapter {
         float width = worldWidth + minWidth * (maxXRatio / minRatio - 1);
         float height = worldHeight + minHeight * (minRatio / maxYRatio - 1);
 
-        PhysicalTower tower = new PhysicalTower(new Position(15.f, 0.f, SCALE/2),
+        Tower tower = new Tower(new Position(15.f, 0.f, SCALE/2),
                 PlayerType.FIRST_PLAYER, world);
 
     }

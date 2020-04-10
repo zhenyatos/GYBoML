@@ -12,7 +12,7 @@ import java.io.InputStream;
 
 import ru.spbstu.gyboml.core.PlayerType;
 
-public class PhysicalTower implements Updatable {
+public class Tower implements Updatable {
     private final String PATH = "physics/objects.xml";
     private PlayerType playerType;
     private Body tower;
@@ -20,7 +20,7 @@ public class PhysicalTower implements Updatable {
     private RevoluteJoint joint;
     private Movable sprite = null;
 
-    public PhysicalTower(Position pos, PlayerType playerType, World world) {
+    public Tower(Position pos, PlayerType playerType, World world) {
         this.playerType = playerType;
 
         InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(PATH);

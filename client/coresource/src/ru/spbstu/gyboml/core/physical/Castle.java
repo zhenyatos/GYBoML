@@ -13,12 +13,12 @@ import java.io.InputStream;
 
 import ru.spbstu.gyboml.core.PlayerType;
 
-public class PhysicalCastle extends Destructible {
+public class Castle extends Destructible {
     private static final String PATH = "physics/objects.xml";
     private Body front;
     private Body tower;
 
-    public PhysicalCastle(int HP, Position pos, PlayerType playerType, World world) {
+    public Castle(int HP, Position pos, PlayerType playerType, World world) {
         super(HP, Material.STONE);
         InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(PATH);
 
