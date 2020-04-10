@@ -4,9 +4,9 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
 
-import ru.spbstu.gyboml.core.physical.Movable;
+import ru.spbstu.gyboml.core.physical.Updatable;
 
-public class GraphicalBlock implements Drawable, Movable {
+public class GraphicalBlock implements Drawable, Updatable {
     private final Sprite intactBlock;
     private final Sprite damagedBlock;
     private Sprite currentSprite;

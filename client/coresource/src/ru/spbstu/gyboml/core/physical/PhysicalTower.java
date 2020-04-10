@@ -12,13 +12,13 @@ import java.io.InputStream;
 
 import ru.spbstu.gyboml.core.PlayerType;
 
-public class PhysicalTower implements Physical, Updatable {
+public class PhysicalTower implements Physical, Movable {
     private PlayerType playerType;
     private Body tower;
     private Body cannon;
     private RevoluteJoint joint;
 
-    private Movable sprite = null;
+    private Updatable sprite = null;
 
     public PhysicalTower(Location location, PlayerType playerType, World world) {
         this.playerType = playerType;
@@ -72,7 +72,7 @@ public class PhysicalTower implements Physical, Updatable {
     public float getUpdatableAngle() { return cannon.getAngle(); }
 
     @Override
-    public void setMovableSprite(Movable sprite) {
+    public void setMovableSprite(Updatable sprite) {
         this.sprite = sprite;
     }
 

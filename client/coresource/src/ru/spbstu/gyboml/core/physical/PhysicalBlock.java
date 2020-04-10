@@ -11,11 +11,11 @@ import ru.spbstu.gyboml.core.destructible.Destructible;
 import ru.spbstu.gyboml.core.destructible.Material;
 import ru.spbstu.gyboml.core.util.PhysicsShapeCache;
 
-public class PhysicalBlock extends Destructible implements Physical, Updatable {
+public class PhysicalBlock extends Destructible implements Physical, Movable {
     private static final int BASE_HP = 100;
 
     private Body body;
-    private Movable sprite;
+    private Updatable sprite;
 
     public PhysicalBlock(Material material, Location location, World world) {
         super((int)(BASE_HP * material.getDefenceRatio()), material);
@@ -37,7 +37,7 @@ public class PhysicalBlock extends Destructible implements Physical, Updatable {
     public float getUpdatableAngle() { return body.getAngle(); }
 
     @Override
-    public void setMovableSprite(Movable sprite) {
+    public void setMovableSprite(Updatable sprite) {
         this.sprite = sprite;
     }
 

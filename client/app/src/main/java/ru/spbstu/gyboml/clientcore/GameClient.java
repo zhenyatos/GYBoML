@@ -6,7 +6,6 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
@@ -44,7 +43,7 @@ import ru.spbstu.gyboml.core.physical.PhysicalBlock;
 import ru.spbstu.gyboml.core.physical.PhysicalCastle;
 import ru.spbstu.gyboml.core.physical.PhysicalTower;
 import ru.spbstu.gyboml.core.physical.Location;
-import ru.spbstu.gyboml.core.physical.Updatable;
+import ru.spbstu.gyboml.core.physical.Movable;
 
 /**
  * The GameClient class handles rendering, camera movement,
@@ -78,7 +77,7 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
     private final float backgroundY = 0 - (canvasHeight - worldHeight) / 2;
     private float SCALE;
     private float BLOCKS_SCALE;
-    private List<Updatable> updatables;
+    private List<Movable> movables;
     private PhysicalBackground physicalBackground;
     private PhysicalCastle physicalCastleP1;
     private PhysicalCastle physicalCastleP2;
@@ -161,7 +160,7 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
         final float RESOLUTION_W = backgroundBack.findRegion("bg_sky").originalWidth;
         SCALE = canvasWidth / RESOLUTION_W;
 
-        updatables = new ArrayList<>();
+        movables = new ArrayList<>();
         drawables = new ArrayList<>();
 
         // all values are calculated manually for same placement for both players
@@ -186,8 +185,8 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
         physicalCastleP2 = new PhysicalCastle(100, new Location(castleP2X, castleP2Y, 0, SCALE), PlayerType.SECOND_PLAYER, world);
         physicalTowerP1 = new PhysicalTower(new Location(towerP1X, towerP1Y, 0, SCALE), PlayerType.FIRST_PLAYER, world);
         physicalTowerP2 = new PhysicalTower(new Location(towerP2X, towerP2Y, 0, SCALE), PlayerType.SECOND_PLAYER, world);
-        updatables.add(physicalTowerP1);
-        updatables.add(physicalTowerP2);
+        movables.add(physicalTowerP1);
+        movables.add(physicalTowerP2);
         placeDefaultBlocks(castleP1X, castleP1Y, castleP2X, castleP2Y);
 
         // graphics
@@ -287,8 +286,8 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
         physicalBlocksP2.add(new PhysicalBlock(Material.WOOD, new Location(castleP2X + (castleTextureWidth + 60) * SCALE, blockP2Y, 0, BLOCKS_SCALE), world));
         physicalBlocksP2.add(new PhysicalBlock(Material.WOOD, new Location(castleP2X + (castleTextureWidth + 60) * SCALE, blockP2Y + 1.2f * blockTextureHeight * BLOCKS_SCALE, 0, BLOCKS_SCALE), world));
 
-        updatables.addAll(physicalBlocksP1);
-        updatables.addAll(physicalBlocksP2);
+        movables.addAll(physicalBlocksP1);
+        movables.addAll(physicalBlocksP2);
     }
 
     /**
@@ -324,8 +323,8 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
             world.step(STEP_TIME, VELOCITY_ITERATIONS, POSITION_ITERATIONS);
 
             // temp debug stuff
-            for (Updatable updatable : updatables)
-                updatable.updateMovableSprite();
+            for (Movable movable : movables)
+                movable.updateMovableSprite();
 
             if ((physicalTowerP1.getJoint().getJointAngle() >= physicalTowerP1.getJoint().getUpperLimit() && physicalTowerP1.getJoint().getMotorSpeed() > 0)||
                 (physicalTowerP1.getJoint().getJointAngle() <= physicalTowerP1.getJoint().getLowerLimit() && physicalTowerP1.getJoint().getMotorSpeed() < 0))
