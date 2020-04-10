@@ -11,7 +11,7 @@ import ru.spbstu.gyboml.core.destructible.Block;
 import ru.spbstu.gyboml.core.destructible.Material;
 import ru.spbstu.gyboml.core.util.PhysicsShapeCache;
 
-public class PhysicalBlock extends Block {
+public class PhysicalBlock extends Block implements Updatable {
     private final String PATH = "physics/objects.xml";
     private Body body;
     private Movable sprite;
@@ -37,8 +37,12 @@ public class PhysicalBlock extends Block {
 
     public Vector2 getPosition() { return body.getPosition(); }
 
-    public void setMovableSprite(Movable sprite) { this.sprite = sprite; }
+    @Override
+    public void setMovableSprite(Movable sprite) {
+        this.sprite = sprite;
+    }
 
+    @Override
     public void updateMovableSprite() {
         if (this.sprite != null) {
             sprite.setMovablePartPosition(body.getPosition());

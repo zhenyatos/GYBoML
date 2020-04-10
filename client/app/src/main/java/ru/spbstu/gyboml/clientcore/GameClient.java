@@ -83,8 +83,8 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
 
     private MessageSender toServerMessageSender;
     private SpriteBatch batch;
-    private TextureAtlas background1;
-    private TextureAtlas background2;
+    private TextureAtlas backgroundBack;
+    private TextureAtlas backgroundFront;
     private TextureAtlas objects;
     private final List<Drawable> drawables = new ArrayList<>();
     private OrthographicCamera camera;
@@ -97,7 +97,6 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
     private Controller controller = null;
     private final String serverName = "34.91.65.96";
     private final int serverPort = 4445;
-
 
     /**
      * This is the method that is called on client's creation.
@@ -117,32 +116,70 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
 
         debugRenderer = new Box2DDebugRenderer();
         world = new World(new Vector2(gravityAccelerationX, gravityAccelerationY), true);
-
         batch = new SpriteBatch();
-        background1 = new TextureAtlas("sprites/background_1.txt");
-        background2 = new TextureAtlas("sprites/background_2.txt");
-        objects = new TextureAtlas("sprites/objects.txt");
 
-        Sprite backgroundSky = background1.createSprite("bg_sky");
-        Sprite backgroundDesert = background1.createSprite("bg_desert");
-        Sprite backgroundLand = background2.createSprite("bg_land");
-        SCALE = canvasWidth / backgroundSky.getWidth();
+        buildScene();
+
+        camera = new OrthographicCamera(minWidth, minHeight);
+        viewport = new ExtendViewport(camera.viewportWidth, camera.viewportHeight, camera);
+        camera.position.set(camera.viewportWidth / 2, camera.viewportHeight / 2, 0);
+        camera.update();
+    
+        // create game net controller
+        try {
+            controller = new Controller(serverName, serverPort);
+        } catch (Exception error) {
+            System.out.println(error);
+
+        }
+        controller.start();
+
+        // establish connection to server
+        ConnectionGenerator generator = new ConnectionGenerator();
+        generator.generate(null, controller.getServerAddress(), controller.getServerPort(), controller);
+    }
+
+
+    /**
+     * Called during client creation.
+     * Builds physical and displayed scene for client application.
+     */
+    private void buildScene() {
+        backgroundBack  = new TextureAtlas("sprites/background_1.txt");
+        backgroundFront = new TextureAtlas("sprites/background_2.txt");
+        objects         = new TextureAtlas("sprites/objects.txt");
+
+        Sprite backgroundSky    = backgroundBack.createSprite("bg_sky");
+        Sprite backgroundDesert = backgroundBack.createSprite("bg_desert");
+        Sprite backgroundLand   = backgroundFront.createSprite("bg_land");
+
+        final float RESOLUTION_W = backgroundBack.findRegion("bg_sky").originalWidth;
+        SCALE = canvasWidth / RESOLUTION_W;
+
+        // all values are calculated manually for same placement for both players
+        final float castleIndentX   = 860;  // manually set value for castle placement
+        final float towerIndentX    = 450;  // manually set value for tower  placement
+        final float platformIndentY = 364;  // value from background.xml file - position of platform for objects
+        final float castleTextureWidth = objects.findRegion("castle_p1_front").originalWidth;
+        final float towerTextureWidth  = objects.findRegion("tower_p1").originalWidth;
+        final float blockTextureWidth  = objects.findRegion("block_wood").originalWidth;
 
         float backgroundX = 0 - (canvasWidth - worldWidth) / 2;
         float backgroundY = 0 - (canvasHeight - worldHeight) / 2;
-        float castleP1X = backgroundX + 860 * SCALE;
-        float castleP1Y = backgroundY + 360 * SCALE;
-        float castleP2X = backgroundX + 2634 * SCALE;   // 2634 = 3734 - 860 - 240 (bg resolution - castleP1X indent - castle width)
-        float castleP2Y = backgroundY + 360 * SCALE;
-        float towerP1X = backgroundX + 450 * SCALE;
-        float towerP1Y = backgroundY + 360 * SCALE;
-        float towerP2X = backgroundX + 3064 * SCALE;    // 3064 = 3734 - 450 - 220 (bg resolution - towerP1X indent - tower width)
-        float towerP2Y = backgroundY + 360 * SCALE;
+
+        float castleP1X = backgroundX + castleIndentX * SCALE;
+        float castleP2X = backgroundX + (RESOLUTION_W - castleIndentX - castleTextureWidth) * SCALE;
+        float castleP1Y = backgroundY + platformIndentY * SCALE;
+        float castleP2Y = backgroundY + platformIndentY * SCALE;
+        float towerP1X = backgroundX + towerIndentX * SCALE;
+        float towerP2X = backgroundX + (RESOLUTION_W - towerIndentX - towerTextureWidth) * SCALE;
+        float towerP1Y = backgroundY + platformIndentY * SCALE;
+        float towerP2Y = backgroundY + platformIndentY * SCALE;
 
         final float BLOCKS_SCALE = SCALE * 0.35f;
-        float blockP1X = castleP1X + (240 + 60) * SCALE;
+        float blockP1X = castleP1X + (castleTextureWidth + 60) * SCALE;
         float blockP1Y = castleP1Y + 240 * SCALE;
-        float blockP2X = castleP2X - 60 * SCALE - 200 * BLOCKS_SCALE;
+        float blockP2X = castleP2X - 60 * SCALE - blockTextureWidth * BLOCKS_SCALE;
         float blockP2Y = castleP2Y + 240 * SCALE;
 
         physicalBackground = new PhysicalBackground(new Position(backgroundX, backgroundY, SCALE), world);
@@ -207,29 +244,20 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
         drawables.add(graphicalBlockP2);
         physicalBlocksP2.get(0).setMovableSprite(graphicalBlockP2);
 
-        GraphicalForeground graphicalForeground = new GraphicalForeground(background2.createSprite("bg_front"), SCALE);
+        GraphicalForeground graphicalForeground = new GraphicalForeground(backgroundFront.createSprite("bg_front"), SCALE);
         graphicalForeground.setSize(canvasWidth, canvasHeight);
         graphicalForeground.setOrigin(0, 0);
         graphicalForeground.setPosition(backgroundX, backgroundY);
         drawables.add(graphicalForeground);
+    }
 
-        camera = new OrthographicCamera(minWidth, minHeight);
-        viewport = new ExtendViewport(camera.viewportWidth, camera.viewportHeight, camera);
-        camera.position.set(camera.viewportWidth / 2, camera.viewportHeight / 2, 0);
-        camera.update();
-    
-        // create game net controller
-        try {
-            controller = new Controller(serverName, serverPort);
-        } catch (Exception error) {
-            System.out.println(error);
+    /**
+     * This method is implemented for demo. Called within buildScene() method.
+     * Fills physicalBlocksP1 and physicalBlocksP2 array lists with
+     * several blocks placed by default same for both players.
+     */
+    private void placeDefaultBlocks() {
 
-        }
-        controller.start();
-
-        // establish connection to server
-        ConnectionGenerator generator = new ConnectionGenerator();
-        generator.generate(null, controller.getServerAddress(), controller.getServerPort(), controller);
     }
 
     private void stepWorld() {
@@ -243,6 +271,7 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
             world.step(STEP_TIME, VELOCITY_ITERATIONS, POSITION_ITERATIONS);
 
             // temp debug stuff
+            // TODO: wrap updateMovableSprite() method
             physicalTowerP1.updateMovableSprite();
             physicalTowerP2.updateMovableSprite();
             for (PhysicalBlock block : physicalBlocksP1)
@@ -290,8 +319,8 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
     @Override
     public void dispose() {
         batch.dispose();
-        background1.dispose();
-        background2.dispose();
+        backgroundBack.dispose();
+        backgroundFront.dispose();
         objects.dispose();
         stageForUI.dispose();
         controller.interrupt();

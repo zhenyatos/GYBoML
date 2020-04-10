@@ -13,7 +13,7 @@ import java.io.InputStream;
 import ru.spbstu.gyboml.core.PlayerType;
 import ru.spbstu.gyboml.core.Tower;
 
-public class PhysicalTower extends Tower {
+public class PhysicalTower extends Tower implements Updatable {
     private final String PATH = "physics/objects.xml";
     private PlayerType playerType;
     private Body tower;
@@ -69,8 +69,12 @@ public class PhysicalTower extends Tower {
 
     public float getCannonAngle() { return cannon.getAngle(); }
 
-    public void setMovableSprite(Movable sprite) { this.sprite = sprite; }
+    @Override
+    public void setMovableSprite(Movable sprite) {
+        this.sprite = sprite;
+    }
 
+    @Override
     public void updateMovableSprite() {
         if (this.sprite != null) {
             sprite.setMovablePartPosition(cannon.getPosition());
