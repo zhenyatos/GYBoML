@@ -26,8 +26,8 @@ public class PhysicalCastle extends Destructible implements Physical {
         front = physicsShapeCache.createBody("castle" + playerName + "front", world, location.scale, location.scale);
         tower = physicsShapeCache.createBody("castle" + playerName + "tower", world, location.scale, location.scale);
 
-        front.setTransform(location.x, location.y, 0);
-        tower.setTransform(location.x, location.y, 0);
+        front.setTransform(location.x, location.y, location.angle);
+        tower.setTransform(location.x, location.y, location.angle);
 
         // Castle doesn't move => static components
         front.setType(BodyDef.BodyType.StaticBody);

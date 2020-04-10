@@ -23,7 +23,7 @@ public class PhysicalBlock extends Destructible implements Physical, Updatable {
 
         PhysicsShapeCache physicsShapeCache = new PhysicsShapeCache(is);
         body = physicsShapeCache.createBody("block_" + material.getName(), world, location.scale, location.scale);
-        body.setTransform(location.x, location.y, 0);
+        body.setTransform(location.x, location.y, location.angle);
         body.setType(BodyDef.BodyType.DynamicBody);
     }
 

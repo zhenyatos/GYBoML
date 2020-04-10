@@ -35,10 +35,10 @@ public class PhysicalTower implements Physical, Updatable {
         // Cannon can move => dynamic
         cannon.setType(BodyDef.BodyType.DynamicBody);
 
-        tower.setTransform(location.x, location.y, 0);
+        tower.setTransform(location.x, location.y, location.angle);
         RevoluteJointDef revoluteJointDef = new RevoluteJointDef();
         if (playerType == PlayerType.FIRST_PLAYER) {
-            cannon.setTransform(location.x + (40.f * location.scale), location.y + (800.f * location.scale), 0);
+            cannon.setTransform(location.x + (40.f * location.scale), location.y + (800.f * location.scale), location.angle);
             Vector2 jointPos = new Vector2(cannon.getPosition().x + 80.f * location.scale, cannon.getPosition().y + 45.f * location.scale);
             revoluteJointDef.initialize(cannon, tower, jointPos);
             revoluteJointDef.motorSpeed = -(float)Math.PI;
@@ -46,7 +46,7 @@ public class PhysicalTower implements Physical, Updatable {
             revoluteJointDef.lowerAngle = -(float)Math.PI / 3;
         }
         else {
-            cannon.setTransform(location.x - (40.f * location.scale), location.y + (800.f * location.scale), 0);
+            cannon.setTransform(location.x - (40.f * location.scale), location.y + (800.f * location.scale), location.angle);
             Vector2 jointPos = new Vector2(cannon.getPosition().x + 140.f * location.scale, cannon.getPosition().y + 45.f * location.scale);
             revoluteJointDef.initialize(cannon, tower, jointPos);
             revoluteJointDef.motorSpeed = (float)Math.PI;

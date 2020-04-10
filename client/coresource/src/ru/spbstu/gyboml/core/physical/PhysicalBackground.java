@@ -18,7 +18,7 @@ public class PhysicalBackground implements Physical {
 
         PhysicsShapeCache physicsBodies = new PhysicsShapeCache(is);
         body = physicsBodies.createBody("bg_land", world, location.scale, location.scale);
-        body.setTransform(location.x, location.y, 0);
+        body.setTransform(location.x, location.y, location.angle);
         body.setType(BodyDef.BodyType.StaticBody);
     }
 

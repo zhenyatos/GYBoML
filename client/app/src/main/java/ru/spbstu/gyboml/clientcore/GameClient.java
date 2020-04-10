@@ -44,6 +44,7 @@ import ru.spbstu.gyboml.core.physical.PhysicalBlock;
 import ru.spbstu.gyboml.core.physical.PhysicalCastle;
 import ru.spbstu.gyboml.core.physical.PhysicalTower;
 import ru.spbstu.gyboml.core.physical.Location;
+import ru.spbstu.gyboml.core.physical.Updatable;
 
 /**
  * The GameClient class handles rendering, camera movement,
@@ -52,7 +53,7 @@ import ru.spbstu.gyboml.core.physical.Location;
  * @since   2020-03-11
  */
 public class GameClient extends ApplicationAdapter implements InputProcessor {
-    private float SCALE;
+    // canvas / world constants
     private static final float minRatio = 3f / 2f;
     private static final float minWidth = 50;
     private static final float minHeight = minWidth / minRatio;
@@ -72,31 +73,40 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
     private static final int POSITION_ITERATIONS = 2;
     private float accumulator = 0;
 
-    // TODO: wrap in single container
-    PhysicalBackground physicalBackground;
-    PhysicalCastle physicalCastleP1;
-    PhysicalCastle physicalCastleP2;
-    PhysicalTower physicalTowerP1;
-    PhysicalTower physicalTowerP2;
-    ArrayList<PhysicalBlock> blocksP1;
-    ArrayList<PhysicalBlock> blocksP2;
+    // scene physics
+    private final float backgroundX = 0 - (canvasWidth - worldWidth) / 2;
+    private final float backgroundY = 0 - (canvasHeight - worldHeight) / 2;
+    private float SCALE;
+    private float BLOCKS_SCALE;
+    private List<Updatable> updatables;
+    private PhysicalBackground physicalBackground;
+    private PhysicalCastle physicalCastleP1;
+    private PhysicalCastle physicalCastleP2;
+    private PhysicalTower physicalTowerP1;
+    private PhysicalTower physicalTowerP2;
+    private ArrayList<PhysicalBlock> physicalBlocksP1;
+    private ArrayList<PhysicalBlock> physicalBlocksP2;
 
-    private MessageSender toServerMessageSender;
-    private SpriteBatch batch;
+    // scene graphics
+    private List<Drawable> drawables;
     private TextureAtlas backgroundBack;
     private TextureAtlas backgroundFront;
     private TextureAtlas objects;
-    private final List<Drawable> drawables = new ArrayList<>();
+
+    // drawing and stuff
+    private Box2DDebugRenderer debugRenderer;
+    private SpriteBatch batch;
     private OrthographicCamera camera;
     private ExtendViewport viewport;
     private Stage stageForUI;
     private Table table;
     private World world;
-    private Box2DDebugRenderer debugRenderer;
 
+    // connection
     private Controller controller = null;
     private final String serverName = "34.91.65.96";
     private final int serverPort = 4445;
+    private MessageSender toServerMessageSender;
 
     /**
      * This is the method that is called on client's creation.
@@ -117,6 +127,10 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
         debugRenderer = new Box2DDebugRenderer();
         world = new World(new Vector2(gravityAccelerationX, gravityAccelerationY), true);
         batch = new SpriteBatch();
+
+        backgroundBack  = new TextureAtlas("sprites/background_1.txt");
+        backgroundFront = new TextureAtlas("sprites/background_2.txt");
+        objects         = new TextureAtlas("sprites/objects.txt");
 
         buildScene();
 
@@ -139,33 +153,23 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
         generator.generate(null, controller.getServerAddress(), controller.getServerPort(), controller);
     }
 
-
     /**
      * Called during client creation.
      * Builds physical and displayed scene for client application.
      */
     private void buildScene() {
-        backgroundBack  = new TextureAtlas("sprites/background_1.txt");
-        backgroundFront = new TextureAtlas("sprites/background_2.txt");
-        objects         = new TextureAtlas("sprites/objects.txt");
-
-        Sprite backgroundSky    = backgroundBack.createSprite("bg_sky");
-        Sprite backgroundDesert = backgroundBack.createSprite("bg_desert");
-        Sprite backgroundLand   = backgroundFront.createSprite("bg_land");
-
         final float RESOLUTION_W = backgroundBack.findRegion("bg_sky").originalWidth;
         SCALE = canvasWidth / RESOLUTION_W;
 
+        updatables = new ArrayList<>();
+        drawables = new ArrayList<>();
+
         // all values are calculated manually for same placement for both players
-        final float castleIndentX   = 860;  // manually set value for castle placement
-        final float towerIndentX    = 450;  // manually set value for tower  placement
-        final float platformIndentY = 364;  // value from background.xml file - position of platform for objects
+        final float castleIndentX   = 860;  // manually set value for castle placement on platform
+        final float towerIndentX    = 450;  // manually set value for tower  placement on platform
+        final float platformIndentY = 364;  // y position of platforms for objects from background.xml
         final float castleTextureWidth = objects.findRegion("castle_p1_front").originalWidth;
         final float towerTextureWidth  = objects.findRegion("tower_p1").originalWidth;
-        final float blockTextureWidth  = objects.findRegion("block_wood").originalWidth;
-
-        float backgroundX = 0 - (canvasWidth - worldWidth) / 2;
-        float backgroundY = 0 - (canvasHeight - worldHeight) / 2;
 
         float castleP1X = backgroundX + castleIndentX * SCALE;
         float castleP2X = backgroundX + (RESOLUTION_W - castleIndentX - castleTextureWidth) * SCALE;
@@ -176,23 +180,21 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
         float towerP1Y = backgroundY + platformIndentY * SCALE;
         float towerP2Y = backgroundY + platformIndentY * SCALE;
 
-        final float BLOCKS_SCALE = SCALE * 0.35f;
-        float blockP1X = castleP1X + (castleTextureWidth + 60) * SCALE;
-        float blockP1Y = castleP1Y + 240 * SCALE;
-        float blockP2X = castleP2X - 60 * SCALE - blockTextureWidth * BLOCKS_SCALE;
-        float blockP2Y = castleP2Y + 240 * SCALE;
+        // physics
+        physicalBackground = new PhysicalBackground(new Location(backgroundX, backgroundY,0, SCALE), world);
+        physicalCastleP1 = new PhysicalCastle(100, new Location(castleP1X, castleP1Y, 0, SCALE), PlayerType.FIRST_PLAYER, world);
+        physicalCastleP2 = new PhysicalCastle(100, new Location(castleP2X, castleP2Y, 0, SCALE), PlayerType.SECOND_PLAYER, world);
+        physicalTowerP1 = new PhysicalTower(new Location(towerP1X, towerP1Y, 0, SCALE), PlayerType.FIRST_PLAYER, world);
+        physicalTowerP2 = new PhysicalTower(new Location(towerP2X, towerP2Y, 0, SCALE), PlayerType.SECOND_PLAYER, world);
+        updatables.add(physicalTowerP1);
+        updatables.add(physicalTowerP2);
+        placeDefaultBlocks(castleP1X, castleP1Y, castleP2X, castleP2Y);
 
-        physicalBackground = new PhysicalBackground(new Location(backgroundX, backgroundY, SCALE), world);
-        physicalCastleP1 = new PhysicalCastle(100, new Location(castleP1X, castleP1Y, SCALE), PlayerType.FIRST_PLAYER, world);
-        physicalCastleP2 = new PhysicalCastle(100, new Location(castleP2X, castleP2Y, SCALE), PlayerType.SECOND_PLAYER, world);
-        physicalTowerP1 = new PhysicalTower(new Location(towerP1X, towerP1Y, SCALE), PlayerType.FIRST_PLAYER, world);
-        physicalTowerP2 = new PhysicalTower(new Location(towerP2X, towerP2Y, SCALE), PlayerType.SECOND_PLAYER, world);
-        blocksP1 = new ArrayList<>();
-        blocksP2 = new ArrayList<>();
-        blocksP1.add(new PhysicalBlock(Material.WOOD, new Location(blockP1X, blockP1Y, BLOCKS_SCALE ), world));
-        blocksP2.add(new PhysicalBlock(Material.WOOD, new Location(blockP2X, blockP2Y, BLOCKS_SCALE ), world));
-
-        GraphicalBackground graphicalBackground = new GraphicalBackground(backgroundSky, backgroundDesert, backgroundLand, SCALE);
+        // graphics
+        GraphicalBackground graphicalBackground = new GraphicalBackground(backgroundBack.createSprite("bg_sky"),
+                                                                          backgroundBack.createSprite("bg_desert"),
+                                                                          backgroundFront.createSprite("bg_land"),
+                                                                          SCALE);
         graphicalBackground.setSize(canvasWidth, canvasHeight);
         graphicalBackground.setOrigin(0, 0);
         graphicalBackground.setPosition(physicalBackground.getPosition().x, physicalBackground.getPosition().y);
@@ -232,22 +234,12 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
         graphicalCastleP2.setPosition(physicalCastleP2.getPosition().x, physicalCastleP2.getPosition().y);
         drawables.add(graphicalCastleP2);
 
-        GraphicalBlock graphicalBlockP1 = new GraphicalBlock(objects.createSprite("block_wood"), objects.createSprite("block_wood_damaged"), BLOCKS_SCALE);
-        graphicalBlockP1.setOrigin(0,0);
-        graphicalBlockP1.setPosition(blocksP1.get(0).getPosition().x, blocksP1.get(0).getPosition().y);
-        drawables.add(graphicalBlockP1);
-        blocksP1.get(0).setMovableSprite(graphicalBlockP1);
-
-        GraphicalBlock graphicalBlockP2 = new GraphicalBlock(objects.createSprite("block_wood"), objects.createSprite("block_wood_damaged"), BLOCKS_SCALE);
-        graphicalBlockP2.setOrigin(0,0);
-        graphicalBlockP2.setPosition(blocksP2.get(0).getPosition().x, blocksP2.get(0).getPosition().y);
-        drawables.add(graphicalBlockP2);
-        blocksP2.get(0).setMovableSprite(graphicalBlockP2);
+        bindDefaultBlocksGraphics();
 
         GraphicalForeground graphicalForeground = new GraphicalForeground(backgroundFront.createSprite("bg_front"), SCALE);
         graphicalForeground.setSize(canvasWidth, canvasHeight);
         graphicalForeground.setOrigin(0, 0);
-        graphicalForeground.setPosition(backgroundX, backgroundY);
+        graphicalForeground.setPosition(physicalBackground.getPosition().x, physicalBackground.getPosition().y);
         drawables.add(graphicalForeground);
     }
 
@@ -255,9 +247,70 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
      * This method is implemented for demo. Called within buildScene() method.
      * Fills physicalBlocksP1 and physicalBlocksP2 array lists with
      * several blocks placed by default same for both players.
+     * Blocks placed manually in general.
      */
-    private void placeDefaultBlocks() {
+    private void placeDefaultBlocks(float castleP1X, float castleP1Y, float castleP2X, float castleP2Y) {
+        final float blockTextureWidth  = objects.findRegion("block_wood").originalWidth;
+        final float blockTextureHeight = objects.findRegion("block_wood").originalHeight;
+        final float castleTextureWidth = objects.findRegion("castle_p1_front").originalWidth;
 
+        BLOCKS_SCALE = SCALE * 0.35f;
+        float blockP1X = castleP1X + (castleTextureWidth + 60) * SCALE;
+        float blockP1Y = castleP1Y + 240 * SCALE;
+        float blockP2X = castleP2X -  60 * SCALE - blockTextureWidth * BLOCKS_SCALE;
+        float blockP2Y = castleP2Y + 240 * SCALE;
+
+        physicalBlocksP1 = new ArrayList<>();
+        physicalBlocksP2 = new ArrayList<>();
+
+        // 1st row
+        physicalBlocksP1.add(new PhysicalBlock(Material.WOOD, new Location(blockP1X, blockP1Y, 0, BLOCKS_SCALE), world));
+        physicalBlocksP2.add(new PhysicalBlock(Material.WOOD, new Location(blockP2X, blockP2Y, 0, BLOCKS_SCALE), world));
+        physicalBlocksP1.add(new PhysicalBlock(Material.WOOD, new Location(blockP1X, blockP1Y + 1.2f * blockTextureHeight * BLOCKS_SCALE, 0, BLOCKS_SCALE), world));
+        physicalBlocksP2.add(new PhysicalBlock(Material.WOOD, new Location(blockP2X, blockP2Y + 1.2f * blockTextureHeight * BLOCKS_SCALE, 0, BLOCKS_SCALE), world));
+        physicalBlocksP1.add(new PhysicalBlock(Material.WOOD, new Location(blockP1X, blockP1Y + 2 * 1.2f * blockTextureHeight * BLOCKS_SCALE, 0, BLOCKS_SCALE), world));
+        physicalBlocksP2.add(new PhysicalBlock(Material.WOOD, new Location(blockP2X, blockP2Y + 2 * 1.2f * blockTextureHeight * BLOCKS_SCALE, 0, BLOCKS_SCALE), world));
+
+        // 2nd row
+        physicalBlocksP1.add(new PhysicalBlock(Material.WOOD, new Location(blockP1X + 2 * blockTextureWidth * BLOCKS_SCALE, blockP1Y, 0, BLOCKS_SCALE), world));
+        physicalBlocksP2.add(new PhysicalBlock(Material.WOOD, new Location(blockP2X - 2 * blockTextureWidth * BLOCKS_SCALE, blockP2Y, 0, BLOCKS_SCALE), world));
+        physicalBlocksP1.add(new PhysicalBlock(Material.WOOD, new Location(blockP1X + 2 * blockTextureWidth * BLOCKS_SCALE, blockP1Y + 1.2f * blockTextureHeight * BLOCKS_SCALE, 0, BLOCKS_SCALE), world));
+        physicalBlocksP2.add(new PhysicalBlock(Material.WOOD, new Location(blockP2X - 2 * blockTextureWidth * BLOCKS_SCALE, blockP2Y + 1.2f * blockTextureHeight * BLOCKS_SCALE, 0, BLOCKS_SCALE), world));
+
+        // 3rd row
+        physicalBlocksP1.add(new PhysicalBlock(Material.WOOD, new Location(blockP1X + 4 * blockTextureWidth * BLOCKS_SCALE, blockP1Y, 0, BLOCKS_SCALE), world));
+        physicalBlocksP2.add(new PhysicalBlock(Material.WOOD, new Location(blockP2X - 4 * blockTextureWidth * BLOCKS_SCALE, blockP2Y, 0 ,BLOCKS_SCALE), world));
+
+        // back row
+        physicalBlocksP1.add(new PhysicalBlock(Material.WOOD, new Location(castleP1X - 60 * SCALE - blockTextureWidth * BLOCKS_SCALE, blockP1Y, 0, BLOCKS_SCALE), world));
+        physicalBlocksP1.add(new PhysicalBlock(Material.WOOD, new Location(castleP1X - 60 * SCALE - blockTextureWidth * BLOCKS_SCALE, blockP1Y + 1.2f * blockTextureHeight * BLOCKS_SCALE, 0, BLOCKS_SCALE), world));
+        physicalBlocksP2.add(new PhysicalBlock(Material.WOOD, new Location(castleP2X + (castleTextureWidth + 60) * SCALE, blockP2Y, 0, BLOCKS_SCALE), world));
+        physicalBlocksP2.add(new PhysicalBlock(Material.WOOD, new Location(castleP2X + (castleTextureWidth + 60) * SCALE, blockP2Y + 1.2f * blockTextureHeight * BLOCKS_SCALE, 0, BLOCKS_SCALE), world));
+
+        updatables.addAll(physicalBlocksP1);
+        updatables.addAll(physicalBlocksP2);
+    }
+
+    /**
+     * This method is implemented for demo. Called within buildScene() method.
+     * Binds graphical blocks objects to its physical versions.
+     */
+    private void bindDefaultBlocksGraphics() {
+        for (PhysicalBlock block : physicalBlocksP1) {
+            GraphicalBlock graphicalBlockP1 = new GraphicalBlock(objects.createSprite("block_wood"), objects.createSprite("block_wood_damaged"), BLOCKS_SCALE);
+            graphicalBlockP1.setOrigin(0,0);
+            graphicalBlockP1.setPosition(block.getPosition().x, block.getPosition().y);
+            drawables.add(graphicalBlockP1);
+            block.setMovableSprite(graphicalBlockP1);
+        }
+
+        for (PhysicalBlock block : physicalBlocksP2) {
+            GraphicalBlock graphicalBlockP2 = new GraphicalBlock(objects.createSprite("block_wood"), objects.createSprite("block_wood_damaged"), BLOCKS_SCALE);
+            graphicalBlockP2.setOrigin(0,0);
+            graphicalBlockP2.setPosition(block.getPosition().x, block.getPosition().y);
+            drawables.add(graphicalBlockP2);
+            block.setMovableSprite(graphicalBlockP2);
+        }
     }
 
     private void stepWorld() {
@@ -271,13 +324,8 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
             world.step(STEP_TIME, VELOCITY_ITERATIONS, POSITION_ITERATIONS);
 
             // temp debug stuff
-            // TODO: wrap updateMovableSprite() method
-            physicalTowerP1.updateMovableSprite();
-            physicalTowerP2.updateMovableSprite();
-            for (PhysicalBlock physicalBlock : blocksP1)
-                physicalBlock.updateMovableSprite();
-            for (PhysicalBlock physicalBlock : blocksP2)
-                physicalBlock.updateMovableSprite();
+            for (Updatable updatable : updatables)
+                updatable.updateMovableSprite();
 
             if ((physicalTowerP1.getJoint().getJointAngle() >= physicalTowerP1.getJoint().getUpperLimit() && physicalTowerP1.getJoint().getMotorSpeed() > 0)||
                 (physicalTowerP1.getJoint().getJointAngle() <= physicalTowerP1.getJoint().getLowerLimit() && physicalTowerP1.getJoint().getMotorSpeed() < 0))

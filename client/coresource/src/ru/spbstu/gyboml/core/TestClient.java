@@ -96,7 +96,7 @@ public class TestClient extends ApplicationAdapter {
         float width = worldWidth + minWidth * (maxXRatio / minRatio - 1);
         float height = worldHeight + minHeight * (minRatio / maxYRatio - 1);
 
-        PhysicalTower physicalTower = new PhysicalTower(new Location(15.f, 0.f, SCALE/2),
+        PhysicalTower physicalTower = new PhysicalTower(new Location(15.f, 0.f, 0,SCALE/2),
                 PlayerType.FIRST_PLAYER, world);
 
     }
