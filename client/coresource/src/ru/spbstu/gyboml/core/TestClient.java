@@ -16,7 +16,7 @@ import com.badlogic.gdx.utils.viewport.ExtendViewport;
 
 import ru.spbstu.gyboml.core.physical.PhysicalBackground;
 import ru.spbstu.gyboml.core.physical.PhysicalTower;
-import ru.spbstu.gyboml.core.physical.Position;
+import ru.spbstu.gyboml.core.physical.Location;
 
 
 public class TestClient extends ApplicationAdapter {
@@ -96,7 +96,7 @@ public class TestClient extends ApplicationAdapter {
         float width = worldWidth + minWidth * (maxXRatio / minRatio - 1);
         float height = worldHeight + minHeight * (minRatio / maxYRatio - 1);
 
-        PhysicalTower physicalTower = new PhysicalTower(new Position(15.f, 0.f, SCALE/2),
+        PhysicalTower physicalTower = new PhysicalTower(new Location(15.f, 0.f, SCALE/2),
                 PlayerType.FIRST_PLAYER, world);
 
     }

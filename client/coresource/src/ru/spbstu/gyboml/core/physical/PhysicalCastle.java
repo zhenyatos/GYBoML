@@ -17,17 +17,17 @@ public class PhysicalCastle extends Destructible implements Physical {
     private Body front;
     private Body tower;
 
-    public PhysicalCastle(int HP, Position pos, PlayerType playerType, World world) {
+    public PhysicalCastle(int HP, Location location, PlayerType playerType, World world) {
         super(HP, Material.STONE);
         InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(PHYSICS_PATH_OBJECTS);
 
         PhysicsShapeCache physicsShapeCache = new PhysicsShapeCache(is);
         String playerName = (playerType == PlayerType.FIRST_PLAYER) ? "_p1_" : "_p2_";
-        front = physicsShapeCache.createBody("castle" + playerName + "front", world, pos.scale, pos.scale);
-        tower = physicsShapeCache.createBody("castle" + playerName + "tower", world, pos.scale, pos.scale);
+        front = physicsShapeCache.createBody("castle" + playerName + "front", world, location.scale, location.scale);
+        tower = physicsShapeCache.createBody("castle" + playerName + "tower", world, location.scale, location.scale);
 
-        front.setTransform(pos.x, pos.y, 0);
-        tower.setTransform(pos.x, pos.y, 0);
+        front.setTransform(location.x, location.y, 0);
+        tower.setTransform(location.x, location.y, 0);
 
         // Castle doesn't move => static components
         front.setType(BodyDef.BodyType.StaticBody);

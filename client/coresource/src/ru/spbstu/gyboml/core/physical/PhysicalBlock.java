@@ -17,13 +17,13 @@ public class PhysicalBlock extends Destructible implements Physical, Updatable {
     private Body body;
     private Movable sprite;
 
-    public PhysicalBlock(Material material, Position pos, World world) {
+    public PhysicalBlock(Material material, Location location, World world) {
         super((int)(BASE_HP * material.getDefenceRatio()), material);
         InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(PHYSICS_PATH_OBJECTS);
 
         PhysicsShapeCache physicsShapeCache = new PhysicsShapeCache(is);
-        body = physicsShapeCache.createBody("block_wood", world, pos.scale, pos.scale);
-        body.setTransform(pos.x, pos.y, 0);
+        body = physicsShapeCache.createBody("block_wood", world, location.scale, location.scale);
+        body.setTransform(location.x, location.y, 0);
         body.setType(BodyDef.BodyType.DynamicBody);
     }
 

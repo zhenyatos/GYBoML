@@ -13,12 +13,12 @@ import ru.spbstu.gyboml.core.util.PhysicsShapeCache;
 public class PhysicalBackground implements Physical {
     private final Body body;
 
-    public PhysicalBackground(Position pos, World world) {
+    public PhysicalBackground(Location location, World world) {
         InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(PHYSICS_PATH_BACKGROUND);
 
         PhysicsShapeCache physicsBodies = new PhysicsShapeCache(is);
-        body = physicsBodies.createBody("bg_land", world, pos.scale, pos.scale);
-        body.setTransform(pos.x, pos.y, 0);
+        body = physicsBodies.createBody("bg_land", world, location.scale, location.scale);
+        body.setTransform(location.x, location.y, 0);
         body.setType(BodyDef.BodyType.StaticBody);
     }
 

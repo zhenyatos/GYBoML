@@ -43,7 +43,7 @@ import ru.spbstu.gyboml.core.physical.PhysicalBackground;
 import ru.spbstu.gyboml.core.physical.PhysicalBlock;
 import ru.spbstu.gyboml.core.physical.PhysicalCastle;
 import ru.spbstu.gyboml.core.physical.PhysicalTower;
-import ru.spbstu.gyboml.core.physical.Position;
+import ru.spbstu.gyboml.core.physical.Location;
 
 /**
  * The GameClient class handles rendering, camera movement,
@@ -182,15 +182,15 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
         float blockP2X = castleP2X - 60 * SCALE - blockTextureWidth * BLOCKS_SCALE;
         float blockP2Y = castleP2Y + 240 * SCALE;
 
-        physicalBackground = new PhysicalBackground(new Position(backgroundX, backgroundY, SCALE), world);
-        physicalCastleP1 = new PhysicalCastle(100, new Position(castleP1X, castleP1Y, SCALE), PlayerType.FIRST_PLAYER, world);
-        physicalCastleP2 = new PhysicalCastle(100, new Position(castleP2X, castleP2Y, SCALE), PlayerType.SECOND_PLAYER, world);
-        physicalTowerP1 = new PhysicalTower(new Position(towerP1X, towerP1Y, SCALE), PlayerType.FIRST_PLAYER, world);
-        physicalTowerP2 = new PhysicalTower(new Position(towerP2X, towerP2Y, SCALE), PlayerType.SECOND_PLAYER, world);
+        physicalBackground = new PhysicalBackground(new Location(backgroundX, backgroundY, SCALE), world);
+        physicalCastleP1 = new PhysicalCastle(100, new Location(castleP1X, castleP1Y, SCALE), PlayerType.FIRST_PLAYER, world);
+        physicalCastleP2 = new PhysicalCastle(100, new Location(castleP2X, castleP2Y, SCALE), PlayerType.SECOND_PLAYER, world);
+        physicalTowerP1 = new PhysicalTower(new Location(towerP1X, towerP1Y, SCALE), PlayerType.FIRST_PLAYER, world);
+        physicalTowerP2 = new PhysicalTower(new Location(towerP2X, towerP2Y, SCALE), PlayerType.SECOND_PLAYER, world);
         blocksP1 = new ArrayList<>();
         blocksP2 = new ArrayList<>();
-        blocksP1.add(new PhysicalBlock(Material.WOOD, new Position(blockP1X, blockP1Y, BLOCKS_SCALE ), world));
-        blocksP2.add(new PhysicalBlock(Material.WOOD, new Position(blockP2X, blockP2Y, BLOCKS_SCALE ), world));
+        blocksP1.add(new PhysicalBlock(Material.WOOD, new Location(blockP1X, blockP1Y, BLOCKS_SCALE ), world));
+        blocksP2.add(new PhysicalBlock(Material.WOOD, new Location(blockP2X, blockP2Y, BLOCKS_SCALE ), world));
 
         GraphicalBackground graphicalBackground = new GraphicalBackground(backgroundSky, backgroundDesert, backgroundLand, SCALE);
         graphicalBackground.setSize(canvasWidth, canvasHeight);
