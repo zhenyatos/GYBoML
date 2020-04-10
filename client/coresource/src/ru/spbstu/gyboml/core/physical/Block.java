@@ -11,32 +11,30 @@ import ru.spbstu.gyboml.core.destructible.Destructible;
 import ru.spbstu.gyboml.core.destructible.Material;
 import ru.spbstu.gyboml.core.util.PhysicsShapeCache;
 
-public class Block extends Destructible implements Updatable {
+public class Block extends Destructible implements Physical, Updatable {
     private static final int BASE_HP = 100;
-    private static final String PATH = "physics/objects.xml";
+
     private Body body;
     private Movable sprite;
 
     public Block(Material material, Position pos, World world) {
         super((int)(BASE_HP * material.getDefenceRatio()), material);
-        InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(PATH);
+        InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(PHYSICS_PATH_OBJECTS);
 
         PhysicsShapeCache physicsShapeCache = new PhysicsShapeCache(is);
         body = physicsShapeCache.createBody("block_wood", world, pos.scale, pos.scale);
-
-        // IMPORTANT: fixtures now set in .xml manually
-
-        // FixtureDef fixtureDef   = new FixtureDef();
-        // fixtureDef.density      = 600;      // oak density 0.6 * 10^3 kg/m^3
-        // fixtureDef.friction     = 0.5f;     // friction coefficient [0, 1]
-        // fixtureDef.restitution  = 0.1f;     // elasticity coefficient [0, 1]
-        // body.createFixture(fixtureDef);
-
         body.setTransform(pos.x, pos.y, 0);
         body.setType(BodyDef.BodyType.DynamicBody);
     }
 
+    @Override
     public Vector2 getPosition() { return body.getPosition(); }
+
+    @Override
+    public Vector2 getUpdatablePosition() { return body.getPosition(); }
+
+    @Override
+    public float getUpdatableAngle() { return body.getAngle(); }
 
     @Override
     public void setMovableSprite(Movable sprite) {

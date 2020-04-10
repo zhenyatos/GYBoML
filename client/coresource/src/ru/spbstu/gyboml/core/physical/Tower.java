@@ -12,18 +12,18 @@ import java.io.InputStream;
 
 import ru.spbstu.gyboml.core.PlayerType;
 
-public class Tower implements Updatable {
-    private final String PATH = "physics/objects.xml";
+public class Tower implements Physical, Updatable {
     private PlayerType playerType;
     private Body tower;
     private Body cannon;
     private RevoluteJoint joint;
+
     private Movable sprite = null;
 
     public Tower(Position pos, PlayerType playerType, World world) {
         this.playerType = playerType;
 
-        InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(PATH);
+        InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(PHYSICS_PATH_OBJECTS);
 
         PhysicsShapeCache physicsShapeCache = new PhysicsShapeCache(is);
         String playerName = (playerType == PlayerType.FIRST_PLAYER) ? "_p1_" : "_p2_";
@@ -62,11 +62,14 @@ public class Tower implements Updatable {
 
     public RevoluteJoint getJoint() { return joint; }
 
-    public Vector2 getTowerPosition() { return tower.getPosition(); }
+    @Override
+    public Vector2 getPosition() { return tower.getPosition(); }
 
-    public Vector2 getCannonPosition() { return cannon.getPosition(); }
+    @Override
+    public Vector2 getUpdatablePosition() { return cannon.getPosition(); }
 
-    public float getCannonAngle() { return cannon.getAngle(); }
+    @Override
+    public float getUpdatableAngle() { return cannon.getAngle(); }
 
     @Override
     public void setMovableSprite(Movable sprite) {

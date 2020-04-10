@@ -10,11 +10,11 @@ import java.io.InputStream;
 import ru.spbstu.gyboml.core.util.PhysicsShapeCache;
 
 
-public class Background {
+public class Background implements Physical {
     private final Body body;
-    private final String PATH = "physics/background.xml";
+
     public Background(Position pos, World world) {
-        InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(PATH);
+        InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(PHYSICS_PATH_BACKGROUND);
 
         PhysicsShapeCache physicsBodies = new PhysicsShapeCache(is);
         body = physicsBodies.createBody("bg_land", world, pos.scale, pos.scale);
@@ -22,5 +22,6 @@ public class Background {
         body.setType(BodyDef.BodyType.StaticBody);
     }
 
+    @Override
     public Vector2 getPosition() { return body.getPosition(); }
 }

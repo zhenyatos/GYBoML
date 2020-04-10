@@ -13,14 +13,13 @@ import java.io.InputStream;
 
 import ru.spbstu.gyboml.core.PlayerType;
 
-public class Castle extends Destructible {
-    private static final String PATH = "physics/objects.xml";
+public class Castle extends Destructible implements Physical {
     private Body front;
     private Body tower;
 
     public Castle(int HP, Position pos, PlayerType playerType, World world) {
         super(HP, Material.STONE);
-        InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(PATH);
+        InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(PHYSICS_PATH_OBJECTS);
 
         PhysicsShapeCache physicsShapeCache = new PhysicsShapeCache(is);
         String playerName = (playerType == PlayerType.FIRST_PLAYER) ? "_p1_" : "_p2_";
@@ -35,5 +34,6 @@ public class Castle extends Destructible {
         tower.setType(BodyDef.BodyType.StaticBody);
     }
 
+    @Override
     public Vector2 getPosition() { return front.getPosition(); }
 }

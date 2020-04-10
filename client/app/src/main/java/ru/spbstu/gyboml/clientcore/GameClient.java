@@ -200,26 +200,26 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
 
         GraphicalCannon graphicalCannonP1 = new GraphicalCannon(objects.createSprite("cannon_p1"), SCALE);
         graphicalCannonP1.setOrigin(0, 0);
-        graphicalCannonP1.setPosition(towerP1.getCannonPosition().x, towerP1.getCannonPosition().y);
-        graphicalCannonP1.setRotation(towerP1.getCannonAngle());
+        graphicalCannonP1.setPosition(towerP1.getUpdatablePosition().x, towerP1.getUpdatablePosition().y);
+        graphicalCannonP1.setRotation(towerP1.getUpdatableAngle());
         drawables.add(graphicalCannonP1);
         towerP1.setMovableSprite(graphicalCannonP1);
 
         GraphicalCannon graphicalCannonP2 = new GraphicalCannon(objects.createSprite("cannon_p2"), SCALE);
         graphicalCannonP2.setOrigin(0, 0);
-        graphicalCannonP2.setPosition(towerP2.getCannonPosition().x, towerP2.getCannonPosition().y);
-        graphicalCannonP2.setRotation(towerP2.getCannonAngle());
+        graphicalCannonP2.setPosition(towerP2.getUpdatablePosition().x, towerP2.getUpdatablePosition().y);
+        graphicalCannonP2.setRotation(towerP2.getUpdatableAngle());
         drawables.add(graphicalCannonP2);
         towerP2.setMovableSprite(graphicalCannonP2);
 
         GraphicalTower graphicalTowerP1 = new GraphicalTower(objects.createSprite("tower_p1"), SCALE);
         graphicalTowerP1.setOrigin(0, 0);
-        graphicalTowerP1.setPosition(towerP1.getTowerPosition().x, towerP1.getTowerPosition().y);
+        graphicalTowerP1.setPosition(towerP1.getPosition().x, towerP1.getPosition().y);
         drawables.add(graphicalTowerP1);
 
         GraphicalTower graphicalTowerP2 = new GraphicalTower(objects.createSprite("tower_p2"), SCALE);
         graphicalTowerP2.setOrigin(0, 0);
-        graphicalTowerP2.setPosition(towerP2.getTowerPosition().x, towerP2.getTowerPosition().y);
+        graphicalTowerP2.setPosition(towerP2.getPosition().x, towerP2.getPosition().y);
         drawables.add(graphicalTowerP2);
 
         GraphicalCastle graphicalCastleP1 = new GraphicalCastle(objects.createSprite("castle_p1_back"), objects.createSprite("castle_p1_front"), objects.createSprite("castle_p1_tower"), SCALE, 100);
