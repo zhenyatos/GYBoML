@@ -3,10 +3,10 @@ package main.java.ru.spbstu.gyboml.graphics;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 
-public class GraphicalBall implements Drawable {
+public class GraphicalBasicShot implements Drawable {
     private Sprite ball;
 
-    public GraphicalBall(Sprite ball, float scale) {
+    public GraphicalBasicShot(Sprite ball, float scale) {
         ball.setSize(ball.getWidth() * scale, ball.getHeight() * scale);
         this.ball = ball;
     }
