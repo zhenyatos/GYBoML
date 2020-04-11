@@ -14,9 +14,11 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 
+import ru.spbstu.gyboml.core.destructible.Material;
+import ru.spbstu.gyboml.core.physical.CollisionHandler;
 import ru.spbstu.gyboml.core.physical.PhysicalBackground;
-import ru.spbstu.gyboml.core.physical.PhysicalTower;
 import ru.spbstu.gyboml.core.physical.Location;
+import ru.spbstu.gyboml.core.physical.PhysicalBlock;
 
 
 public class TestClient extends ApplicationAdapter {
@@ -54,6 +56,7 @@ public class TestClient extends ApplicationAdapter {
 
         Box2D.init();
         world = new World(new Vector2(0, -10), true);
+        world.setContactListener(new CollisionHandler());
         createTestedObjects();
 
         debugRenderer = new Box2DDebugRenderer();
@@ -93,12 +96,13 @@ public class TestClient extends ApplicationAdapter {
     }
 
     private void createTestedObjects() {
-        float width = worldWidth + minWidth * (maxXRatio / minRatio - 1);
-        float height = worldHeight + minHeight * (minRatio / maxYRatio - 1);
+        PhysicalBackground background = new PhysicalBackground(
+                new Location(10.f, 0, 0, SCALE), world);
 
-        PhysicalTower physicalTower = new PhysicalTower(new Location(15.f, 0.f, 0,SCALE/2),
-                PlayerType.FIRST_PLAYER, world);
-
+        PhysicalBlock block1 = new PhysicalBlock(
+                Material.WOOD, new Location(15.f, 20.f, 0, SCALE/3), world);
+        PhysicalBlock block2 = new PhysicalBlock(
+                Material.WOOD, new Location(20.f, 20.f, 0, SCALE/3), world);
     }
 
     private Body createBox(float hx, float hy, float x, float y, float angle) {
@@ -113,6 +117,8 @@ public class TestClient extends ApplicationAdapter {
 
         fixtureDef.shape = shape;
         fixtureDef.friction = 1;
+        fixtureDef.restitution = 0.6f;
+        fixtureDef.density = 0.5f;
 
         Body box = world.createBody(bodyDef);
         box.createFixture(fixtureDef);
