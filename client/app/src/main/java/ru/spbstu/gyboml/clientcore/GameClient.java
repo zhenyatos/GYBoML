@@ -2,6 +2,7 @@ package main.java.ru.spbstu.gyboml.clientcore;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.GL20;
@@ -21,12 +22,15 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
+import org.lwjgl.input.Keyboard;
+
 import main.java.ru.spbstu.gyboml.clientnet.Controller;
 
 import main.java.ru.spbstu.gyboml.clientnet.generating.ConnectionGenerator;
 import main.java.ru.spbstu.gyboml.clientnet.generating.PassTurnGenerator;
 // imported from core
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import main.java.ru.spbstu.gyboml.graphics.Drawable;
@@ -40,6 +44,7 @@ import main.java.ru.spbstu.gyboml.graphics.GraphicalTower;
 import ru.spbstu.gyboml.core.PlayerType;
 import ru.spbstu.gyboml.core.destructible.Material;
 import ru.spbstu.gyboml.core.physical.CollisionHandler;
+import ru.spbstu.gyboml.core.physical.Physical;
 import ru.spbstu.gyboml.core.physical.PhysicalBackground;
 import ru.spbstu.gyboml.core.physical.PhysicalBasicShot;
 import ru.spbstu.gyboml.core.physical.PhysicalBlock;
@@ -88,6 +93,7 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
     private PhysicalTower physicalTowerP2;
     private ArrayList<PhysicalBlock> physicalBlocksP1;
     private ArrayList<PhysicalBlock> physicalBlocksP2;
+    private HashMap<PhysicalBlock, GraphicalBlock> blocks;
 
     // scene graphics
     private List<Drawable> drawables;
@@ -299,12 +305,14 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
      * Binds graphical blocks objects to its physical versions.
      */
     private void bindDefaultBlocksGraphics() {
+        blocks = new HashMap<>();
         for (PhysicalBlock block : physicalBlocksP1) {
             GraphicalBlock graphicalBlockP1 = new GraphicalBlock(objects.createSprite("block_wood"), objects.createSprite("block_wood_damaged"), BLOCKS_SCALE);
             graphicalBlockP1.setOrigin(0,0);
             graphicalBlockP1.setPosition(block.getPosition().x, block.getPosition().y);
             drawables.add(graphicalBlockP1);
             block.setUpdatableSprite(graphicalBlockP1);
+            blocks.put(block, graphicalBlockP1);
         }
 
         for (PhysicalBlock block : physicalBlocksP2) {
@@ -313,6 +321,7 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
             graphicalBlockP2.setPosition(block.getPosition().x, block.getPosition().y);
             drawables.add(graphicalBlockP2);
             block.setUpdatableSprite(graphicalBlockP2);
+            blocks.put(block, graphicalBlockP2);
         }
     }
 
@@ -349,6 +358,8 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
         Gdx.gl.glClearColor(1, 0, 0, 0);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         stepWorld();
+
+        removeDeadBlocks();
 
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
@@ -447,31 +458,52 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
         table.right().bottom();
     }
 
-    public boolean keyDown(int keycode) {return true;}
+    /** Called when key is pressed, fires with P1 cannon
+     * @param keycode key code (one of the Input.Keys)
+     */
+    public boolean keyDown(int keycode) {
+        if (keycode == Input.Keys.SPACE) {
+            Vector2 pos = physicalTowerP1.getMovablePartPosition();
+            float angle = physicalTowerP1.getMovablePartAngle();
+            PhysicalBasicShot physicalShot = new PhysicalBasicShot(
+                    new Location(pos.x + 6.f * (float)Math.cos(angle),
+                            pos.y + 6.f * (float)Math.sin(angle),
+                            0, SCALE / 4.5f),
+                    world);
+            physicalShot.setVelocity(new Vector2(20.f * (float) Math.cos(angle), 20.f * (float) Math.sin(angle)));
+            movables.add(physicalShot);
+            GraphicalBasicShot graphicalShot = new GraphicalBasicShot(objects.createSprite("cannonballl"), SCALE / 4.5f);
+            graphicalShot.setOrigin(0, 0);
+            graphicalShot.setPosition(physicalShot.getPosition().x, physicalShot.getPosition().y);
+            drawables.add(graphicalShot);
+            physicalShot.setUpdatableSprite(graphicalShot);
+        }
+        return true;
+    }
 
     public boolean keyUp(int keycode) {return true;}
 
     public boolean keyTyped(char character) {return true;}
 
-    /// TODO: Bug with placement
-    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        Vector2 pos = physicalTowerP1.getMovablePartPosition();
-        PhysicalBasicShot physicalShot = new PhysicalBasicShot(
-                new Location(pos.x + 10.f, pos.y, 0, SCALE/3), world);
-        float angle = physicalTowerP1.getMovablePartAngle();
-        physicalShot.setVelocity(new Vector2(20.f * (float)Math.cos(angle), 20.f * (float)Math.sin(angle)));
-        movables.add(physicalShot);
-        GraphicalBasicShot graphicalShot = new GraphicalBasicShot(objects.createSprite("cannonballl"), SCALE/3);
-        graphicalShot.setOrigin(0, 0);
-        graphicalShot.setPosition(physicalShot.getPosition().x, physicalShot.getPosition().y);
-        drawables.add(graphicalShot);
-        physicalShot.setUpdatableSprite(graphicalShot);
-        return true;
-    }
+    public boolean touchDown(int screenX, int screenY, int pointer, int button) {return true;}
 
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {return true;}
 
     public boolean mouseMoved(int screenX, int screenY) {return true;}
 
     public boolean scrolled(int amount) { return true;}
+
+    private void removeDeadBlocks() {
+        List<PhysicalBlock> toRemove = new ArrayList<>();
+        for (PhysicalBlock block : blocks.keySet()) {
+            if (block.getHitpoints() < 0) {
+                world.destroyBody(block.getBody());
+                movables.remove(block);
+                drawables.remove(blocks.get(block));
+                toRemove.add(block);
+            }
+        }
+        for (PhysicalBlock block : toRemove)
+            blocks.remove(block);
+    }
 }
