@@ -18,6 +18,7 @@ import ru.spbstu.gyboml.core.destructible.Material;
 import ru.spbstu.gyboml.core.physical.CollisionHandler;
 import ru.spbstu.gyboml.core.physical.PhysicalBackground;
 import ru.spbstu.gyboml.core.physical.Location;
+import ru.spbstu.gyboml.core.physical.PhysicalBasicShot;
 import ru.spbstu.gyboml.core.physical.PhysicalBlock;
 
 
@@ -44,7 +45,8 @@ public class TestClient extends ApplicationAdapter {
     private Box2DDebugRenderer debugRenderer;
     private ExtendViewport viewport;
     private PhysicalBackground physicalBackground;
-    private Body test;
+    private PhysicalBlock block1;
+    private PhysicalBlock block2;
 
     @Override
     public void create () {
@@ -93,16 +95,21 @@ public class TestClient extends ApplicationAdapter {
 
             world.step(STEP_TIME, VELOCITY_ITERATIONS, POSITION_ITERATIONS);
         }
+
+        System.out.println(block2.getHitpoints());
     }
 
     private void createTestedObjects() {
-        PhysicalBackground background = new PhysicalBackground(
+        physicalBackground = new PhysicalBackground(
                 new Location(10.f, 0, 0, SCALE), world);
 
-        PhysicalBlock block1 = new PhysicalBlock(
+        block1 = new PhysicalBlock(
                 Material.WOOD, new Location(15.f, 20.f, 0, SCALE/3), world);
-        PhysicalBlock block2 = new PhysicalBlock(
+        block2 = new PhysicalBlock(
                 Material.WOOD, new Location(20.f, 20.f, 0, SCALE/3), world);
+
+        PhysicalBasicShot shot = new PhysicalBasicShot(
+                new Location(25.f, 40.f, 0, SCALE/3), world);
     }
 
     private Body createBox(float hx, float hy, float x, float y, float angle) {

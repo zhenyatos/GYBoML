@@ -6,6 +6,10 @@ import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Manifold;
 
+import ru.spbstu.gyboml.core.destructible.Destructible;
+import ru.spbstu.gyboml.core.shot.Shot;
+import sun.security.krb5.internal.crypto.Des;
+
 public class CollisionHandler implements ContactListener {
     @Override
     public void beginContact(Contact contact) {
@@ -21,11 +25,17 @@ public class CollisionHandler implements ContactListener {
         Type typeA = ((Interactable) objA).getType();
         Type typeB = ((Interactable) objB).getType();
 
-        // Background - Block
-        if (typeA == Type.BLOCK && typeB == Type.BACKGROUND)
-            System.out.println("Background-Block");
-        if (typeA == Type.BACKGROUND && typeB == Type.BLOCK)
-            System.out.println("Background-Block");
+        // Shot - Block
+        if (typeA == Type.BLOCK && typeB == Type.SHOT) {
+            Destructible block = (Destructible) objA;
+            Shot shot = (Shot) objB;
+            block.handleDamage(shot.generateDamage(block));
+        }
+        if (typeA == Type.SHOT && typeB == Type.BLOCK) {
+            Shot shot = (Shot) objA;
+            Destructible block = (Destructible) objB;
+            block.handleDamage(shot.generateDamage(block));
+        }
 
         // Block - Block
         if (typeA == Type.BLOCK && typeB == Type.BLOCK)

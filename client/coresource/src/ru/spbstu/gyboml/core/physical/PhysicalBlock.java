@@ -15,6 +15,7 @@ import ru.spbstu.gyboml.core.util.PhysicsShapeCache;
 
 public class PhysicalBlock extends Destructible implements Physical, Movable, Interactable {
     private static final int BASE_HP = 100;
+    private static final float DENSITY = 0.5f;
 
     private Body body;
     private Updatable sprite;
@@ -26,7 +27,7 @@ public class PhysicalBlock extends Destructible implements Physical, Movable, In
         PhysicsShapeCache physicsShapeCache = new PhysicsShapeCache(is);
         body = physicsShapeCache.createBody("block_" + material.getName(), world, location.scale, location.scale);
         body.setTransform(location.x, location.y, location.angle);
-        Consumer addDensity = (fixture) -> {((Fixture)fixture).setDensity(0.5f);};
+        Consumer addDensity = (fixture) -> {((Fixture)fixture).setDensity(DENSITY);};
         body.getFixtureList().forEach(addDensity);
         body.setType(BodyDef.BodyType.DynamicBody);
         body.setUserData(this);
