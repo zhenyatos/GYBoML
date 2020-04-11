@@ -2,8 +2,11 @@ package main.java.ru.spbstu.gyboml.graphics;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.math.Vector2;
 
-public class GraphicalBasicShot implements Drawable {
+import ru.spbstu.gyboml.core.physical.Updatable;
+
+public class GraphicalBasicShot implements Drawable, Updatable {
     private Sprite ball;
 
     public GraphicalBasicShot(Sprite ball, float scale) {
@@ -45,4 +48,10 @@ public class GraphicalBasicShot implements Drawable {
     public float getHeight() {
         return ball.getHeight();
     }
+
+    @Override
+    public void setUpdatablePartPosition(Vector2 position) { ball.setPosition(position.x, position.y); }
+
+    @Override
+    public void setUpdatablePartAngle(float angle) { ball.setRotation(angle); }
 }

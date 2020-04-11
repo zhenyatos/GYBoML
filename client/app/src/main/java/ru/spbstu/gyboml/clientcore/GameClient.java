@@ -462,6 +462,7 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
         graphicalShot.setOrigin(0, 0);
         graphicalShot.setPosition(physicalShot.getPosition().x, physicalShot.getPosition().y);
         drawables.add(graphicalShot);
+        physicalShot.setUpdatableSprite(graphicalShot);
         return true;
     }
 
