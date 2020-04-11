@@ -2,8 +2,11 @@ package main.java.ru.spbstu.gyboml.graphics;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.math.Vector2;
 
-public class GraphicalBlock implements Drawable {
+import ru.spbstu.gyboml.core.physical.Updatable;
+
+public class GraphicalBlock implements Drawable, Updatable {
     private final Sprite intactBlock;
     private final Sprite damagedBlock;
     private Sprite currentSprite;
@@ -55,4 +58,10 @@ public class GraphicalBlock implements Drawable {
     public float getHeight() {
         return currentSprite.getHeight();
     }
+
+    @Override
+    public void setUpdatablePartPosition(Vector2 position) { currentSprite.setPosition(position.x, position.y); }
+
+    @Override
+    public void setUpdatablePartAngle(float angle) { currentSprite.setRotation(angle); }
 }

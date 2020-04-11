@@ -4,9 +4,9 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
 
-import ru.spbstu.gyboml.core.physical.Movable;
+import ru.spbstu.gyboml.core.physical.Updatable;
 
-public class GraphicalCannon implements Drawable, Movable {
+public class GraphicalCannon implements Drawable, Updatable {
     private final Sprite cannon;
 
     public GraphicalCannon(Sprite cannon, float scale) {
@@ -50,8 +50,8 @@ public class GraphicalCannon implements Drawable, Movable {
     }
 
     @Override
-    public void setMovablePartPosition(Vector2 position) { cannon.setPosition(position.x, position.y); }
+    public void setUpdatablePartPosition(Vector2 position) { cannon.setPosition(position.x, position.y); }
 
     @Override
-    public void setMovablePartAngle(float angle) { cannon.setRotation(angle); }
+    public void setUpdatablePartAngle(float angle) { cannon.setRotation(angle); }
 }

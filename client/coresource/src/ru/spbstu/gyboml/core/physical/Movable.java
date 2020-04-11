@@ -1,8 +1,10 @@
 package ru.spbstu.gyboml.core.physical;
 
-import com.badlogic.gdx.math.Vector2;
-
+/**
+ * Interface to implement by physical classes
+ * which has mobile parts that update their positions in graphical classes.
+ */
 public interface Movable {
-   void setMovablePartPosition(Vector2 position);
-   void setMovablePartAngle(float angle);
+    void setUpdatableSprite(Updatable sprite);
+    void updateSprite();
 }

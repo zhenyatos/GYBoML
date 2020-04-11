@@ -1,20 +1,20 @@
 package ru.spbstu.gyboml.core.destructible;
 
-import ru.spbstu.gyboml.core.Constants;
-
 public enum Material {
-    WOOD(Constants.WOOD_DEFENCE_RATIO),
-    STONE(Constants.STONE_DEFENCE_RATIO),
-    GLASS(Constants.GLASS_DEFENCE_RATIO),
-    NO(0.f);
+    WOOD(0.3f, "wood"),
+    STONE(0.5f, "stone");
 
     private float defenceRatio;
+    private String name;
 
-    Material(float defenceRatio) {
+    Material(float defenceRatio, String name) {
         this.defenceRatio = defenceRatio;
+        this.name = name;
     }
 
     public float getDefenceRatio() {
         return defenceRatio;
     }
+
+    public String getName() { return name; }
 }
