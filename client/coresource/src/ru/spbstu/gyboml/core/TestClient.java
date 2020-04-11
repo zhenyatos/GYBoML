@@ -14,6 +14,9 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import ru.spbstu.gyboml.core.destructible.Material;
 import ru.spbstu.gyboml.core.physical.CollisionHandler;
 import ru.spbstu.gyboml.core.physical.PhysicalBackground;
@@ -47,6 +50,7 @@ public class TestClient extends ApplicationAdapter {
     private PhysicalBackground physicalBackground;
     private PhysicalBlock block1;
     private PhysicalBlock block2;
+    private List<Body> dead = new ArrayList<>();
 
     @Override
     public void create () {
@@ -72,6 +76,11 @@ public class TestClient extends ApplicationAdapter {
 
         stepWorld();
         debugRenderer.render(world, camera.combined);
+
+        if (block2 != null && block2.getHitpoints() < 0) {
+            world.destroyBody(block2.getBody());
+            block2 = null;
+        }
     }
 
     @Override
@@ -95,8 +104,6 @@ public class TestClient extends ApplicationAdapter {
 
             world.step(STEP_TIME, VELOCITY_ITERATIONS, POSITION_ITERATIONS);
         }
-
-        System.out.println(block2.getHitpoints());
     }
 
     private void createTestedObjects() {

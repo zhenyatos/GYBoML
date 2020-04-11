@@ -31,6 +31,7 @@ import java.util.List;
 
 import main.java.ru.spbstu.gyboml.graphics.Drawable;
 import main.java.ru.spbstu.gyboml.graphics.GraphicalBackground;
+import main.java.ru.spbstu.gyboml.graphics.GraphicalBasicShot;
 import main.java.ru.spbstu.gyboml.graphics.GraphicalBlock;
 import main.java.ru.spbstu.gyboml.graphics.GraphicalCannon;
 import main.java.ru.spbstu.gyboml.graphics.GraphicalCastle;
@@ -38,7 +39,9 @@ import main.java.ru.spbstu.gyboml.graphics.GraphicalForeground;
 import main.java.ru.spbstu.gyboml.graphics.GraphicalTower;
 import ru.spbstu.gyboml.core.PlayerType;
 import ru.spbstu.gyboml.core.destructible.Material;
+import ru.spbstu.gyboml.core.physical.CollisionHandler;
 import ru.spbstu.gyboml.core.physical.PhysicalBackground;
+import ru.spbstu.gyboml.core.physical.PhysicalBasicShot;
 import ru.spbstu.gyboml.core.physical.PhysicalBlock;
 import ru.spbstu.gyboml.core.physical.PhysicalCastle;
 import ru.spbstu.gyboml.core.physical.PhysicalTower;
@@ -125,6 +128,7 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
 
         debugRenderer = new Box2DDebugRenderer();
         world = new World(new Vector2(gravityAccelerationX, gravityAccelerationY), true);
+        world.setContactListener(new CollisionHandler());
         batch = new SpriteBatch();
 
         backgroundBack  = new TextureAtlas("sprites/background_1.txt");
@@ -449,7 +453,17 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
 
     public boolean keyTyped(char character) {return true;}
 
-    public boolean touchDown(int screenX, int screenY, int pointer, int button) {return true;}
+    /// TODO: Bug with placement
+    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+        PhysicalBasicShot physicalShot = new PhysicalBasicShot(
+                new Location(Gdx.input.getX() * SCALE, Gdx.input.getY() * SCALE, 0, SCALE/3), world);
+        movables.add(physicalShot);
+        GraphicalBasicShot graphicalShot = new GraphicalBasicShot(objects.createSprite("cannonballl"), SCALE/3);
+        graphicalShot.setOrigin(0, 0);
+        graphicalShot.setPosition(physicalShot.getPosition().x, physicalShot.getPosition().y);
+        drawables.add(graphicalShot);
+        return true;
+    }
 
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {return true;}
 

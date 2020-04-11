@@ -30,16 +30,14 @@ public class CollisionHandler implements ContactListener {
             Destructible block = (Destructible) objA;
             Shot shot = (Shot) objB;
             block.handleDamage(shot.generateDamage(block));
+            return;
         }
         if (typeA == Type.SHOT && typeB == Type.BLOCK) {
             Shot shot = (Shot) objA;
             Destructible block = (Destructible) objB;
             block.handleDamage(shot.generateDamage(block));
+            return;
         }
-
-        // Block - Block
-        if (typeA == Type.BLOCK && typeB == Type.BLOCK)
-            System.out.println("Block-Block");
     }
 
     @Override

@@ -21,7 +21,7 @@ public class PhysicalBlock extends Destructible implements Physical, Movable, In
     private Updatable sprite;
 
     public PhysicalBlock(Material material, Location location, World world) {
-        super((int)(BASE_HP * material.getDefenceRatio()), material);
+        super(BASE_HP, material);
         InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(PHYSICS_PATH_OBJECTS);
 
         PhysicsShapeCache physicsShapeCache = new PhysicsShapeCache(is);
@@ -58,5 +58,9 @@ public class PhysicalBlock extends Destructible implements Physical, Movable, In
     @Override
     public Type getType() {
         return Type.BLOCK;
+    }
+
+    public Body getBody() {
+        return body;
     }
 }

@@ -15,8 +15,9 @@ import ru.spbstu.gyboml.core.shot.Shot;
 import ru.spbstu.gyboml.core.util.PhysicsShapeCache;
 
 public class PhysicalBasicShot implements Shot, Physical, Movable, Interactable {
-    private static final int BASE_DAMAGE = 100;
+    private static final int BASE_DAMAGE = 50;
     private static final float DENSITY = 1.f;
+    private static final float RESTITUTION = 0.3f;
 
     private Body body;
     private Updatable sprite;
@@ -26,8 +27,11 @@ public class PhysicalBasicShot implements Shot, Physical, Movable, Interactable 
         PhysicsShapeCache physicsShapeCache = new PhysicsShapeCache(is);
         body = physicsShapeCache.createBody("shot_basic", world, location.scale, location.scale);
         body.setTransform(location.x, location.y, location.angle);
-        Consumer addDensity = (fixture) -> {((Fixture)fixture).setDensity(DENSITY);};
-        body.getFixtureList().forEach(addDensity);
+        Consumer addParams = (fixture) -> {
+            ((Fixture)fixture).setDensity(DENSITY);
+            ((Fixture)fixture).setRestitution(RESTITUTION);
+        };
+        body.getFixtureList().forEach(addParams);
         body.setType(BodyDef.BodyType.DynamicBody);
         body.setUserData(this);
     }
