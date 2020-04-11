@@ -455,8 +455,11 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
 
     /// TODO: Bug with placement
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+        Vector2 pos = physicalTowerP1.getMovablePartPosition();
         PhysicalBasicShot physicalShot = new PhysicalBasicShot(
-                new Location(Gdx.input.getX() * SCALE, Gdx.input.getY() * SCALE, 0, SCALE/3), world);
+                new Location(pos.x + 10.f, pos.y, 0, SCALE/3), world);
+        float angle = physicalTowerP1.getMovablePartAngle();
+        physicalShot.setVelocity(new Vector2(20.f * (float)Math.cos(angle), 20.f * (float)Math.sin(angle)));
         movables.add(physicalShot);
         GraphicalBasicShot graphicalShot = new GraphicalBasicShot(objects.createSprite("cannonballl"), SCALE/3);
         graphicalShot.setOrigin(0, 0);

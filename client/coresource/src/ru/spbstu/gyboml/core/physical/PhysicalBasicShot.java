@@ -41,6 +41,10 @@ public class PhysicalBasicShot implements Shot, Physical, Movable, Interactable 
         return new Damage((int)(BASE_DAMAGE * (1 - destructible.material.getDefenceRatio())));
     }
 
+    public void setVelocity(Vector2 velocity) {
+        body.setLinearVelocity(velocity);
+    }
+
     @Override
     public Vector2 getPosition() { return body.getPosition(); }
 
