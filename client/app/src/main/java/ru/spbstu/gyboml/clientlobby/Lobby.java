@@ -1,26 +1,20 @@
 package main.java.ru.spbstu.gyboml.clientlobby;
 
-import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
-
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.text.InputType;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ListView;
 
 import ru.spbstu.gyboml.R;
+
 
 public class Lobby extends AppCompatActivity {
 
@@ -28,35 +22,42 @@ public class Lobby extends AppCompatActivity {
     private ButtonAdapter sessionsAdapter;
     private RecyclerView.LayoutManager layoutManager;
     private Button createNewSessionButton;
-    private String sessionName;
+    private Button readyButton;
+    private Button exitButton;
+    private String chosenSessionName;
+    private int chosenSessionID;
+
+    private PlayerStatus playerStatus = PlayerStatus.FREE;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lobby);
+
         gameSessionsView = findViewById(R.id.gameSessions);
         createNewSessionButton = findViewById(R.id.createSession);
+        readyButton = findViewById(R.id.ready);
+        exitButton = findViewById(R.id.exit);
 
+        readyButton.setOnClickListener(getReadyButtonListener());
+        exitButton.setOnClickListener(getExitButtonListener());
         createNewSessionButton.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
-                    Context currentContext = createNewSessionButton.getContext();
                     createDialogueWindow();
                 }
         });
+
         layoutManager = new LinearLayoutManager(this);
         gameSessionsView.setLayoutManager(layoutManager);
 
         sessionsAdapter = new ButtonAdapter();
-        sessionsAdapter.add("game_1");
-        sessionsAdapter.add("game_2");
+        sessionsAdapter.setOnClickListener(getSessionButtonListener());
+        sessionsAdapter.add(0, "game_1"); //temporary
+        sessionsAdapter.add(0, "game_2"); //temporary
         gameSessionsView.setAdapter(sessionsAdapter);
 
 
-    }
-    private Button createSessionButton() {
-        Button sessionButton = new Button(this);
-        sessionButton.setText("session");
-        return sessionButton;
     }
 
     private void createDialogueWindow() {
@@ -70,8 +71,12 @@ public class Lobby extends AppCompatActivity {
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                sessionName = input.getText().toString();
-                //Send message to server
+                chosenSessionName = input.getText().toString();
+                //Send message to server, retrieve session's ID
+                playerStatus = PlayerStatus.SESSIONCREATED;
+                hideNewSessionButton();
+                sessionsAdapter.add(0, chosenSessionName); //temporary
+                sessionsAdapter.disableTouch();
             }
         });
 
@@ -83,6 +88,75 @@ public class Lobby extends AppCompatActivity {
         });
 
         builder.show();
+    }
+
+    private void hideNewSessionButton() {
+        createNewSessionButton.setVisibility(View.INVISIBLE);
+      //  gameSessionsView.setVisibility(View.INVISIBLE);
+        readyButton.setVisibility(View.VISIBLE);
+        exitButton.setVisibility(View.VISIBLE);
+    }
+
+    private void showNewSessionButton() {
+        createNewSessionButton.setVisibility(View.VISIBLE);
+      //  gameSessionsView.setVisibility(View.VISIBLE);
+        readyButton.setVisibility(View.INVISIBLE);
+        exitButton.setVisibility(View.INVISIBLE);
+    }
+
+    private enum PlayerStatus {
+        FREE,
+        SESSIONCREATED,
+        SESSIONJOINED
+    }
+
+    private View.OnClickListener getSessionButtonListener() {
+        return new View.OnClickListener() {
+            public void onClick(View v) {
+                //Send message to server
+                playerStatus = PlayerStatus.SESSIONJOINED;
+                sessionsAdapter.disableTouch();
+                chosenSessionID = v.getId();
+                hideNewSessionButton();
+            }
+        };
+    }
+
+    private View.OnClickListener getExitButtonListener() {
+        return new View.OnClickListener() {
+            public void onClick(View v) {
+                switch(playerStatus) {
+                    case SESSIONJOINED:
+                        //tell server to remove player from session
+                        break;
+                    case SESSIONCREATED:
+                        //tell server to destroy session
+                        sessionsAdapter.remove(chosenSessionID); //temporary
+                        break;
+                }
+                playerStatus = PlayerStatus.FREE;
+                sessionsAdapter.enableTouch();
+                showNewSessionButton();
+            }
+        };
+    }
+
+    private View.OnClickListener getReadyButtonListener() {
+        return new View.OnClickListener() {
+            public void onClick(View v) {
+                //send message to server
+            }
+        };
+    }
+
+    void JoinSession(int ID) {
+        hideNewSessionButton();
+        playerStatus = PlayerStatus.SESSIONJOINED;
+    }
+
+    void leaveSession() {
+        showNewSessionButton();
+        playerStatus = PlayerStatus.FREE;
     }
 
 }
