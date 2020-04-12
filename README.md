@@ -19,7 +19,7 @@ A two-player game for Android. The goal is the destruction of your opponent's ba
 
 # Системные требования
 1. Целевая платформа - Android
-2. Версия Anroid - 10.0 и выше
+2. Версия Anroid - 7.0 и выше
 3. Минимальная оперативная память - 2 Гб
 4. Минимальное разрешение экрана - 480 х 800
 
