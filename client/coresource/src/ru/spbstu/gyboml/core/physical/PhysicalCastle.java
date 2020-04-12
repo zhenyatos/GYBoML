@@ -13,7 +13,7 @@ import java.io.InputStream;
 
 import ru.spbstu.gyboml.core.PlayerType;
 
-public class PhysicalCastle extends Destructible implements Physical {
+public class PhysicalCastle extends Destructible implements Physical, Interactable {
     private Body front;
     private Body tower;
     private PlayerType playerType;
@@ -35,10 +35,23 @@ public class PhysicalCastle extends Destructible implements Physical {
         // Castle doesn't move => static components
         front.setType(BodyDef.BodyType.StaticBody);
         tower.setType(BodyDef.BodyType.StaticBody);
+
+        front.setUserData(this);
+        tower.setUserData(this);
+    }
+
+    Body getFront() {
+        return front;
     }
 
     public PlayerType getPlayerType() { return playerType; }
 
     @Override
     public Vector2 getPosition() { return front.getPosition(); }
+
+
+    @Override
+    public Type getType() {
+        return Type.CASTLE;
+    }
 }
