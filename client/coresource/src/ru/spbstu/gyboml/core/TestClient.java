@@ -77,7 +77,7 @@ public class TestClient extends ApplicationAdapter {
         stepWorld();
         debugRenderer.render(world, camera.combined);
 
-        if (block2 != null && block2.getHitpoints() < 0) {
+        if (block2 != null && block2.getHP() < 0) {
             world.destroyBody(block2.getBody());
             block2 = null;
         }

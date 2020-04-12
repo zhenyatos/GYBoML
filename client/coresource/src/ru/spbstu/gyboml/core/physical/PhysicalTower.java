@@ -17,6 +17,7 @@ public class PhysicalTower implements Physical, Movable {
     private Body tower;
     private Body cannon;
     private RevoluteJoint joint;
+    private Vector2 jointPosition;
 
     private Updatable sprite = null;
 
@@ -39,17 +40,17 @@ public class PhysicalTower implements Physical, Movable {
         RevoluteJointDef revoluteJointDef = new RevoluteJointDef();
         if (playerType == PlayerType.FIRST_PLAYER) {
             cannon.setTransform(location.x + (40.f * location.scale), location.y + (800.f * location.scale), location.angle);
-            Vector2 jointPos = new Vector2(cannon.getPosition().x + 80.f * location.scale, cannon.getPosition().y + 45.f * location.scale);
-            revoluteJointDef.initialize(cannon, tower, jointPos);
-            revoluteJointDef.motorSpeed = -(float)Math.PI;
+            jointPosition = new Vector2(cannon.getPosition().x + 80.f * location.scale, cannon.getPosition().y + 45.f * location.scale);
+            revoluteJointDef.initialize(cannon, tower, jointPosition);
+            revoluteJointDef.motorSpeed = -(float)Math.PI / 2;
             revoluteJointDef.upperAngle = 0.0f;
             revoluteJointDef.lowerAngle = -(float)Math.PI / 3;
         }
         else {
             cannon.setTransform(location.x - (40.f * location.scale), location.y + (800.f * location.scale), location.angle);
-            Vector2 jointPos = new Vector2(cannon.getPosition().x + 140.f * location.scale, cannon.getPosition().y + 45.f * location.scale);
-            revoluteJointDef.initialize(cannon, tower, jointPos);
-            revoluteJointDef.motorSpeed = (float)Math.PI;
+            jointPosition = new Vector2(cannon.getPosition().x + 140.f * location.scale, cannon.getPosition().y + 45.f * location.scale);
+            revoluteJointDef.initialize(cannon, tower, jointPosition);
+            revoluteJointDef.motorSpeed = (float)Math.PI / 2;
             revoluteJointDef.upperAngle = (float)Math.PI / 3;
             revoluteJointDef.lowerAngle = 0.0f;
         }
@@ -61,6 +62,8 @@ public class PhysicalTower implements Physical, Movable {
     }
 
     public RevoluteJoint getJoint() { return joint; }
+
+    public Vector2 getJointPosition() { return jointPosition; }
 
     @Override
     public Vector2 getPosition() { return tower.getPosition(); }

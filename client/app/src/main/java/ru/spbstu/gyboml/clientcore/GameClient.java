@@ -2,7 +2,6 @@ package main.java.ru.spbstu.gyboml.clientcore;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.GL20;
@@ -21,8 +20,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
-
-import org.lwjgl.input.Keyboard;
 
 import main.java.ru.spbstu.gyboml.clientnet.Controller;
 
@@ -44,7 +41,6 @@ import main.java.ru.spbstu.gyboml.graphics.GraphicalTower;
 import ru.spbstu.gyboml.core.PlayerType;
 import ru.spbstu.gyboml.core.destructible.Material;
 import ru.spbstu.gyboml.core.physical.CollisionHandler;
-import ru.spbstu.gyboml.core.physical.Physical;
 import ru.spbstu.gyboml.core.physical.PhysicalBackground;
 import ru.spbstu.gyboml.core.physical.PhysicalBasicShot;
 import ru.spbstu.gyboml.core.physical.PhysicalBlock;
@@ -173,7 +169,6 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
         movables = new ArrayList<>();
         drawables = new ArrayList<>();
 
-        // all values are calculated manually for same placement for both players
         final float castleIndentX   = 860;  // manually set value for castle placement on platform
         final float towerIndentX    = 450;  // manually set value for tower  placement on platform
         final float platformIndentY = 364;  // y position of platforms for objects from background.xml
@@ -325,6 +320,65 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
         }
     }
 
+    /** This function sets up the UI. The name speaks for itself, really.
+     * Creates the UI table and creates the layout of the UI elements.
+     */
+    private void setUpUI() {
+        final float buttonWidth  = 200;
+        final float buttonHeight = 100;
+        table = new Table();
+        table.setBounds(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        stageForUI.addActor(table);
+
+        Button endTurnButton = new TextButton("End Turn", new Skin(Gdx.files.internal("skin/flat-earth-ui.json")), "default");
+        endTurnButton.addListener(new InputListener() {
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                //toServerMessageSender.nextTurnMessage();
+                PassTurnGenerator generator = new PassTurnGenerator();
+                generator.generate(null, controller.getServerAddress(), controller.getServerPort(), controller);
+            }
+
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                return true;
+            }
+        });
+        table.bottom().left();
+        table.add(endTurnButton).width(buttonWidth).height(buttonHeight);
+        table.getCell(endTurnButton).spaceRight(Gdx.graphics.getWidth() - 2 * buttonWidth);
+
+        Button fireButton = new TextButton("Fire", new Skin(Gdx.files.internal("skin/flat-earth-ui.json")), "default");
+        fireButton.addListener(new InputListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                return true;
+            }
+
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                Vector2 jointPosition = physicalTowerP1.getJointPosition();
+                float barrelLength = objects.findRegion("cannon_p1").originalWidth * SCALE - (jointPosition.x - physicalTowerP1.getMovablePartPosition().x);
+                float angle = physicalTowerP1.getMovablePartAngle();
+                float cos = (float)Math.cos(angle);
+                float sin = (float)Math.sin(angle);
+                // TODO: still needs fix
+                float shotX = jointPosition.x + barrelLength * cos - objects.findRegion("shot_basic").originalWidth  / 2f * (SCALE / 4.5f);
+                float shotY = jointPosition.y + barrelLength * sin - objects.findRegion("shot_basic").originalHeight / 2f * (SCALE / 4.5f);
+                Location location = new Location(shotX, shotY, 0, SCALE / 4.5f);
+                PhysicalBasicShot physicalShot = new PhysicalBasicShot(location, world);
+                physicalShot.setVelocity(new Vector2(20.f * cos, 20.f * sin));
+                movables.add(physicalShot);
+                GraphicalBasicShot graphicalShot = new GraphicalBasicShot(objects.createSprite("shot_basic"), SCALE / 4.5f);
+                graphicalShot.setOrigin(0, 0);
+                graphicalShot.setPosition(physicalShot.getPosition().x, physicalShot.getPosition().y);
+                drawables.add(graphicalShot);
+                physicalShot.setUpdatableSprite(graphicalShot);
+            }
+        });
+        table.add(fireButton).width(buttonWidth).height(buttonHeight);
+    }
+
     private void stepWorld() {
         float delta = Gdx.graphics.getDeltaTime();
 
@@ -346,7 +400,23 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
             if ((physicalTowerP2.getJoint().getJointAngle() >= physicalTowerP2.getJoint().getUpperLimit() && physicalTowerP2.getJoint().getMotorSpeed() > 0)||
                 (physicalTowerP2.getJoint().getJointAngle() <= physicalTowerP2.getJoint().getLowerLimit() && physicalTowerP2.getJoint().getMotorSpeed() < 0))
                 physicalTowerP2.getJoint().setMotorSpeed(-physicalTowerP2.getJoint().getMotorSpeed());
+
+            removeDeadBlocks();
         }
+    }
+
+    private void removeDeadBlocks() {
+        List<PhysicalBlock> toRemove = new ArrayList<>();
+        for (PhysicalBlock block : blocks.keySet()) {
+            if (block.getHP() <= 0) {
+                world.destroyBody(block.getBody());
+                movables.remove(block);
+                drawables.remove(blocks.get(block));
+                toRemove.add(block);
+            }
+        }
+        for (PhysicalBlock block : toRemove)
+            blocks.remove(block);
     }
 
     /**
@@ -358,8 +428,6 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
         Gdx.gl.glClearColor(1, 0, 0, 0);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         stepWorld();
-
-        removeDeadBlocks();
 
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
@@ -430,80 +498,27 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
         stageForUI.getViewport().update(width, height, false);
     }
 
-    /** This function sets up the UI. The name speaks for itself, really.
-     * Creates the UI table and creates the layout of the UI elements.
-     */
-    private void setUpUI() {
-        table = new Table();
-        table.setFillParent(true);
-        stageForUI.addActor(table);
-
-        //table.setDebug(true);
-        Skin skin = new Skin(Gdx.files.internal("skin/flat-earth-ui.json"));
-        Button endTurnButton = new TextButton("End Turn", skin, "default");
-        endTurnButton.addListener(new InputListener() {
-            @Override
-            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                //toServerMessageSender.nextTurnMessage();
-                PassTurnGenerator generator = new PassTurnGenerator();
-                generator.generate(null, controller.getServerAddress(), controller.getServerPort(), controller);
-            }
-
-            @Override
-            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                return true;
-            }
-        });
-        table.add(endTurnButton).width(200).height(100);
-        table.right().bottom();
-    }
-
     /** Called when key is pressed, fires with P1 cannon
      * @param keycode key code (one of the Input.Keys)
      */
-    public boolean keyDown(int keycode) {
-        if (keycode == Input.Keys.SPACE) {
-            Vector2 pos = physicalTowerP1.getMovablePartPosition();
-            float angle = physicalTowerP1.getMovablePartAngle();
-            PhysicalBasicShot physicalShot = new PhysicalBasicShot(
-                    new Location(pos.x + 6.f * (float)Math.cos(angle),
-                            pos.y + 6.f * (float)Math.sin(angle),
-                            0, SCALE / 4.5f),
-                    world);
-            physicalShot.setVelocity(new Vector2(20.f * (float) Math.cos(angle), 20.f * (float) Math.sin(angle)));
-            movables.add(physicalShot);
-            GraphicalBasicShot graphicalShot = new GraphicalBasicShot(objects.createSprite("cannonballl"), SCALE / 4.5f);
-            graphicalShot.setOrigin(0, 0);
-            graphicalShot.setPosition(physicalShot.getPosition().x, physicalShot.getPosition().y);
-            drawables.add(graphicalShot);
-            physicalShot.setUpdatableSprite(graphicalShot);
-        }
-        return true;
-    }
+    @Override
+    public boolean keyDown(int keycode) { return true; }
 
+    @Override
     public boolean keyUp(int keycode) {return true;}
 
+    @Override
     public boolean keyTyped(char character) {return true;}
 
+    @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {return true;}
 
+    @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {return true;}
 
+    @Override
     public boolean mouseMoved(int screenX, int screenY) {return true;}
 
+    @Override
     public boolean scrolled(int amount) { return true;}
-
-    private void removeDeadBlocks() {
-        List<PhysicalBlock> toRemove = new ArrayList<>();
-        for (PhysicalBlock block : blocks.keySet()) {
-            if (block.getHitpoints() < 0) {
-                world.destroyBody(block.getBody());
-                movables.remove(block);
-                drawables.remove(blocks.get(block));
-                toRemove.add(block);
-            }
-        }
-        for (PhysicalBlock block : toRemove)
-            blocks.remove(block);
-    }
 }

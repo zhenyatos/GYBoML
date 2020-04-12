@@ -8,19 +8,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Destructible {
-
-    private int hitpoints;
-    private List<Effect> activeEffects;
     public final Material material;
+    protected final int initialHP;
+    private int HP;
+    private List<Effect> activeEffects;
 
-    public Destructible(int hitpoints, Material material) {
-        this.hitpoints = hitpoints;
-        this.material = material;
-        activeEffects = new ArrayList<>();
+    public Destructible(int HP, Material material) {
+        this.material  = material;
+        this.initialHP = HP;
+        this.HP        = HP;
+        activeEffects  = new ArrayList<>();
     }
 
     public void handleDamage(@NotNull Damage damage) {
-        hitpoints -= damage.value;
+        HP -= damage.value;
         activeEffects.addAll(damage.getEffects());
     }
 
@@ -30,7 +31,7 @@ public class Destructible {
         activeEffects.removeIf(effect -> !effect.isActive());
     }
 
-    public int getHitpoints() {
-        return hitpoints;
+    public int getHP() {
+        return HP;
     }
 }

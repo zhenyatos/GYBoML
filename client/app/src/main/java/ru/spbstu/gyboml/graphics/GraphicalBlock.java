@@ -2,6 +2,7 @@ package main.java.ru.spbstu.gyboml.graphics;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 
 import ru.spbstu.gyboml.core.physical.Updatable;
@@ -14,9 +15,8 @@ public class GraphicalBlock implements Drawable, Updatable {
     public GraphicalBlock(Sprite intactBlock, Sprite damagedBlock, float scale) {
         intactBlock.setSize(intactBlock.getWidth() * scale, intactBlock.getHeight() * scale);
         damagedBlock.setSize(damagedBlock.getWidth() * scale, damagedBlock.getHeight() * scale);
-        this.intactBlock = intactBlock;
-        this.damagedBlock = damagedBlock;
-
+        this.intactBlock   = intactBlock;
+        this.damagedBlock  = damagedBlock;
         this.currentSprite = intactBlock;
     }
 
@@ -60,8 +60,23 @@ public class GraphicalBlock implements Drawable, Updatable {
     }
 
     @Override
-    public void setUpdatablePartPosition(Vector2 position) { currentSprite.setPosition(position.x, position.y); }
+    public void setUpdatablePartPosition(Vector2 position) {
+        // change both to exclude further glitches
+        intactBlock.setPosition(position.x, position.y);
+        damagedBlock.setPosition(position.x, position.y);
+    }
 
     @Override
-    public void setUpdatablePartAngle(float angle) { currentSprite.setRotation(angle); }
+    public void setUpdatablePartAngle(float angle) {
+        // change both to exclude further glitches
+        intactBlock.setRotation(angle);
+        damagedBlock.setRotation(angle);
+    }
+
+    @Override
+    public void changeSprite() {
+        if (currentSprite == intactBlock) {
+            currentSprite = damagedBlock;
+        }
+    }
 }

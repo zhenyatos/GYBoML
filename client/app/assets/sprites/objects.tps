@@ -181,26 +181,6 @@
         </struct>
         <key>individualSpriteSettings</key>
         <map type="IndividualSpriteSettingsMap">
-            <key type="filename">../castle_p1_back.png</key>
-            <key type="filename">../castle_p1_front.png</key>
-            <key type="filename">../castle_p1_tower.png</key>
-            <key type="filename">../castle_p2_back.png</key>
-            <key type="filename">../castle_p2_front.png</key>
-            <key type="filename">../castle_p2_tower.png</key>
-            <struct type="IndividualSpriteSettings">
-                <key>pivotPoint</key>
-                <point_f>0.5,0.5</point_f>
-                <key>spriteScale</key>
-                <double>1</double>
-                <key>scale9Enabled</key>
-                <false/>
-                <key>scale9Borders</key>
-                <rect>60,60,120,120</rect>
-                <key>scale9Paddings</key>
-                <rect>60,60,120,120</rect>
-                <key>scale9FromFile</key>
-                <false/>
-            </struct>
             <key type="filename">../images/block_wood.png</key>
             <key type="filename">../images/block_wood_damaged.png</key>
             <struct type="IndividualSpriteSettings">
@@ -233,7 +213,27 @@
                 <key>scale9FromFile</key>
                 <false/>
             </struct>
-            <key type="filename">../images/cannonballl.png</key>
+            <key type="filename">../images/castle_p1_back.png</key>
+            <key type="filename">../images/castle_p1_front.png</key>
+            <key type="filename">../images/castle_p1_tower.png</key>
+            <key type="filename">../images/castle_p2_back.png</key>
+            <key type="filename">../images/castle_p2_front.png</key>
+            <key type="filename">../images/castle_p2_tower.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>60,60,120,120</rect>
+                <key>scale9Paddings</key>
+                <rect>60,60,120,120</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">../images/shot_basic.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
                 <point_f>0.5,0.5</point_f>
@@ -269,17 +269,17 @@
         <array>
             <filename>../images/cannon_p1.png</filename>
             <filename>../images/cannon_p2.png</filename>
-            <filename>../images/cannonballl.png</filename>
             <filename>../images/tower_p1.png</filename>
             <filename>../images/tower_p2.png</filename>
-            <filename>../castle_p1_back.png</filename>
-            <filename>../castle_p1_front.png</filename>
-            <filename>../castle_p1_tower.png</filename>
-            <filename>../castle_p2_back.png</filename>
-            <filename>../castle_p2_front.png</filename>
-            <filename>../castle_p2_tower.png</filename>
             <filename>../images/block_wood.png</filename>
             <filename>../images/block_wood_damaged.png</filename>
+            <filename>../images/shot_basic.png</filename>
+            <filename>../images/castle_p1_front.png</filename>
+            <filename>../images/castle_p2_front.png</filename>
+            <filename>../images/castle_p1_back.png</filename>
+            <filename>../images/castle_p2_back.png</filename>
+            <filename>../images/castle_p1_tower.png</filename>
+            <filename>../images/castle_p2_tower.png</filename>
         </array>
         <key>ignoreFileList</key>
         <array/>

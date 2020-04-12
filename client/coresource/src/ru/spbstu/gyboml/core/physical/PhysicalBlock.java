@@ -3,11 +3,9 @@ package ru.spbstu.gyboml.core.physical;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.World;
 
 import java.io.InputStream;
-import java.util.function.Consumer;
 
 import ru.spbstu.gyboml.core.destructible.Destructible;
 import ru.spbstu.gyboml.core.destructible.Material;
@@ -49,6 +47,9 @@ public class PhysicalBlock extends Destructible implements Physical, Movable, In
         if (this.sprite != null) {
             sprite.setUpdatablePartPosition(body.getPosition());
             sprite.setUpdatablePartAngle((float) Math.toDegrees(body.getAngle()));
+
+            if (this.getHP() < initialHP / 2)
+                sprite.changeSprite();
         }
     }
 
