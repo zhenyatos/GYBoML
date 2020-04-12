@@ -14,12 +14,12 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Button;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+
+import android.view.View;
+import android.widget.Button;
+import android.widget.FrameLayout;
 
 import main.java.ru.spbstu.gyboml.clientnet.Controller;
 
@@ -38,6 +38,7 @@ import main.java.ru.spbstu.gyboml.graphics.GraphicalCannon;
 import main.java.ru.spbstu.gyboml.graphics.GraphicalCastle;
 import main.java.ru.spbstu.gyboml.graphics.GraphicalForeground;
 import main.java.ru.spbstu.gyboml.graphics.GraphicalTower;
+import ru.spbstu.gyboml.R;
 import ru.spbstu.gyboml.core.PlayerType;
 import ru.spbstu.gyboml.core.destructible.Material;
 import ru.spbstu.gyboml.core.physical.CollisionHandler;
@@ -103,7 +104,6 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
     private OrthographicCamera camera;
     private ExtendViewport viewport;
     private Stage stageForUI;
-    private Table table;
     private World world;
 
     // connection
@@ -111,6 +111,14 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
     private final String serverName = "34.91.65.96";
     private final int serverPort = 4445;
     private MessageSender toServerMessageSender;
+
+    private View uiView;
+
+    public GameClient(View uiView) {
+        this.uiView = uiView;
+    }
+
+    public GameClient() {}
 
     /**
      * This is the method that is called on client's creation.
@@ -143,6 +151,7 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
         viewport = new ExtendViewport(camera.viewportWidth, camera.viewportHeight, camera);
         camera.position.set(camera.viewportWidth / 2, camera.viewportHeight / 2, 0);
         camera.update();
+
     
         // create game net controller
         try {
@@ -324,13 +333,50 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
      * Creates the UI table and creates the layout of the UI elements.
      */
     private void setUpUI() {
+
+        Button endTurnButton = uiView.findViewById(R.id.endTurnButton);
+
+        endTurnButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                PassTurnGenerator generator = new PassTurnGenerator();
+                generator.generate(null, controller.getServerAddress(), controller.getServerPort(), controller);
+            }
+        });
+
+        Button fireButton = uiView.findViewById(R.id.fireButton);
+
+        fireButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            synchronized public void onClick(View v) {
+                Vector2 jointPosition = physicalTowerP1.getJointPosition();
+                float barrelLength = objects.findRegion("cannon_p1").originalWidth * SCALE - (jointPosition.x - physicalTowerP1.getMovablePartPosition().x);
+                float angle = physicalTowerP1.getMovablePartAngle();
+                float cos = (float)Math.cos(angle);
+                float sin = (float)Math.sin(angle);
+                // TODO: still needs fix
+                float shotX = jointPosition.x + barrelLength * cos - objects.findRegion("shot_basic").originalWidth  / 2f * (SCALE / 4.5f);
+                float shotY = jointPosition.y + barrelLength * sin - objects.findRegion("shot_basic").originalHeight / 2f * (SCALE / 4.5f);
+                Location location = new Location(shotX, shotY, 0, SCALE / 4.5f);
+                PhysicalBasicShot physicalShot = new PhysicalBasicShot(location, world);
+                physicalShot.setVelocity(new Vector2(20.f * cos, 20.f * sin));
+                movables.add(physicalShot);
+                GraphicalBasicShot graphicalShot = new GraphicalBasicShot(objects.createSprite("shot_basic"), SCALE / 4.5f);
+                graphicalShot.setOrigin(0, 0);
+                graphicalShot.setPosition(physicalShot.getPosition().x, physicalShot.getPosition().y);
+                drawables.add(graphicalShot);
+                physicalShot.setUpdatableSprite(graphicalShot);
+            }
+        });
+
+        /*
         final float buttonWidth  = 200;
         final float buttonHeight = 100;
         table = new Table();
         table.setBounds(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         stageForUI.addActor(table);
 
-        Button endTurnButton = new TextButton("End Turn", new Skin(Gdx.files.internal("skin/flat-earth-ui.json")), "default");
+        com.badlogic.gdx.scenes.scene2d.ui.Button endTurnButton = new TextButton("End Turn", new Skin(Gdx.files.internal("skin/flat-earth-ui.json")), "default");
         endTurnButton.addListener(new InputListener() {
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
@@ -348,7 +394,7 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
         table.add(endTurnButton).width(buttonWidth).height(buttonHeight);
         table.getCell(endTurnButton).spaceRight(Gdx.graphics.getWidth() - 2 * buttonWidth);
 
-        Button fireButton = new TextButton("Fire", new Skin(Gdx.files.internal("skin/flat-earth-ui.json")), "default");
+        com.badlogic.gdx.scenes.scene2d.ui.Button fireButton = new TextButton("Fire", new Skin(Gdx.files.internal("skin/flat-earth-ui.json")), "default");
         fireButton.addListener(new InputListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
@@ -377,6 +423,7 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
             }
         });
         table.add(fireButton).width(buttonWidth).height(buttonHeight);
+        */
     }
 
     private void stepWorld() {
