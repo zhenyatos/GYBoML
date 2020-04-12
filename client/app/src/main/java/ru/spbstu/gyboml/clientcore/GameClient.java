@@ -7,10 +7,7 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
-import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -25,29 +22,7 @@ import main.java.ru.spbstu.gyboml.clientnet.Controller;
 
 import main.java.ru.spbstu.gyboml.clientnet.generating.ConnectionGenerator;
 import main.java.ru.spbstu.gyboml.clientnet.generating.PassTurnGenerator;
-// imported from core
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
-import main.java.ru.spbstu.gyboml.graphics.Drawable;
-import main.java.ru.spbstu.gyboml.graphics.GraphicalBackground;
-import main.java.ru.spbstu.gyboml.graphics.GraphicalBasicShot;
-import main.java.ru.spbstu.gyboml.graphics.GraphicalBlock;
-import main.java.ru.spbstu.gyboml.graphics.GraphicalCannon;
-import main.java.ru.spbstu.gyboml.graphics.GraphicalCastle;
-import main.java.ru.spbstu.gyboml.graphics.GraphicalForeground;
-import main.java.ru.spbstu.gyboml.graphics.GraphicalTower;
 import ru.spbstu.gyboml.core.PlayerType;
-import ru.spbstu.gyboml.core.destructible.Material;
-import ru.spbstu.gyboml.core.physical.CollisionHandler;
-import ru.spbstu.gyboml.core.physical.PhysicalBackground;
-import ru.spbstu.gyboml.core.physical.PhysicalBasicShot;
-import ru.spbstu.gyboml.core.physical.PhysicalBlock;
-import ru.spbstu.gyboml.core.physical.PhysicalCastle;
-import ru.spbstu.gyboml.core.physical.PhysicalTower;
-import ru.spbstu.gyboml.core.physical.Location;
-import ru.spbstu.gyboml.core.physical.Movable;
 
 /**
  * The GameClient class handles rendering, camera movement,

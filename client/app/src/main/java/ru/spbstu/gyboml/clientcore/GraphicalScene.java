@@ -92,17 +92,18 @@ class GraphicalScene {
 
     void generateGraphicalTower(PhysicalTower physicalTower) {
         String playerName = (physicalTower.getPlayerType() == PlayerType.FIRST_PLAYER) ? "_p1" : "_p2";
-        GraphicalTower graphicalTower = new GraphicalTower(objects.createSprite("tower" + playerName), SCALE);
-        graphicalTower.setOrigin(0, 0);
-        graphicalTower.setPosition(physicalTower.getPosition().x, physicalTower.getPosition().y);
-        drawables.add(graphicalTower);
-
+        
         GraphicalCannon graphicalCannon = new GraphicalCannon(objects.createSprite("cannon" + playerName), SCALE);
         graphicalCannon.setOrigin(0, 0);
         graphicalCannon.setPosition(physicalTower.getMovablePartPosition().x, physicalTower.getMovablePartPosition().y);
         graphicalCannon.setRotation(physicalTower.getMovablePartAngle());
         drawables.add(graphicalCannon);
         physicalTower.setUpdatableSprite(graphicalCannon);
+
+        GraphicalTower graphicalTower = new GraphicalTower(objects.createSprite("tower" + playerName), SCALE);
+        graphicalTower.setOrigin(0, 0);
+        graphicalTower.setPosition(physicalTower.getPosition().x, physicalTower.getPosition().y);
+        drawables.add(graphicalTower);
     }
 
     void generateGraphicalForeground(PhysicalBackground physicalBackground) {
@@ -140,6 +141,7 @@ class GraphicalScene {
 
     void removeBlock(PhysicalBlock block) {
         drawables.remove(blocks.get(block));
+        blocks.remove(block);
     }
 
     float getScale() { return SCALE; }
@@ -147,8 +149,6 @@ class GraphicalScene {
     float getBlockScale() { return BLOCKS_SCALE; }
 
     float getShotsScale() { return SHOTS_SCALE; }
-
-    float getCanvasWidth() { return canvasWidth; }
 
     float getResolutionWidth() { return resolutionWidth; }
 
