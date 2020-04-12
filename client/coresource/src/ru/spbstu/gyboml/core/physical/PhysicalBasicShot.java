@@ -27,14 +27,19 @@ public class PhysicalBasicShot implements Shot, Physical, Movable, Interactable 
         body.setUserData(this);
     }
 
+    public void setVelocity(Vector2 velocity) {
+        body.setLinearVelocity(velocity);
+    }
+
+    public Vector2 getVelocity() { return body.getLinearVelocity(); }
+
+    public Body getBody() { return body; }
+
     @Override
     public Damage generateDamage(Destructible destructible) {
         return new Damage((int)(BASE_DAMAGE * (1 - destructible.material.getDefenceRatio())));
     }
 
-    public void setVelocity(Vector2 velocity) {
-        body.setLinearVelocity(velocity);
-    }
 
     @Override
     public Vector2 getPosition() { return body.getPosition(); }

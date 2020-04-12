@@ -34,6 +34,9 @@ class PhysicalScene {
     private PhysicalTower physicalTowerP2;
     private ArrayList<PhysicalBlock> physicalBlocksP1;
     private ArrayList<PhysicalBlock> physicalBlocksP2;
+    private ArrayList<PhysicalBasicShot> physicalBasicShots;
+    private List<PhysicalBlock> blocksToRemove;
+    private List<PhysicalBasicShot> shotsToRemove;
 
     // physics
     private static final float gravityAccelerationX = 0f;
@@ -57,6 +60,11 @@ class PhysicalScene {
         world.setContactListener(new CollisionHandler());
 
         movables = new ArrayList<>();
+        physicalBlocksP1 = new ArrayList<>();
+        physicalBlocksP2 = new ArrayList<>();
+        physicalBasicShots = new ArrayList<>();
+        blocksToRemove = new ArrayList<>();
+        shotsToRemove = new ArrayList<>();
 
         final float castleIndentX   = 860;  // manually set value for castle placement on platform
         final float towerIndentX    = 450;  // manually set value for tower  placement on platform
@@ -109,9 +117,6 @@ class PhysicalScene {
         float blockP2X = castleP2X -  60 * SCALE - blockTextureWidth * BLOCKS_SCALE;
         float blockP2Y = castleP2Y + 240 * SCALE;
 
-        physicalBlocksP1 = new ArrayList<>();
-        physicalBlocksP2 = new ArrayList<>();
-
         // 1st row
         physicalBlocksP1.add(new PhysicalBlock(Material.WOOD, new Location(blockP1X, blockP1Y, 0, BLOCKS_SCALE), world));
         physicalBlocksP2.add(new PhysicalBlock(Material.WOOD, new Location(blockP2X, blockP2Y, 0, BLOCKS_SCALE), world));
@@ -151,6 +156,7 @@ class PhysicalScene {
             PhysicalBasicShot physicalShot = new PhysicalBasicShot(location, world);
             physicalShot.setVelocity(new Vector2(20.f * cos, 20.f * sin));
             movables.add(physicalShot);
+            physicalBasicShots.add(physicalShot);
             graphicalScene.generateGraphicalShot(physicalShot);
         }
         // temp
@@ -166,6 +172,7 @@ class PhysicalScene {
             PhysicalBasicShot physicalShot = new PhysicalBasicShot(location, world);
             physicalShot.setVelocity(new Vector2(-20.f * cos, -20.f * sin));
             movables.add(physicalShot);
+            physicalBasicShots.add(physicalShot);
             graphicalScene.generateGraphicalShot(physicalShot);
         }
     }
@@ -193,31 +200,42 @@ class PhysicalScene {
                 (physicalTowerP2.getJoint().getJointAngle() <= physicalTowerP2.getJoint().getLowerLimit() && physicalTowerP2.getJoint().getMotorSpeed() < 0))
                  physicalTowerP2.getJoint().setMotorSpeed(-physicalTowerP2.getJoint().getMotorSpeed());
 
-            removeDeadBlocks();
+            removeDeadBodies();
         }
     }
 
-    private void removeDeadBlocks() {
-        List<PhysicalBlock> toRemove = new ArrayList<>();
+    private void removeDeadBodies() {
+        blocksToRemove.clear();
         for (PhysicalBlock block : physicalBlocksP1) {
             if (block.getHP() <= 0) {
-                toRemove.add(block);
+                blocksToRemove.add(block);
             }
         }
         for (PhysicalBlock block : physicalBlocksP2) {
             if (block.getHP() <= 0) {
-                toRemove.add(block);
+                blocksToRemove.add(block);
             }
         }
 
-        for (PhysicalBlock block : toRemove) {
+        for (PhysicalBlock block : blocksToRemove) {
             world.destroyBody(block.getBody());
             movables.remove(block);
             graphicalScene.removeBlock(block);
-            //if (physicalBlocksP1.contains(block))
             physicalBlocksP1.remove(block);
-            //if (physicalBlocksP2.contains(block))
             physicalBlocksP2.remove(block);
+        }
+
+        shotsToRemove.clear();
+        for (PhysicalBasicShot shot : physicalBasicShots) {
+            if (shot.getVelocity().isZero(0.1f))
+                shotsToRemove.add(shot);
+        }
+
+        for (PhysicalBasicShot shot : shotsToRemove) {
+            world.destroyBody(shot.getBody());
+            movables.remove(shot);
+            graphicalScene.removeShot(shot);
+            physicalBasicShots.remove(shot);
         }
     }
 }
