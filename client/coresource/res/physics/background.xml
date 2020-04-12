@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- created with https://www.codeandweb.com/physicseditor -->
+<bodydef>
+
+	<body name="bg_land">
+		<is_dynamic/>
+		<linear_damping>0</linear_damping>
+		<angular_damping>0</angular_damping>
+		<allow_sleep/>
+		<fixture>
+			<density>2</density>
+			<friction>0.5</friction>
+			<restitution>0</restitution>
+			<filter_category_bits>1</filter_category_bits>
+			<filter_mask_bits>65535</filter_mask_bits>
+			<filter_group_index>0</filter_group_index>
+			<polygon>523.0000, 364.0000, 1250.0000, 133.0000, 1539.0000, 341.0000, 1545.0000, 364.0000</polygon>
+		</fixture>
+		<fixture>
+			<density>2</density>
+			<friction>0.5</friction>
+			<restitution>0</restitution>
+			<filter_category_bits>1</filter_category_bits>
+			<filter_mask_bits>65535</filter_mask_bits>
+			<filter_group_index>0</filter_group_index>
+			<polygon>3208.0000, 363.0000, 2186.0000, 363.0000, 2192.0000, 340.0000, 2481.0000, 132.0000</polygon>
+		</fixture>
+		<fixture>
+			<density>2</density>
+			<friction>0.5</friction>
+			<restitution>0</restitution>
+			<filter_category_bits>1</filter_category_bits>
+			<filter_mask_bits>65535</filter_mask_bits>
+			<filter_group_index>0</filter_group_index>
+			<polygon>3731.0000, -1.0000, 3731.0000, 504.0000, 3295.0000, 363.0000, 3347.0000, 191.0000</polygon>
+			<polygon>3197.0000, 362.0000, 3347.0000, 191.0000, 3295.0000, 363.0000</polygon>
+		</fixture>
+		<fixture>
+			<density>2</density>
+			<friction>0.5</friction>
+			<restitution>0</restitution>
+			<filter_category_bits>1</filter_category_bits>
+			<filter_mask_bits>65535</filter_mask_bits>
+			<filter_group_index>0</filter_group_index>
+			<polygon>2.0000, 4.0000, 384.0000, 192.0000, 436.0000, 364.0000, 0.0000, 505.0000</polygon>
+			<polygon>534.0000, 363.0000, 436.0000, 364.0000, 384.0000, 192.0000</polygon>
+		</fixture>
+		<fixture>
+			<density>2</density>
+			<friction>0.5</friction>
+			<restitution>0</restitution>
+			<filter_category_bits>1</filter_category_bits>
+			<filter_mask_bits>65535</filter_mask_bits>
+			<filter_group_index>0</filter_group_index>
+			<polygon>2343.0000, 251.0000, 2122.0000, 194.0000, 1869.0000, 9.0000</polygon>
+			<polygon>2122.0000, 194.0000, 1975.0000, 168.0000, 1869.0000, 9.0000</polygon>
+			<polygon>1975.0000, 168.0000, 1762.0000, 169.0000, 1869.0000, 9.0000</polygon>
+			<polygon>1762.0000, 169.0000, 1587.0000, 211.0000, 1869.0000, 9.0000</polygon>
+			<polygon>1587.0000, 211.0000, 1398.0000, 269.0000, 1869.0000, 9.0000</polygon>
+		</fixture>
+	</body>
+
+	<metadata>
+		<format>1</format>
+		<ptm_ratio>32</ptm_ratio>
+	</metadata>
+
+</bodydef>
+

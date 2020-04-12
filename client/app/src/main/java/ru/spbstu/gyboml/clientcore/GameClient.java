@@ -1,23 +1,31 @@
-package main.java.ru.spbstu.clientcore;
+package main.java.ru.spbstu.gyboml.clientcore;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+
+import main.java.ru.spbstu.gyboml.clientnet.Controller;
+
+import main.java.ru.spbstu.gyboml.clientnet.generating.ConnectionGenerator;
+import main.java.ru.spbstu.gyboml.clientnet.generating.PassTurnGenerator;
+import ru.spbstu.gyboml.core.PlayerType;
 
 /**
  * The GameClient class handles rendering, camera movement,
@@ -26,29 +34,46 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
  * @since   2020-03-11
  */
 public class GameClient extends ApplicationAdapter implements InputProcessor {
-    private static final float SCALE = 1f / 20f;
-    private static final float minRatio = 3f / 2f;
-    private static final float minWidth = 50;
-    private static final float minHeight = minWidth / minRatio;
-    private static final float worldScale = 1.5f;
-    private static final float worldWidth = minWidth * worldScale;
-    private static final float worldHeight = minHeight;
-    private static final float maxXRatio = 19.5f / 9f;
-    private static final float maxYRatio = 4f / 3f;
+    // canvas / world constants
+    private static final float minRatio     = 3f / 2f;
+    private static final float minWidth     = 50;
+    private static final float minHeight    = minWidth / minRatio;
+    private static final float worldScale   = 1.5f;
+    private static final float worldWidth   = minWidth * worldScale;
+    private static final float worldHeight  = minHeight;
+    private static final float maxXRatio    = 19.5f / 9f;
+    private static final float maxYRatio    = 4f / 3f;
+    private static final float canvasWidth  = worldWidth + minWidth * (maxXRatio / minRatio - 1);
+    private static final float canvasHeight = worldHeight + minHeight * (minRatio / maxYRatio - 1);
 
-    private MessageSender toServerMessageSender;
+    PhysicalScene  physicalScene;
+    GraphicalScene graphicalScene;
+
+    // drawing and stuff
+    private Box2DDebugRenderer debugRenderer;
     private SpriteBatch batch;
-    private Texture backgroundTexture;
-    private Sprite background;
     private OrthographicCamera camera;
     private ExtendViewport viewport;
     private Stage stageForUI;
     private Table table;
 
+    // connection
+    private Controller controller = null;
+    private final String serverName = "34.91.65.96";
+    private final int serverPort = 4445;
+    private MessageSender toServerMessageSender;
+
+    // temp
+    PlayerType playerTurn = PlayerType.FIRST_PLAYER;
+
+    private Label scoreLabel;
+
     /**
      * This is the method that is called on client's creation.
      * It loads the graphical resources, and sets up the sprites, background,
      * viewport, camera, UI etc.
+     *
+     * The method body is a bit bloated at the moment, it will be refactored in the near future.
      */
     @Override
     public void create() {
@@ -59,21 +84,89 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
         Gdx.input.setInputProcessor(inputMultiplexer);
         setUpUI();
 
+        debugRenderer = new Box2DDebugRenderer();
         batch = new SpriteBatch();
-        backgroundTexture = new Texture("background.png");
-        background = new Sprite(backgroundTexture);
-        float width = worldWidth + minWidth * (maxXRatio / minRatio - 1);
-        float height = worldHeight + minHeight * (minRatio / maxYRatio - 1);
 
-        background.setSize(width, height);
-        background.setOrigin(0, 0);
-        background.setPosition(0 - (width - worldWidth) / 2,0 - (height - worldHeight) / 2);
+        float backgroundX = 0 - (canvasWidth - worldWidth) / 2;
+        float backgroundY = 0 - (canvasHeight - worldHeight) / 2;
+
+        graphicalScene = new GraphicalScene(canvasWidth, canvasHeight);
+        physicalScene  = new PhysicalScene(graphicalScene, backgroundX, backgroundY);
 
         camera = new OrthographicCamera(minWidth, minHeight);
         viewport = new ExtendViewport(camera.viewportWidth, camera.viewportHeight, camera);
         camera.position.set(camera.viewportWidth / 2, camera.viewportHeight / 2, 0);
         camera.update();
+    
+        // create game net controller
+        try {
+            controller = new Controller(serverName, serverPort);
+        } catch (Exception error) {
+            System.out.println(error);
+
+        }
+        controller.start();
+
+        // establish connection to server
+        ConnectionGenerator generator = new ConnectionGenerator();
+        generator.generate(null, controller.getServerAddress(), controller.getServerPort(), controller);
     }
+
+    /** This function sets up the UI. The name speaks for itself, really.
+     * Creates the UI table and creates the layout of the UI elements.
+     */
+    private void setUpUI() {
+        final float buttonWidth  = 200;
+        final float buttonHeight = 100;
+        table = new Table();
+        table.setBounds(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+
+        stageForUI.addActor(table);
+
+        scoreLabel = new Label("Score: 0",
+                new Skin(Gdx.files.internal("skin/glassy/glassy-ui.json")));
+        scoreLabel.setFontScale(0.2f);
+        scoreLabel.setText("Score: 1");
+
+        stageForUI.addActor(scoreLabel);
+
+        Button endTurnButton = new TextButton("End Turn", new Skin(Gdx.files.internal("skin/flat-earth-ui.json")), "default");
+        endTurnButton.addListener(new InputListener() {
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                //toServerMessageSender.nextTurnMessage();
+                PassTurnGenerator generator = new PassTurnGenerator();
+                generator.generate(null, controller.getServerAddress(), controller.getServerPort(), controller);
+
+                // temp
+                playerTurn = (playerTurn == PlayerType.FIRST_PLAYER) ? PlayerType.SECOND_PLAYER : PlayerType.FIRST_PLAYER;
+            }
+
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                return true;
+            }
+        });
+        table.bottom().left();
+        table.add(endTurnButton).width(buttonWidth).height(buttonHeight);
+        table.getCell(endTurnButton).spaceRight(Gdx.graphics.getWidth() - 2 * buttonWidth);
+
+        Button fireButton = new TextButton("Fire", new Skin(Gdx.files.internal("skin/flat-earth-ui.json")), "default");
+        fireButton.addListener(new InputListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                return true;
+            }
+
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                physicalScene.generateShot(playerTurn);
+            }
+        });
+        table.add(fireButton).width(buttonWidth).height(buttonHeight);
+        //table.add(scoreLabel);
+    }
+
 
     /**
      * This is the main method that is called repeatedly in the game loop.
@@ -83,14 +176,18 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
     public void render() {
         Gdx.gl.glClearColor(1, 0, 0, 0);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        physicalScene.stepWorld();
 
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
-        background.draw(batch);
+        graphicalScene.draw(batch);
+        scoreLabel.draw(batch, 1.0f);
         batch.end();
 
         stageForUI.act(Gdx.graphics.getDeltaTime());
         stageForUI.draw();
+
+        debugRenderer.render(physicalScene.getWorld(), camera.combined);
     }
 
     /**
@@ -100,8 +197,9 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
     @Override
     public void dispose() {
         batch.dispose();
-        backgroundTexture.dispose();
+        graphicalScene.dispose();
         stageForUI.dispose();
+        controller.interrupt();
     }
 
     /** Called when a finger or the mouse was dragged.
@@ -113,8 +211,8 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
      */
     @Override
     public boolean touchDragged(int screenX, int screenY, int pointer) {
-        float x = Gdx.input.getDeltaX() * SCALE;
-        float y = Gdx.input.getDeltaY() * SCALE;
+        float x = Gdx.input.getDeltaX() * graphicalScene.getScale();
+        float y = Gdx.input.getDeltaY() * graphicalScene.getScale();
 
         float leftEdgePos = camera.position.x - minWidth / 2;
         float rightEdgePos = leftEdgePos + minWidth;
@@ -146,42 +244,27 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
         stageForUI.getViewport().update(width, height, false);
     }
 
-    /** This function sets up the UI. The name speaks for itself, really.
-     * Creates the UI table and creates the layout of the UI elements.
+    /** Called when key is pressed, fires with P1 cannon
+     * @param keycode key code (one of the Input.Keys)
      */
-    private void setUpUI() {
-        table = new Table();
-        table.setFillParent(true);
-        stageForUI.addActor(table);
+    @Override
+    public boolean keyDown(int keycode) { return true; }
 
-        //table.setDebug(true);
-        Skin skin = new Skin(Gdx.files.internal("skin/flat-earth-ui.json"));
-        Button endTurnButton = new TextButton("End Turn", skin, "default");
-        endTurnButton.addListener(new InputListener() {
-            @Override
-            public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
-                //toServerMessageSender.nextTurnMessage(); method stub
-            }
-            @Override
-            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                return true;
-            }
-        });
-        table.add(endTurnButton).width(200).height(100);
-        table.right().bottom();
-    }
-
-    public boolean keyDown(int keycode) {return true;}
-
+    @Override
     public boolean keyUp(int keycode) {return true;}
 
+    @Override
     public boolean keyTyped(char character) {return true;}
 
+    @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {return true;}
 
+    @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {return true;}
 
+    @Override
     public boolean mouseMoved(int screenX, int screenY) {return true;}
 
+    @Override
     public boolean scrolled(int amount) { return true;}
 }

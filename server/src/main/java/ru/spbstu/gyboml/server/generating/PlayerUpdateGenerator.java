@@ -2,10 +2,10 @@ package ru.spbstu.gyboml.server.generating;
 
 import ru.spbstu.gyboml.core.net.ControllerInterface;
 import ru.spbstu.gyboml.core.net.generating.Generator;
+import ru.spbstu.gyboml.core.net.office.OfficeOutput;
 import ru.spbstu.gyboml.core.net.packing.Packet;
 import ru.spbstu.gyboml.core.net.packing.PacketType;
 import ru.spbstu.gyboml.server.Controller;
-import ru.spbstu.gyboml.core.net.office.OfficeOutput;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
