@@ -11,20 +11,21 @@ import ru.spbstu.gyboml.core.destructible.Destructible;
 import ru.spbstu.gyboml.core.destructible.Material;
 import ru.spbstu.gyboml.core.util.PhysicsShapeCache;
 
-public class PhysicalBlock extends Destructible implements Physical, Movable {
+public class PhysicalBlock extends Destructible implements Physical, Movable, Interactable {
     private static final int BASE_HP = 100;
 
     private Body body;
     private Updatable sprite;
 
     public PhysicalBlock(Material material, Location location, World world) {
-        super((int)(BASE_HP * material.getDefenceRatio()), material);
+        super(BASE_HP, material);
         InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(PHYSICS_PATH_OBJECTS);
 
         PhysicsShapeCache physicsShapeCache = new PhysicsShapeCache(is);
         body = physicsShapeCache.createBody("block_" + material.getName(), world, location.scale, location.scale);
         body.setTransform(location.x, location.y, location.angle);
         body.setType(BodyDef.BodyType.DynamicBody);
+        body.setUserData(this);
     }
 
     @Override
@@ -46,6 +47,18 @@ public class PhysicalBlock extends Destructible implements Physical, Movable {
         if (this.sprite != null) {
             sprite.setUpdatablePartPosition(body.getPosition());
             sprite.setUpdatablePartAngle((float) Math.toDegrees(body.getAngle()));
+
+            if (this.getHP() < initialHP / 2)
+                sprite.changeSprite();
         }
+    }
+
+    @Override
+    public Type getType() {
+        return Type.BLOCK;
+    }
+
+    public Body getBody() {
+        return body;
     }
 }

@@ -10,7 +10,7 @@ import java.io.InputStream;
 import ru.spbstu.gyboml.core.util.PhysicsShapeCache;
 
 
-public class PhysicalBackground implements Physical {
+public class PhysicalBackground implements Physical, Interactable {
     private final Body body;
 
     public PhysicalBackground(Location location, World world) {
@@ -20,8 +20,14 @@ public class PhysicalBackground implements Physical {
         body = physicsBodies.createBody("bg_land", world, location.scale, location.scale);
         body.setTransform(location.x, location.y, location.angle);
         body.setType(BodyDef.BodyType.StaticBody);
+        body.setUserData(this);
     }
 
     @Override
     public Vector2 getPosition() { return body.getPosition(); }
+
+    @Override
+    public Type getType() {
+        return Type.BACKGROUND;
+    }
 }

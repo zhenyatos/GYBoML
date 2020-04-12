@@ -13,10 +13,12 @@ import java.io.InputStream;
 import ru.spbstu.gyboml.core.PlayerType;
 
 public class PhysicalTower implements Physical, Movable {
-    private PlayerType playerType;
     private Body tower;
     private Body cannon;
     private RevoluteJoint joint;
+    private Vector2 jointPosition;
+    private PlayerType playerType;
+    private float barrelLength;
 
     private Updatable sprite = null;
 
@@ -37,19 +39,25 @@ public class PhysicalTower implements Physical, Movable {
 
         tower.setTransform(location.x, location.y, location.angle);
         RevoluteJointDef revoluteJointDef = new RevoluteJointDef();
+        float cannonWidth = 220 * location.scale;    // .xml full body width
+        float cannonHeight = 90 * location.scale;    // .xml full body height
+        float cannonX =  40 * location.scale;        // in front of the tower
+        float cannonY = 800 * location.scale;        // over the tower
+        barrelLength = cannonWidth - 80 * location.scale;
+
         if (playerType == PlayerType.FIRST_PLAYER) {
-            cannon.setTransform(location.x + (40.f * location.scale), location.y + (800.f * location.scale), location.angle);
-            Vector2 jointPos = new Vector2(cannon.getPosition().x + 80.f * location.scale, cannon.getPosition().y + 45.f * location.scale);
-            revoluteJointDef.initialize(cannon, tower, jointPos);
-            revoluteJointDef.motorSpeed = -(float)Math.PI;
+            cannon.setTransform(location.x + cannonX, location.y + cannonY, location.angle);
+            jointPosition = new Vector2(cannon.getPosition().x + cannonWidth - barrelLength, cannon.getPosition().y + cannonHeight / 2f);
+            revoluteJointDef.initialize(cannon, tower, jointPosition);
+            revoluteJointDef.motorSpeed = -(float)Math.PI / 2;
             revoluteJointDef.upperAngle = 0.0f;
             revoluteJointDef.lowerAngle = -(float)Math.PI / 3;
         }
         else {
-            cannon.setTransform(location.x - (40.f * location.scale), location.y + (800.f * location.scale), location.angle);
-            Vector2 jointPos = new Vector2(cannon.getPosition().x + 140.f * location.scale, cannon.getPosition().y + 45.f * location.scale);
-            revoluteJointDef.initialize(cannon, tower, jointPos);
-            revoluteJointDef.motorSpeed = (float)Math.PI;
+            cannon.setTransform(location.x - cannonX, location.y + cannonY, location.angle);
+            jointPosition = new Vector2(cannon.getPosition().x + barrelLength, cannon.getPosition().y + cannonHeight / 2f);
+            revoluteJointDef.initialize(cannon, tower, jointPosition);
+            revoluteJointDef.motorSpeed = (float)Math.PI / 2;
             revoluteJointDef.upperAngle = (float)Math.PI / 3;
             revoluteJointDef.lowerAngle = 0.0f;
         }
@@ -60,7 +68,13 @@ public class PhysicalTower implements Physical, Movable {
         joint = (RevoluteJoint)world.createJoint(revoluteJointDef);
     }
 
+    public PlayerType getPlayerType() { return playerType; }
+
     public RevoluteJoint getJoint() { return joint; }
+
+    public Vector2 getJointPosition() { return jointPosition; }
+
+    public float getBarrelLength() { return barrelLength; }
 
     @Override
     public Vector2 getPosition() { return tower.getPosition(); }
