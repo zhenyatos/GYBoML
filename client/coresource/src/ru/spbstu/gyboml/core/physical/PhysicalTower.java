@@ -17,11 +17,14 @@ public class PhysicalTower implements Physical, Movable {
     private Body cannon;
     private RevoluteJoint joint;
     private Vector2 jointPosition;
+    private PlayerType playerType;
     private float barrelLength;
 
     private Updatable sprite = null;
 
     public PhysicalTower(Location location, PlayerType playerType, World world) {
+        this.playerType = playerType;
+
         InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(PHYSICS_PATH_OBJECTS);
 
         PhysicsShapeCache physicsShapeCache = new PhysicsShapeCache(is);
@@ -64,6 +67,8 @@ public class PhysicalTower implements Physical, Movable {
         revoluteJointDef.enableLimit = true;
         joint = (RevoluteJoint)world.createJoint(revoluteJointDef);
     }
+
+    public PlayerType getPlayerType() { return playerType; }
 
     public RevoluteJoint getJoint() { return joint; }
 

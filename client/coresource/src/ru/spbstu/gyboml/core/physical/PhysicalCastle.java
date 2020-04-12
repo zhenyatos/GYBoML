@@ -16,9 +16,12 @@ import ru.spbstu.gyboml.core.PlayerType;
 public class PhysicalCastle extends Destructible implements Physical {
     private Body front;
     private Body tower;
+    private PlayerType playerType;
 
     public PhysicalCastle(int HP, Location location, PlayerType playerType, World world) {
         super(HP, Material.STONE);
+        this.playerType = playerType;
+
         InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(PHYSICS_PATH_OBJECTS);
 
         PhysicsShapeCache physicsShapeCache = new PhysicsShapeCache(is);
@@ -33,6 +36,8 @@ public class PhysicalCastle extends Destructible implements Physical {
         front.setType(BodyDef.BodyType.StaticBody);
         tower.setType(BodyDef.BodyType.StaticBody);
     }
+
+    public PlayerType getPlayerType() { return playerType; }
 
     @Override
     public Vector2 getPosition() { return front.getPosition(); }
