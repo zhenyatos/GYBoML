@@ -31,7 +31,12 @@ class GraphicalScene {
     private final float canvasHeight;
     private final float resolutionWidth;
     private List<Drawable> drawables;
+    private List<GraphicalBlock> destroyed;
+    private List<GraphicalBlock> toRemoveFromDestroyed;
+    private List<GraphicalBasicShot> stopped;
+    private List<GraphicalBasicShot> toRemoveFromStopped;
     private HashMap<PhysicalBlock, GraphicalBlock> blocks;
+    private HashMap<PhysicalBasicShot, GraphicalBasicShot> shots;
 
     private float SCALE;
     private float BLOCKS_SCALE;
@@ -46,6 +51,12 @@ class GraphicalScene {
         this.canvasWidth  = canvasWidth;
         this.canvasHeight = canvasHeight;
         drawables = new ArrayList<>();
+        destroyed = new ArrayList<>();
+        stopped = new ArrayList<>();
+        toRemoveFromDestroyed = new ArrayList<>();
+        toRemoveFromStopped = new ArrayList<>();
+        blocks = new HashMap<>();
+        shots = new HashMap<>();
 
         backgroundBack  = new TextureAtlas("sprites/background_1.txt");
         backgroundFront = new TextureAtlas("sprites/background_2.txt");
@@ -64,6 +75,7 @@ class GraphicalScene {
         graphicalShot.setPosition(physicalShot.getPosition().x, physicalShot.getPosition().y);
         drawables.add(graphicalShot);
         physicalShot.setUpdatableSprite(graphicalShot);
+        shots.put(physicalShot, graphicalShot);
     }
 
     void generateGraphicalBackground(PhysicalBackground physicalBackground) {
@@ -92,7 +104,7 @@ class GraphicalScene {
 
     void generateGraphicalTower(PhysicalTower physicalTower) {
         String playerName = (physicalTower.getPlayerType() == PlayerType.FIRST_PLAYER) ? "_p1" : "_p2";
-        
+
         GraphicalCannon graphicalCannon = new GraphicalCannon(objects.createSprite("cannon" + playerName), SCALE);
         graphicalCannon.setOrigin(0, 0);
         graphicalCannon.setPosition(physicalTower.getMovablePartPosition().x, physicalTower.getMovablePartPosition().y);
@@ -119,7 +131,6 @@ class GraphicalScene {
      * Binds graphical blocks objects to its physical versions.
      */
     void bindBlocksGraphics(ArrayList<PhysicalBlock> physicalBlocksP1, ArrayList<PhysicalBlock> physicalBlocksP2) {
-        blocks = new HashMap<>();
         for (PhysicalBlock block : physicalBlocksP1) {
             GraphicalBlock graphicalBlockP1 = new GraphicalBlock(objects.createSprite("block_wood"), objects.createSprite("block_wood_damaged"), BLOCKS_SCALE);
             graphicalBlockP1.setOrigin(0,0);
@@ -142,6 +153,23 @@ class GraphicalScene {
     void removeBlock(PhysicalBlock block) {
         drawables.remove(blocks.get(block));
         blocks.remove(block);
+
+        GraphicalBlock destroyedBlock = new GraphicalBlock(objects.createSprite("block_wood_damaged"), objects.createSprite("block_wood_damaged"), BLOCKS_SCALE);
+        destroyedBlock.setOrigin(0,0);
+        destroyedBlock.setPosition(block.getPosition().x, block.getPosition().y);
+        destroyedBlock.setRotation((float)Math.toDegrees(block.getBody().getAngle()));
+        destroyed.add(destroyedBlock);
+    }
+
+    void removeShot(PhysicalBasicShot shot) {
+        drawables.remove(shots.get(shot));
+        shots.remove(shot);
+
+        GraphicalBasicShot stoppedShot = new GraphicalBasicShot(objects.createSprite("shot_basic"), SHOTS_SCALE);
+        stoppedShot.setOrigin(0,0);
+        stoppedShot.setPosition(shot.getPosition().x, shot.getPosition().y);
+        stoppedShot.setRotation((float)Math.toDegrees(shot.getBody().getAngle()));
+        stopped.add(stoppedShot);
     }
 
     float getScale() { return SCALE; }
@@ -167,6 +195,30 @@ class GraphicalScene {
     void draw(Batch batch) {
         for (Drawable object : drawables) {
             object.draw(batch);
+        }
+
+        toRemoveFromDestroyed.clear();
+        for (GraphicalBlock block : destroyed) {
+            block.draw(batch);
+            block.getCurrentSprite().setAlpha(block.getCurrentSprite().getColor().a - 0.03f);
+            if (block.getCurrentSprite().getColor().a <= 0.03f)
+                toRemoveFromDestroyed.add(block);
+        }
+
+        for (GraphicalBlock block : toRemoveFromDestroyed) {
+            destroyed.remove(block);
+        }
+
+        toRemoveFromStopped.clear();
+        for (GraphicalBasicShot shot : stopped) {
+            shot.draw(batch);
+            shot.getSprite().setAlpha(shot.getSprite().getColor().a - 0.03f);
+            if (shot.getSprite().getColor().a <= 0.03f)
+                toRemoveFromStopped.add(shot);
+        }
+
+        for (GraphicalBasicShot shot : toRemoveFromStopped) {
+            stopped.remove(shot);
         }
     }
 

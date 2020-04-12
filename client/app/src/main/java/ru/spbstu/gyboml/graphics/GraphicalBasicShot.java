@@ -14,6 +14,8 @@ public class GraphicalBasicShot implements Drawable, Updatable {
         this.ball = ball;
     }
 
+    public Sprite getSprite() { return ball; }
+
     @Override
     public void draw(Batch batch) {
         ball.draw(batch);
