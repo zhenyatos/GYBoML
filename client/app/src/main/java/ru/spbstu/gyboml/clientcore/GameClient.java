@@ -4,14 +4,17 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -62,6 +65,8 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
 
     // temp
     PlayerType playerTurn = PlayerType.FIRST_PLAYER;
+
+    private Label scoreLabel;
 
     /**
      * This is the method that is called on client's creation.
@@ -115,7 +120,15 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
         final float buttonHeight = 100;
         table = new Table();
         table.setBounds(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+
         stageForUI.addActor(table);
+
+        scoreLabel = new Label("Score: 0",
+                new Skin(Gdx.files.internal("skin/flat-earth-ui.json")));
+        scoreLabel.setFontScale(0.2f);
+        scoreLabel.setText("Score: 1");
+
+        stageForUI.addActor(scoreLabel);
 
         Button endTurnButton = new TextButton("End Turn", new Skin(Gdx.files.internal("skin/flat-earth-ui.json")), "default");
         endTurnButton.addListener(new InputListener() {
@@ -151,6 +164,7 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
             }
         });
         table.add(fireButton).width(buttonWidth).height(buttonHeight);
+        //table.add(scoreLabel);
     }
 
 
@@ -167,6 +181,7 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
         graphicalScene.draw(batch);
+        scoreLabel.draw(batch, 1.0f);
         batch.end();
 
         stageForUI.act(Gdx.graphics.getDeltaTime());
