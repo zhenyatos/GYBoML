@@ -37,13 +37,12 @@ public class Lobby extends AppCompatActivity {
         gameSessionsView = findViewById(R.id.gameSessions);
         createNewSessionButton = findViewById(R.id.createSession);
 
-       /* createNewSessionButton.setOnClickListener(new View.OnClickListener() {
+        createNewSessionButton.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
                     Context currentContext = createNewSessionButton.getContext();
-
-
+                    createDialogueWindow();
                 }
-        });*/
+        });
         layoutManager = new LinearLayoutManager(this);
         gameSessionsView.setLayoutManager(layoutManager);
 
@@ -60,8 +59,8 @@ public class Lobby extends AppCompatActivity {
         return sessionButton;
     }
 
-    /*private void createDialogueWindow() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+    private void createDialogueWindow() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.MyDialogTheme);
         builder.setTitle("Create new session");
 
         final EditText input = new EditText(this);
@@ -72,6 +71,7 @@ public class Lobby extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 sessionName = input.getText().toString();
+                //Send message to server
             }
         });
 
@@ -84,5 +84,5 @@ public class Lobby extends AppCompatActivity {
 
         builder.show();
     }
-    */
+
 }
