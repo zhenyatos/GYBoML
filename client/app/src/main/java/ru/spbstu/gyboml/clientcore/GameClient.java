@@ -81,6 +81,7 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
     private final float backgroundY = 0 - (canvasHeight - worldHeight) / 2;
     private float SCALE;
     private float BLOCKS_SCALE;
+    private float SHOTS_SCALE;
     private List<Movable> movables;
     private PhysicalBackground physicalBackground;
     private PhysicalCastle physicalCastleP1;
@@ -111,6 +112,9 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
     private final String serverName = "34.91.65.96";
     private final int serverPort = 4445;
     private MessageSender toServerMessageSender;
+
+    // temp
+    PlayerType playerTurn = PlayerType.FIRST_PLAYER;
 
     /**
      * This is the method that is called on client's creation.
@@ -165,6 +169,8 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
     private void buildScene() {
         final float RESOLUTION_W = backgroundBack.findRegion("bg_sky").originalWidth;
         SCALE = canvasWidth / RESOLUTION_W;
+        BLOCKS_SCALE = SCALE * 0.35f;
+        SHOTS_SCALE  = SCALE * 0.22f;
 
         movables = new ArrayList<>();
         drawables = new ArrayList<>();
@@ -258,7 +264,6 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
         final float blockTextureHeight = objects.findRegion("block_wood").originalHeight;
         final float castleTextureWidth = objects.findRegion("castle_p1_front").originalWidth;
 
-        BLOCKS_SCALE = SCALE * 0.35f;
         float blockP1X = castleP1X + (castleTextureWidth + 60) * SCALE;
         float blockP1Y = castleP1Y + 240 * SCALE;
         float blockP2X = castleP2X -  60 * SCALE - blockTextureWidth * BLOCKS_SCALE;
@@ -337,6 +342,9 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
                 //toServerMessageSender.nextTurnMessage();
                 PassTurnGenerator generator = new PassTurnGenerator();
                 generator.generate(null, controller.getServerAddress(), controller.getServerPort(), controller);
+
+                // temp
+                playerTurn = (playerTurn == PlayerType.FIRST_PLAYER) ? PlayerType.SECOND_PLAYER : PlayerType.FIRST_PLAYER;
             }
 
             @Override
@@ -357,23 +365,44 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
 
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                Vector2 jointPosition = physicalTowerP1.getJointPosition();
-                float barrelLength = objects.findRegion("cannon_p1").originalWidth * SCALE - (jointPosition.x - physicalTowerP1.getMovablePartPosition().x);
-                float angle = physicalTowerP1.getMovablePartAngle();
-                float cos = (float)Math.cos(angle);
-                float sin = (float)Math.sin(angle);
-                // TODO: still needs fix
-                float shotX = jointPosition.x + barrelLength * cos - objects.findRegion("shot_basic").originalWidth  / 2f * (SCALE / 4.5f);
-                float shotY = jointPosition.y + barrelLength * sin - objects.findRegion("shot_basic").originalHeight / 2f * (SCALE / 4.5f);
-                Location location = new Location(shotX, shotY, 0, SCALE / 4.5f);
-                PhysicalBasicShot physicalShot = new PhysicalBasicShot(location, world);
-                physicalShot.setVelocity(new Vector2(20.f * cos, 20.f * sin));
-                movables.add(physicalShot);
-                GraphicalBasicShot graphicalShot = new GraphicalBasicShot(objects.createSprite("shot_basic"), SCALE / 4.5f);
-                graphicalShot.setOrigin(0, 0);
-                graphicalShot.setPosition(physicalShot.getPosition().x, physicalShot.getPosition().y);
-                drawables.add(graphicalShot);
-                physicalShot.setUpdatableSprite(graphicalShot);
+                // temp
+                if (playerTurn == PlayerType.FIRST_PLAYER) {
+                    Vector2 jointPosition = physicalTowerP1.getJointPosition();
+                    float barrelLength = physicalTowerP1.getBarrelLength();
+                    float angle = physicalTowerP1.getMovablePartAngle();
+                    float cos = (float) Math.cos(angle);
+                    float sin = (float) Math.sin(angle);
+                    float shotX = jointPosition.x + barrelLength * cos - objects.findRegion("shot_basic").originalWidth  / 2f * SHOTS_SCALE;
+                    float shotY = jointPosition.y + barrelLength * sin - objects.findRegion("shot_basic").originalHeight / 2f * SHOTS_SCALE;
+                    Location location = new Location(shotX, shotY, 0, SHOTS_SCALE);
+                    PhysicalBasicShot physicalShot = new PhysicalBasicShot(location, world);
+                    physicalShot.setVelocity(new Vector2(20.f * cos, 20.f * sin));
+                    movables.add(physicalShot);
+                    GraphicalBasicShot graphicalShot = new GraphicalBasicShot(objects.createSprite("shot_basic"), SHOTS_SCALE);
+                    graphicalShot.setOrigin(0, 0);
+                    graphicalShot.setPosition(physicalShot.getPosition().x, physicalShot.getPosition().y);
+                    drawables.add(graphicalShot);
+                    physicalShot.setUpdatableSprite(graphicalShot);
+                }
+                // temp
+                else if (playerTurn == PlayerType.SECOND_PLAYER) {
+                    Vector2 jointPosition = physicalTowerP2.getJointPosition();
+                    float barrelLength = physicalTowerP2.getBarrelLength();
+                    float angle = physicalTowerP2.getMovablePartAngle();
+                    float cos = (float) Math.cos(angle);
+                    float sin = (float) Math.sin(angle);
+                    float shotX = jointPosition.x - barrelLength * cos - objects.findRegion("shot_basic").originalWidth  / 2f * SHOTS_SCALE;
+                    float shotY = jointPosition.y - barrelLength * sin - objects.findRegion("shot_basic").originalHeight / 2f * SHOTS_SCALE;
+                    Location location = new Location(shotX, shotY, 0, SHOTS_SCALE);
+                    PhysicalBasicShot physicalShot = new PhysicalBasicShot(location, world);
+                    physicalShot.setVelocity(new Vector2(-20.f * cos, -20.f * sin));
+                    movables.add(physicalShot);
+                    GraphicalBasicShot graphicalShot = new GraphicalBasicShot(objects.createSprite("shot_basic"), SHOTS_SCALE);
+                    graphicalShot.setOrigin(0, 0);
+                    graphicalShot.setPosition(physicalShot.getPosition().x, physicalShot.getPosition().y);
+                    drawables.add(graphicalShot);
+                    physicalShot.setUpdatableSprite(graphicalShot);
+                }
             }
         });
         table.add(fireButton).width(buttonWidth).height(buttonHeight);
