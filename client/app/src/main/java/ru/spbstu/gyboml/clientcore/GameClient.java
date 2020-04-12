@@ -124,7 +124,7 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
         stageForUI.addActor(table);
 
         scoreLabel = new Label("Score: 0",
-                new Skin(Gdx.files.internal("skin/flat-earth-ui.json")));
+                new Skin(Gdx.files.internal("skin/glassy/glassy-ui.json")));
         scoreLabel.setFontScale(0.2f);
         scoreLabel.setText("Score: 1");
 
