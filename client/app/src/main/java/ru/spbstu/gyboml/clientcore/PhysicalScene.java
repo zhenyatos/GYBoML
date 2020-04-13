@@ -16,7 +16,9 @@ import ru.spbstu.gyboml.core.physical.PhysicalBackground;
 import ru.spbstu.gyboml.core.physical.PhysicalBasicShot;
 import ru.spbstu.gyboml.core.physical.PhysicalBlock;
 import ru.spbstu.gyboml.core.physical.PhysicalCastle;
+import ru.spbstu.gyboml.core.physical.PhysicalShot;
 import ru.spbstu.gyboml.core.physical.PhysicalTower;
+import ru.spbstu.gyboml.core.shot.ShotType;
 
 /**
  * Initialized during client creation.
@@ -34,9 +36,9 @@ class PhysicalScene {
     private PhysicalTower physicalTowerP2;
     private ArrayList<PhysicalBlock> physicalBlocksP1;
     private ArrayList<PhysicalBlock> physicalBlocksP2;
-    private ArrayList<PhysicalBasicShot> physicalBasicShots;
+    private ArrayList<PhysicalShot> physicalShots;
     private List<PhysicalBlock> blocksToRemove;
-    private List<PhysicalBasicShot> shotsToRemove;
+    private List<PhysicalShot> shotsToRemove;
 
     // physics
     private static final float gravityAccelerationX = 0f;
@@ -62,7 +64,7 @@ class PhysicalScene {
         movables = new ArrayList<>();
         physicalBlocksP1 = new ArrayList<>();
         physicalBlocksP2 = new ArrayList<>();
-        physicalBasicShots = new ArrayList<>();
+        physicalShots = new ArrayList<>();
         blocksToRemove = new ArrayList<>();
         shotsToRemove = new ArrayList<>();
 
@@ -88,7 +90,7 @@ class PhysicalScene {
         physicalTowerP2 = new PhysicalTower(new Location(towerP2X, towerP2Y, 0, SCALE), PlayerType.SECOND_PLAYER, world);
         movables.add(physicalTowerP1);
         movables.add(physicalTowerP2);
-        placeDefaultBlocks(castleP1X, castleP1Y, castleP2X, castleP2Y);
+        placeDefaultBlocks(castleP1X, castleP1Y, castleP2X, castleP2Y, Material.WOOD);
         movables.addAll(physicalBlocksP1);
         movables.addAll(physicalBlocksP2);
 
@@ -107,74 +109,78 @@ class PhysicalScene {
      * several blocks placed by default same for both players.
      * Blocks placed manually in general.
      */
-    private void placeDefaultBlocks(float castleP1X, float castleP1Y, float castleP2X, float castleP2Y) {
-        final float blockTextureWidth  = graphicalScene.getBlockWidth();
-        final float blockTextureHeight = graphicalScene.getBlockHeight();
+    private void placeDefaultBlocks(float castleP1X, float castleP1Y, float castleP2X, float castleP2Y, Material material) {
+        final float blockWoodTextureWidth  = graphicalScene.getBlockWidth(material);
+        final float blockWoodTextureHeight = graphicalScene.getBlockHeight(material);
         final float castleTextureWidth = graphicalScene.getCastleWidth();
 
         float blockP1X = castleP1X + (castleTextureWidth + 60) * SCALE;
         float blockP1Y = castleP1Y + 240 * SCALE;
-        float blockP2X = castleP2X -  60 * SCALE - blockTextureWidth * BLOCKS_SCALE;
+        float blockP2X = castleP2X -  60 * SCALE - blockWoodTextureWidth * BLOCKS_SCALE;
         float blockP2Y = castleP2Y + 240 * SCALE;
 
         // 1st row
-        physicalBlocksP1.add(new PhysicalBlock(Material.WOOD, new Location(blockP1X, blockP1Y, 0, BLOCKS_SCALE), world));
-        physicalBlocksP2.add(new PhysicalBlock(Material.WOOD, new Location(blockP2X, blockP2Y, 0, BLOCKS_SCALE), world));
-        physicalBlocksP1.add(new PhysicalBlock(Material.WOOD, new Location(blockP1X, blockP1Y + 1.2f * blockTextureHeight * BLOCKS_SCALE, 0, BLOCKS_SCALE), world));
-        physicalBlocksP2.add(new PhysicalBlock(Material.WOOD, new Location(blockP2X, blockP2Y + 1.2f * blockTextureHeight * BLOCKS_SCALE, 0, BLOCKS_SCALE), world));
-        physicalBlocksP1.add(new PhysicalBlock(Material.WOOD, new Location(blockP1X, blockP1Y + 2 * 1.2f * blockTextureHeight * BLOCKS_SCALE, 0, BLOCKS_SCALE), world));
-        physicalBlocksP2.add(new PhysicalBlock(Material.WOOD, new Location(blockP2X, blockP2Y + 2 * 1.2f * blockTextureHeight * BLOCKS_SCALE, 0, BLOCKS_SCALE), world));
+        physicalBlocksP1.add(new PhysicalBlock(material, new Location(blockP1X, blockP1Y, 0, BLOCKS_SCALE), world));
+        physicalBlocksP2.add(new PhysicalBlock(material, new Location(blockP2X, blockP2Y, 0, BLOCKS_SCALE), world));
+        physicalBlocksP1.add(new PhysicalBlock(material, new Location(blockP1X, blockP1Y + 1.2f * blockWoodTextureHeight * BLOCKS_SCALE, 0, BLOCKS_SCALE), world));
+        physicalBlocksP2.add(new PhysicalBlock(material, new Location(blockP2X, blockP2Y + 1.2f * blockWoodTextureHeight * BLOCKS_SCALE, 0, BLOCKS_SCALE), world));
+        physicalBlocksP1.add(new PhysicalBlock(material, new Location(blockP1X, blockP1Y + 2 * 1.2f * blockWoodTextureHeight * BLOCKS_SCALE, 0, BLOCKS_SCALE), world));
+        physicalBlocksP2.add(new PhysicalBlock(material, new Location(blockP2X, blockP2Y + 2 * 1.2f * blockWoodTextureHeight * BLOCKS_SCALE, 0, BLOCKS_SCALE), world));
 
         // 2nd row
-        physicalBlocksP1.add(new PhysicalBlock(Material.WOOD, new Location(blockP1X + 2 * blockTextureWidth * BLOCKS_SCALE, blockP1Y, 0, BLOCKS_SCALE), world));
-        physicalBlocksP2.add(new PhysicalBlock(Material.WOOD, new Location(blockP2X - 2 * blockTextureWidth * BLOCKS_SCALE, blockP2Y, 0, BLOCKS_SCALE), world));
-        physicalBlocksP1.add(new PhysicalBlock(Material.WOOD, new Location(blockP1X + 2 * blockTextureWidth * BLOCKS_SCALE, blockP1Y + 1.2f * blockTextureHeight * BLOCKS_SCALE, 0, BLOCKS_SCALE), world));
-        physicalBlocksP2.add(new PhysicalBlock(Material.WOOD, new Location(blockP2X - 2 * blockTextureWidth * BLOCKS_SCALE, blockP2Y + 1.2f * blockTextureHeight * BLOCKS_SCALE, 0, BLOCKS_SCALE), world));
+        physicalBlocksP1.add(new PhysicalBlock(material, new Location(blockP1X + 2 * blockWoodTextureWidth * BLOCKS_SCALE, blockP1Y, 0, BLOCKS_SCALE), world));
+        physicalBlocksP2.add(new PhysicalBlock(material, new Location(blockP2X - 2 * blockWoodTextureWidth * BLOCKS_SCALE, blockP2Y, 0, BLOCKS_SCALE), world));
+        physicalBlocksP1.add(new PhysicalBlock(material, new Location(blockP1X + 2 * blockWoodTextureWidth * BLOCKS_SCALE, blockP1Y + 1.2f * blockWoodTextureHeight * BLOCKS_SCALE, 0, BLOCKS_SCALE), world));
+        physicalBlocksP2.add(new PhysicalBlock(material, new Location(blockP2X - 2 * blockWoodTextureWidth * BLOCKS_SCALE, blockP2Y + 1.2f * blockWoodTextureHeight * BLOCKS_SCALE, 0, BLOCKS_SCALE), world));
 
         // 3rd row
-        physicalBlocksP1.add(new PhysicalBlock(Material.WOOD, new Location(blockP1X + 4 * blockTextureWidth * BLOCKS_SCALE, blockP1Y, 0, BLOCKS_SCALE), world));
-        physicalBlocksP2.add(new PhysicalBlock(Material.WOOD, new Location(blockP2X - 4 * blockTextureWidth * BLOCKS_SCALE, blockP2Y, 0, BLOCKS_SCALE), world));
+        physicalBlocksP1.add(new PhysicalBlock(material, new Location(blockP1X + 4 * blockWoodTextureWidth * BLOCKS_SCALE, blockP1Y, 0, BLOCKS_SCALE), world));
+        physicalBlocksP2.add(new PhysicalBlock(material, new Location(blockP2X - 4 * blockWoodTextureWidth * BLOCKS_SCALE, blockP2Y, 0, BLOCKS_SCALE), world));
 
         // back row
-        physicalBlocksP1.add(new PhysicalBlock(Material.WOOD, new Location(castleP1X - 60 * SCALE - blockTextureWidth * BLOCKS_SCALE, blockP1Y, 0, BLOCKS_SCALE), world));
-        physicalBlocksP1.add(new PhysicalBlock(Material.WOOD, new Location(castleP1X - 60 * SCALE - blockTextureWidth * BLOCKS_SCALE, blockP1Y + 1.2f * blockTextureHeight * BLOCKS_SCALE, 0, BLOCKS_SCALE), world));
-        physicalBlocksP2.add(new PhysicalBlock(Material.WOOD, new Location(castleP2X + (castleTextureWidth + 60) * SCALE, blockP2Y, 0, BLOCKS_SCALE), world));
-        physicalBlocksP2.add(new PhysicalBlock(Material.WOOD, new Location(castleP2X + (castleTextureWidth + 60) * SCALE, blockP2Y + 1.2f * blockTextureHeight * BLOCKS_SCALE, 0, BLOCKS_SCALE), world));
+        physicalBlocksP1.add(new PhysicalBlock(material, new Location(castleP1X - 60 * SCALE - blockWoodTextureWidth * BLOCKS_SCALE, blockP1Y, 0, BLOCKS_SCALE), world));
+        physicalBlocksP1.add(new PhysicalBlock(material, new Location(castleP1X - 60 * SCALE - blockWoodTextureWidth * BLOCKS_SCALE, blockP1Y + 1.2f * blockWoodTextureHeight * BLOCKS_SCALE, 0, BLOCKS_SCALE), world));
+        physicalBlocksP2.add(new PhysicalBlock(material, new Location(castleP2X + (castleTextureWidth + 60) * SCALE, blockP2Y, 0, BLOCKS_SCALE), world));
+        physicalBlocksP2.add(new PhysicalBlock(material, new Location(castleP2X + (castleTextureWidth + 60) * SCALE, blockP2Y + 1.2f * blockWoodTextureHeight * BLOCKS_SCALE, 0, BLOCKS_SCALE), world));
     }
 
-    void generateShot(PlayerType playerTurn) {
-        // temp
+    void generateShot(PlayerType playerTurn, ShotType shotType) {
+        int sign;
+        float angle;
+        Vector2 jointPosition;
+
         if (playerTurn == PlayerType.FIRST_PLAYER) {
-            Vector2 jointPosition = physicalTowerP1.getJointPosition();
-            float barrelLength = physicalTowerP1.getBarrelLength();
-            float angle = physicalTowerP1.getMovablePartAngle();
-            float cos = (float) Math.cos(angle);
-            float sin = (float) Math.sin(angle);
-            float shotX = jointPosition.x + barrelLength * cos - graphicalScene.getShotBasicWidth()  / 2f * SHOTS_SCALE;
-            float shotY = jointPosition.y + barrelLength * sin - graphicalScene.getShotBasicHeight() / 2f * SHOTS_SCALE;
-            Location location = new Location(shotX, shotY, 0, SHOTS_SCALE);
-            PhysicalBasicShot physicalShot = new PhysicalBasicShot(location, world);
-            physicalShot.setVelocity(new Vector2(20.f * cos, 20.f * sin));
-            movables.add(physicalShot);
-            physicalBasicShots.add(physicalShot);
-            graphicalScene.generateGraphicalShot(physicalShot);
+            sign = 1;
+            angle = physicalTowerP1.getMovablePartAngle();
+            jointPosition = physicalTowerP1.getJointPosition();
         }
-        // temp
-        else if (playerTurn == PlayerType.SECOND_PLAYER) {
-            Vector2 jointPosition = physicalTowerP2.getJointPosition();
-            float barrelLength = physicalTowerP2.getBarrelLength();
-            float angle = physicalTowerP2.getMovablePartAngle();
-            float cos = (float) Math.cos(angle);
-            float sin = (float) Math.sin(angle);
-            float shotX = jointPosition.x - barrelLength * cos - graphicalScene.getShotBasicWidth()  / 2f * SHOTS_SCALE;
-            float shotY = jointPosition.y - barrelLength * sin - graphicalScene.getShotBasicHeight() / 2f * SHOTS_SCALE;
-            Location location = new Location(shotX, shotY, 0, SHOTS_SCALE);
-            PhysicalBasicShot physicalShot = new PhysicalBasicShot(location, world);
-            physicalShot.setVelocity(new Vector2(-20.f * cos, -20.f * sin));
-            movables.add(physicalShot);
-            physicalBasicShots.add(physicalShot);
-            graphicalScene.generateGraphicalShot(physicalShot);
+        else {
+            sign = -1;
+            angle = physicalTowerP2.getMovablePartAngle();
+            jointPosition = physicalTowerP2.getJointPosition();
         }
+
+        float barrelLength = physicalTowerP1.getBarrelLength();
+        float cos = (float) Math.cos(angle);
+        float sin = (float) Math.sin(angle);
+        float shotX = jointPosition.x + sign * barrelLength * cos - graphicalScene.getShotWidth(shotType)  / 2f * SHOTS_SCALE;
+        float shotY = jointPosition.y + sign * barrelLength * sin - graphicalScene.getShotHeight(shotType) / 2f * SHOTS_SCALE;
+        Location location = new Location(shotX, shotY, 0, SHOTS_SCALE);
+        PhysicalShot physicalShot;
+
+        // add new cases for new shots
+        switch (shotType) {
+            case BASIC:
+                physicalShot = new PhysicalBasicShot(location, world);
+                break;
+            default:
+                return;
+        }
+
+        physicalShot.setVelocity(new Vector2(sign * 20.f * cos, sign * 20.f * sin));
+        movables.add(physicalShot);
+        physicalShots.add(physicalShot);
+        graphicalScene.generateGraphicalShot(physicalShot);
     }
 
     World getWorld() { return world; }
@@ -226,16 +232,16 @@ class PhysicalScene {
         }
 
         shotsToRemove.clear();
-        for (PhysicalBasicShot shot : physicalBasicShots) {
+        for (PhysicalShot shot : physicalShots) {
             if (shot.getVelocity().isZero(0.1f))
                 shotsToRemove.add(shot);
         }
 
-        for (PhysicalBasicShot shot : shotsToRemove) {
+        for (PhysicalShot shot : shotsToRemove) {
             world.destroyBody(shot.getBody());
             movables.remove(shot);
             graphicalScene.removeShot(shot);
-            physicalBasicShots.remove(shot);
+            physicalShots.remove(shot);
         }
     }
 }
