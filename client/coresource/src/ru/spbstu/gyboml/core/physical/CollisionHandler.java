@@ -64,7 +64,6 @@ public class CollisionHandler implements ContactListener {
                 castle.handleDamage(damage);
                 castle.handleDamage(damage);
             }
-            System.out.println(castle.getHP());
             return;
         }
     }

@@ -5,7 +5,11 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.World;
 
+import org.jetbrains.annotations.NotNull;
+
+import ru.spbstu.gyboml.core.damage.Damage;
 import ru.spbstu.gyboml.core.destructible.Destructible;
+import ru.spbstu.gyboml.core.destructible.DestructionEmitter;
 import ru.spbstu.gyboml.core.destructible.Material;
 import ru.spbstu.gyboml.core.util.PhysicsShapeCache;
 
@@ -17,12 +21,15 @@ public class PhysicalCastle extends Destructible implements Physical, Interactab
     private Body front;
     private Body tower;
     private PlayerType playerType;
+    private DestructionEmitter destructionEmitter;
 
     public PhysicalCastle(int HP, Location location, PlayerType playerType, World world) {
         super(HP, Material.STONE);
         this.playerType = playerType;
 
         InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(PHYSICS_PATH_OBJECTS);
+
+        destructionEmitter = new DestructionEmitter();
 
         PhysicsShapeCache physicsShapeCache = new PhysicsShapeCache(is);
         String playerName = (playerType == PlayerType.FIRST_PLAYER) ? "_p1_" : "_p2_";
@@ -49,9 +56,18 @@ public class PhysicalCastle extends Destructible implements Physical, Interactab
     @Override
     public Vector2 getPosition() { return front.getPosition(); }
 
+    @Override
+    public void handleDamage(@NotNull Damage damage) {
+        super.handleDamage(damage);
+        destructionEmitter.destruction(getHP());
+    }
 
     @Override
     public Type getType() {
         return Type.CASTLE;
+    }
+
+    public DestructionEmitter getDestructionEmitter() {
+        return destructionEmitter;
     }
 }
