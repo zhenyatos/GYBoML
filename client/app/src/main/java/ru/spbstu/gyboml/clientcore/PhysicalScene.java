@@ -244,4 +244,11 @@ class PhysicalScene {
             physicalShots.remove(shot);
         }
     }
+
+    public void connectWithHPBar(PlayerType type, HPBar bar) {
+        if (type == PlayerType.FIRST_PLAYER)
+            physicalCastleP1.getDestructionEmitter().addListener(bar);
+        else
+            physicalCastleP2.getDestructionEmitter().addListener(bar);
+    }
 }

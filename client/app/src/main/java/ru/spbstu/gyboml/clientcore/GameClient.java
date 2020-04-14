@@ -4,15 +4,22 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.Container;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -55,6 +62,7 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
     private ExtendViewport viewport;
     private Stage stageForUI;
     private Table table;
+    private HPBar bar1;
 
     // connection
     private Controller controller = null;
@@ -65,8 +73,6 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
     // temp
     PlayerType playerTurn = PlayerType.FIRST_PLAYER;
     ShotType shotType = ShotType.BASIC;
-
-    private Label scoreLabel;
 
     /**
      * This is the method that is called on client's creation.
@@ -82,7 +88,6 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
         inputMultiplexer.addProcessor(stageForUI);
         inputMultiplexer.addProcessor(this);
         Gdx.input.setInputProcessor(inputMultiplexer);
-        setUpUI();
 
         debugRenderer = new Box2DDebugRenderer();
         batch = new SpriteBatch();
@@ -92,6 +97,9 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
 
         graphicalScene = new GraphicalScene(canvasWidth, canvasHeight);
         physicalScene  = new PhysicalScene(graphicalScene, backgroundX, backgroundY);
+
+        // UI is setup after main game objects was created
+        setUpUI();
 
         camera = new OrthographicCamera(minWidth, minHeight);
         viewport = new ExtendViewport(camera.viewportWidth, camera.viewportHeight, camera);
@@ -123,13 +131,7 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
 
         stageForUI.addActor(table);
 
-        scoreLabel = new Label("Score: 0",
-                new Skin(Gdx.files.internal("skin/glassy/glassy-ui.json")));
-        scoreLabel.setFontScale(0.2f);
-        scoreLabel.setText("Score: 1");
-
-        stageForUI.addActor(scoreLabel);
-
+        // End turn button
         Button endTurnButton = new TextButton("End Turn", new Skin(Gdx.files.internal("skin/flat-earth-ui.json")), "default");
         endTurnButton.addListener(new InputListener() {
             @Override
@@ -151,6 +153,7 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
         table.add(endTurnButton).width(buttonWidth).height(buttonHeight);
         table.getCell(endTurnButton).spaceRight(Gdx.graphics.getWidth() - 2 * buttonWidth);
 
+        // Fire button
         Button fireButton = new TextButton("Fire", new Skin(Gdx.files.internal("skin/flat-earth-ui.json")), "default");
         fireButton.addListener(new InputListener() {
             @Override
@@ -164,7 +167,11 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
             }
         });
         table.add(fireButton).width(buttonWidth).height(buttonHeight);
-        //table.add(scoreLabel);
+
+        // HP progress bar
+        bar1 = new HPBar(100);
+        physicalScene.connectWithHPBar(PlayerType.FIRST_PLAYER, bar1);
+        stageForUI.addActor(bar1.getHealthBar());
     }
 
 
@@ -181,7 +188,6 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
         graphicalScene.draw(batch);
-        scoreLabel.draw(batch, 1.0f);
         batch.end();
 
         stageForUI.act(Gdx.graphics.getDeltaTime());
