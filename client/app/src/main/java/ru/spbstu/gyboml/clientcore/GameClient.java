@@ -7,6 +7,7 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -23,6 +24,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
@@ -62,7 +65,6 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
     private ExtendViewport viewport;
     private Stage stageForUI;
     private Table table;
-    private HPBar bar1;
 
     // connection
     private Controller controller = null;
@@ -169,9 +171,15 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
         table.add(fireButton).width(buttonWidth).height(buttonHeight);
 
         // HP progress bar
-        bar1 = new HPBar(100);
+        HPBar bar1 = new HPBar(100);
         physicalScene.connectWithHPBar(PlayerType.FIRST_PLAYER, bar1);
+        bar1.getHealthBar().setPosition(10, Gdx.graphics.getHeight() - 30);
         stageForUI.addActor(bar1.getHealthBar());
+
+        HPBar bar2 = new HPBar(100);
+        physicalScene.connectWithHPBar(PlayerType.SECOND_PLAYER, bar2);
+        bar2.getHealthBar().setPosition(Gdx.graphics.getWidth() - 300, Gdx.graphics.getHeight() - 30);
+        stageForUI.addActor(bar2.getHealthBar());
     }
 
 

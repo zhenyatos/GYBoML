@@ -1,7 +1,6 @@
 package main.java.ru.spbstu.gyboml.clientcore;
 
-import android.graphics.Color;
-
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -15,6 +14,7 @@ public class HPBar implements DestructionListener {
     private int basicHP;
 
     public HPBar(int basicHP) {
+        this.basicHP = basicHP;
         Pixmap pixmap = new Pixmap(100, 50, Pixmap.Format.RGBA8888);
         pixmap.setColor(Color.RED);
         pixmap.fill();
@@ -46,7 +46,7 @@ public class HPBar implements DestructionListener {
         healthBar = new ProgressBar(0.f, 1.f, 0.01f, false, progressBarStyle);
         healthBar.setValue(1.f);
         healthBar.setAnimateDuration(0.25f);
-        healthBar.setBounds(100, 100, 100, 50);
+        healthBar.setBounds(0,0, 290, 20);
     }
 
     @Override
