@@ -4,10 +4,8 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -26,6 +24,7 @@ import main.java.ru.spbstu.gyboml.clientnet.Controller;
 import main.java.ru.spbstu.gyboml.clientnet.generating.ConnectionGenerator;
 import main.java.ru.spbstu.gyboml.clientnet.generating.PassTurnGenerator;
 import ru.spbstu.gyboml.core.PlayerType;
+import ru.spbstu.gyboml.core.shot.ShotType;
 
 /**
  * The GameClient class handles rendering, camera movement,
@@ -65,6 +64,7 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
 
     // temp
     PlayerType playerTurn = PlayerType.FIRST_PLAYER;
+    ShotType shotType = ShotType.BASIC;
 
     private Label scoreLabel;
 
@@ -160,7 +160,7 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
 
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                physicalScene.generateShot(playerTurn);
+                physicalScene.generateShot(playerTurn, shotType);
             }
         });
         table.add(fireButton).width(buttonWidth).height(buttonHeight);

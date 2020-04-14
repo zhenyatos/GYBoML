@@ -9,18 +9,20 @@ import java.util.List;
 
 import main.java.ru.spbstu.gyboml.graphics.Drawable;
 import main.java.ru.spbstu.gyboml.graphics.GraphicalBackground;
-import main.java.ru.spbstu.gyboml.graphics.GraphicalBasicShot;
+import main.java.ru.spbstu.gyboml.graphics.GraphicalShot;
 import main.java.ru.spbstu.gyboml.graphics.GraphicalBlock;
 import main.java.ru.spbstu.gyboml.graphics.GraphicalCannon;
 import main.java.ru.spbstu.gyboml.graphics.GraphicalCastle;
 import main.java.ru.spbstu.gyboml.graphics.GraphicalForeground;
 import main.java.ru.spbstu.gyboml.graphics.GraphicalTower;
 import ru.spbstu.gyboml.core.PlayerType;
+import ru.spbstu.gyboml.core.destructible.Material;
 import ru.spbstu.gyboml.core.physical.PhysicalBackground;
-import ru.spbstu.gyboml.core.physical.PhysicalBasicShot;
 import ru.spbstu.gyboml.core.physical.PhysicalBlock;
 import ru.spbstu.gyboml.core.physical.PhysicalCastle;
+import ru.spbstu.gyboml.core.physical.PhysicalShot;
 import ru.spbstu.gyboml.core.physical.PhysicalTower;
+import ru.spbstu.gyboml.core.shot.ShotType;
 
 /**
  * Initialized during client creation.
@@ -33,10 +35,10 @@ class GraphicalScene {
     private List<Drawable> drawables;
     private List<GraphicalBlock> destroyed;
     private List<GraphicalBlock> toRemoveFromDestroyed;
-    private List<GraphicalBasicShot> stopped;
-    private List<GraphicalBasicShot> toRemoveFromStopped;
+    private List<GraphicalShot> stopped;
+    private List<GraphicalShot> toRemoveFromStopped;
     private HashMap<PhysicalBlock, GraphicalBlock> blocks;
-    private HashMap<PhysicalBasicShot, GraphicalBasicShot> shots;
+    private HashMap<PhysicalShot, GraphicalShot> shots;
 
     private float SCALE;
     private float BLOCKS_SCALE;
@@ -67,15 +69,6 @@ class GraphicalScene {
         SCALE = canvasWidth / resolutionWidth;
         BLOCKS_SCALE = SCALE * 0.35f;
         SHOTS_SCALE  = SCALE * 0.22f;
-    }
-
-    void generateGraphicalShot(PhysicalBasicShot physicalShot) {
-        GraphicalBasicShot graphicalShot = new GraphicalBasicShot(objects.createSprite("shot_basic"), SHOTS_SCALE);
-        graphicalShot.setOrigin(0, 0);
-        graphicalShot.setPosition(physicalShot.getPosition().x, physicalShot.getPosition().y);
-        drawables.add(graphicalShot);
-        physicalShot.setUpdatableSprite(graphicalShot);
-        shots.put(physicalShot, graphicalShot);
     }
 
     void generateGraphicalBackground(PhysicalBackground physicalBackground) {
@@ -126,50 +119,50 @@ class GraphicalScene {
         drawables.add(graphicalForeground);
     }
 
+    void generateGraphicalShot(PhysicalShot physicalShot) {
+        GraphicalShot graphicalShot = new GraphicalShot(objects.createSprite("shot_" + physicalShot.shotType.getName()), SHOTS_SCALE);
+        graphicalShot.setOrigin(0, 0);
+        graphicalShot.setPosition(physicalShot.getPosition().x, physicalShot.getPosition().y);
+        drawables.add(graphicalShot);
+        physicalShot.setUpdatableSprite(graphicalShot);
+        shots.put(physicalShot, graphicalShot);
+    }
+
+    void generateGraphicalBlock(PhysicalBlock physicalBlock) {
+        GraphicalBlock graphicalBlock = new GraphicalBlock(
+                objects.createSprite("block_" + physicalBlock.material.getName()),
+                objects.createSprite("block_" + physicalBlock.material.getName() + "_damaged"),
+                BLOCKS_SCALE);
+        graphicalBlock.setOrigin(0,0);
+        graphicalBlock.setPosition(physicalBlock.getPosition().x, physicalBlock.getPosition().y);
+        drawables.add(graphicalBlock);
+        physicalBlock.setUpdatableSprite(graphicalBlock);
+        blocks.put(physicalBlock, graphicalBlock);
+    }
+
     /**
      * This method is implemented for demo. Called within buildScene() method.
      * Binds graphical blocks objects to its physical versions.
      */
     void bindBlocksGraphics(ArrayList<PhysicalBlock> physicalBlocksP1, ArrayList<PhysicalBlock> physicalBlocksP2) {
         for (PhysicalBlock block : physicalBlocksP1) {
-            GraphicalBlock graphicalBlockP1 = new GraphicalBlock(objects.createSprite("block_wood"), objects.createSprite("block_wood_damaged"), BLOCKS_SCALE);
-            graphicalBlockP1.setOrigin(0,0);
-            graphicalBlockP1.setPosition(block.getPosition().x, block.getPosition().y);
-            drawables.add(graphicalBlockP1);
-            block.setUpdatableSprite(graphicalBlockP1);
-            blocks.put(block, graphicalBlockP1);
+            generateGraphicalBlock(block);
         }
-
         for (PhysicalBlock block : physicalBlocksP2) {
-            GraphicalBlock graphicalBlockP2 = new GraphicalBlock(objects.createSprite("block_wood"), objects.createSprite("block_wood_damaged"), BLOCKS_SCALE);
-            graphicalBlockP2.setOrigin(0,0);
-            graphicalBlockP2.setPosition(block.getPosition().x, block.getPosition().y);
-            drawables.add(graphicalBlockP2);
-            block.setUpdatableSprite(graphicalBlockP2);
-            blocks.put(block, graphicalBlockP2);
+            generateGraphicalBlock(block);
         }
     }
 
     void removeBlock(PhysicalBlock block) {
+        destroyed.add(blocks.get(block));
         drawables.remove(blocks.get(block));
         blocks.remove(block);
-
-        GraphicalBlock destroyedBlock = new GraphicalBlock(objects.createSprite("block_wood_damaged"), objects.createSprite("block_wood_damaged"), BLOCKS_SCALE);
-        destroyedBlock.setOrigin(0,0);
-        destroyedBlock.setPosition(block.getPosition().x, block.getPosition().y);
-        destroyedBlock.setRotation((float)Math.toDegrees(block.getBody().getAngle()));
-        destroyed.add(destroyedBlock);
     }
 
-    void removeShot(PhysicalBasicShot shot) {
+    void removeShot(PhysicalShot shot) {
+        stopped.add(shots.get(shot));
         drawables.remove(shots.get(shot));
         shots.remove(shot);
-
-        GraphicalBasicShot stoppedShot = new GraphicalBasicShot(objects.createSprite("shot_basic"), SHOTS_SCALE);
-        stoppedShot.setOrigin(0,0);
-        stoppedShot.setPosition(shot.getPosition().x, shot.getPosition().y);
-        stoppedShot.setRotation((float)Math.toDegrees(shot.getBody().getAngle()));
-        stopped.add(stoppedShot);
     }
 
     float getScale() { return SCALE; }
@@ -184,13 +177,13 @@ class GraphicalScene {
 
     float getTowerWidth() { return objects.findRegion("tower_p1").originalWidth; }
 
-    float getShotBasicWidth() { return objects.findRegion("shot_basic").originalWidth; }
+    float getShotWidth(ShotType shotType) { return objects.findRegion("shot_" + shotType.getName()).originalWidth; }
 
-    float getShotBasicHeight() { return getShotBasicWidth(); }
+    float getShotHeight(ShotType shotType) { return objects.findRegion("shot_" + shotType.getName()).originalHeight; }
 
-    float getBlockWidth() { return objects.findRegion("block_wood").originalWidth; }
+    float getBlockWidth(Material material) { return objects.findRegion("block_" + material.getName()).originalWidth; }
 
-    float getBlockHeight() { return objects.findRegion("block_wood").originalHeight; }
+    float getBlockHeight(Material material) { return objects.findRegion("block_" + material.getName()).originalHeight; }
 
     void draw(Batch batch) {
         for (Drawable object : drawables) {
@@ -210,14 +203,14 @@ class GraphicalScene {
         }
 
         toRemoveFromStopped.clear();
-        for (GraphicalBasicShot shot : stopped) {
+        for (GraphicalShot shot : stopped) {
             shot.draw(batch);
             shot.getSprite().setAlpha(shot.getSprite().getColor().a - 0.03f);
             if (shot.getSprite().getColor().a <= 0.03f)
                 toRemoveFromStopped.add(shot);
         }
 
-        for (GraphicalBasicShot shot : toRemoveFromStopped) {
+        for (GraphicalShot shot : toRemoveFromStopped) {
             stopped.remove(shot);
         }
     }
