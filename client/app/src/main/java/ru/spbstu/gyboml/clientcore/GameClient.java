@@ -178,7 +178,8 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
 
         HPBar bar2 = new HPBar(100);
         physicalScene.connectWithHPBar(PlayerType.SECOND_PLAYER, bar2);
-        bar2.getHealthBar().setPosition(Gdx.graphics.getWidth() - 300, Gdx.graphics.getHeight() - 30);
+        bar2.getHealthBar().setPosition(Gdx.graphics.getWidth() - HPBar.width - 10,
+                Gdx.graphics.getHeight() - 30);
         stageForUI.addActor(bar2.getHealthBar());
     }
 
