@@ -28,7 +28,7 @@ public class HPBar implements DestructionListener {
         ProgressBar.ProgressBarStyle progressBarStyle = new ProgressBar.ProgressBarStyle();
         progressBarStyle.background = drawable;
 
-        pixmap = new Pixmap(10, 10, Pixmap.Format.RGBA8888);
+        pixmap = new Pixmap(0, 10, Pixmap.Format.RGBA8888);
         pixmap.setColor(Color.GREEN);
         pixmap.fill();
         drawable = new TextureRegionDrawable(
