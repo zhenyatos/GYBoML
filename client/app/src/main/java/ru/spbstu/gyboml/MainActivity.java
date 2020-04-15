@@ -20,12 +20,6 @@ public class MainActivity extends AndroidApplication {
         super.onCreate(savedInstanceState);
         AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
 
-        FrameLayout fl = new FrameLayout(this);
-        LayoutInflater inflater = getLayoutInflater();
-        View uiView = inflater.inflate(R.layout.ui, null, false);
-        View mainView = initializeForView(new GameClient(uiView), config);
-        fl.addView(mainView);
-        fl.addView(uiView);
-        setContentView(fl);
+        setContentView(initializeForView(new GameClient(), config));
     }
 }

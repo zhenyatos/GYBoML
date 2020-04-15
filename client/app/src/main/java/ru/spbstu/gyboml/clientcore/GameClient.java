@@ -10,16 +10,22 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 import android.location.Location;
 import android.view.View;
-import android.widget.Button;
 import android.widget.FrameLayout;
+
+import org.w3c.dom.Text;
 
 import main.java.ru.spbstu.gyboml.clientnet.Controller;
 
@@ -62,6 +68,9 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
     private static final float canvasWidth  = worldWidth + minWidth * (maxXRatio / minRatio - 1);
     private static final float canvasHeight = worldHeight + minHeight * (minRatio / maxYRatio - 1);
 
+    private static final float buttonWidth  = 200;
+    private static final float buttonHeight = 100;
+
     PhysicalScene  physicalScene;
     GraphicalScene graphicalScene;
 
@@ -73,19 +82,19 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
     private Stage stageForUI;
     private World world;
 
+    private Skin earthSkin;
+
     // connection
     private Controller controller = null;
     private final String serverName = "34.91.65.96";
     private final int serverPort = 4445;
     private MessageSender toServerMessageSender;
 
-    private View uiView;
+    private Table table;
 
-    public GameClient(View uiView) {
-        this.uiView = uiView;
-    }
+    private Table armoryCells;
+    private boolean visibleArmory;
 
-    public GameClient() {}
     // temp
     PlayerType playerTurn = PlayerType.FIRST_PLAYER;
 
@@ -138,34 +147,14 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
      * Creates the UI table and creates the layout of the UI elements.
      */
     private void setUpUI() {
-
-        Button endTurnButton = uiView.findViewById(R.id.endTurnButton);
-
-        endTurnButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                PassTurnGenerator generator = new PassTurnGenerator();
-                generator.generate(null, controller.getServerAddress(), controller.getServerPort(), controller);
-            }
-        });
-
-        Button fireButton = uiView.findViewById(R.id.fireButton);
-
-        fireButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            synchronized public void onClick(View v) {
-                physicalScene.generateShot(playerTurn);
-            }
-        });
-
-        /*
-        final float buttonWidth  = 200;
-        final float buttonHeight = 100;
         table = new Table();
+        table.setDebug(true);
         table.setBounds(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         stageForUI.addActor(table);
 
-        com.badlogic.gdx.scenes.scene2d.ui.Button endTurnButton = new TextButton("End Turn", new Skin(Gdx.files.internal("skin/flat-earth-ui.json")), "default");
+        earthSkin = new Skin(Gdx.files.internal("skin/flat-earth-ui.json"));
+
+        com.badlogic.gdx.scenes.scene2d.ui.Button endTurnButton = new TextButton("End Turn", earthSkin, "default");
         endTurnButton.addListener(new InputListener() {
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
@@ -182,11 +171,15 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
                 return true;
             }
         });
-        table.bottom().left();
-        table.add(endTurnButton).width(buttonWidth).height(buttonHeight);
-        table.getCell(endTurnButton).spaceRight(Gdx.graphics.getWidth() - 2 * buttonWidth);
+        table.top().left();
+        table.row();
+        setUpArmoryStorage();
+        table.add(new Actor());
+        table.row();
+        table.add(endTurnButton).width(buttonWidth).height(buttonHeight).
+                spaceRight(Gdx.graphics.getWidth() - 2 * buttonWidth);
 
-        com.badlogic.gdx.scenes.scene2d.ui.Button fireButton = new TextButton("Fire", new Skin(Gdx.files.internal("skin/flat-earth-ui.json")), "default");
+        Button fireButton = new TextButton("Fire", earthSkin, "default");
         fireButton.addListener(new InputListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
@@ -199,7 +192,48 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
             }
         });
         table.add(fireButton).width(buttonWidth).height(buttonHeight);
-        */
+    }
+
+    private void setUpArmoryStorage() {
+        Table armoryTable = new Table();
+        armoryCells = new Table();
+        visibleArmory = false;
+        armoryCells.setVisible(visibleArmory);
+
+
+        float heightFactor = 2 / 3.0f;
+        int
+                rowCount = 4,
+                columnCount = 4;
+        for (int y = 0; y < rowCount; y++) {
+            armoryCells.row();
+            for (int x = 0; x < columnCount; x++)
+                armoryCells.add(new TextButton("Cell " + y + ", " + x, earthSkin, "default")).
+                        height(buttonHeight * heightFactor);
+        }
+
+
+        Button showArmory = new TextButton("Show armory", earthSkin, "default");
+        showArmory.addListener(new InputListener() {
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                visibleArmory = !visibleArmory;
+                armoryCells.setVisible(visibleArmory);
+            }
+
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                return true;
+            }
+        });
+
+        armoryTable.row();
+        armoryTable.center().center();
+        armoryTable.add(showArmory).width(buttonWidth).height(buttonHeight);
+        armoryTable.add(armoryCells);
+
+
+        table.add(armoryTable).spaceBottom(Gdx.graphics.getHeight() - buttonHeight - rowCount * buttonHeight * heightFactor);
     }
 
 
