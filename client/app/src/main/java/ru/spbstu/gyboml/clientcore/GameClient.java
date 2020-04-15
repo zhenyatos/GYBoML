@@ -8,32 +8,18 @@ import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
-import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
-import com.badlogic.gdx.scenes.scene2d.ui.Container;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
-import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
-import main.java.ru.spbstu.gyboml.clientnet.Controller;
-
-import main.java.ru.spbstu.gyboml.clientnet.generating.ConnectionGenerator;
-import main.java.ru.spbstu.gyboml.clientnet.generating.PassTurnGenerator;
 import ru.spbstu.gyboml.core.PlayerType;
 import ru.spbstu.gyboml.core.shot.ShotType;
 
@@ -69,9 +55,6 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
     private Table table;
 
     // connection
-    private Controller controller = null;
-    private final String serverName = "34.91.65.96";
-    private final int serverPort = 4445;
     private MessageSender toServerMessageSender;
 
     // temp
@@ -110,19 +93,6 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
         viewport = new ExtendViewport(camera.viewportWidth, camera.viewportHeight, camera);
         camera.position.set(camera.viewportWidth / 2, camera.viewportHeight / 2, 0);
         camera.update();
-    
-        // create game net controller
-        try {
-            controller = new Controller(serverName, serverPort);
-        } catch (Exception error) {
-            System.out.println(error);
-
-        }
-        controller.start();
-
-        // establish connection to server
-        ConnectionGenerator generator = new ConnectionGenerator();
-        generator.generate(null, controller.getServerAddress(), controller.getServerPort(), controller);
     }
 
     /** This function sets up the UI. The name speaks for itself, really.
@@ -141,12 +111,6 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
         endTurnButton.addListener(new InputListener() {
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                //toServerMessageSender.nextTurnMessage();
-                PassTurnGenerator generator = new PassTurnGenerator();
-                generator.generate(null, controller.getServerAddress(), controller.getServerPort(), controller);
-
-                // temp
-                playerTurn = (playerTurn == PlayerType.FIRST_PLAYER) ? PlayerType.SECOND_PLAYER : PlayerType.FIRST_PLAYER;
             }
 
             @Override
@@ -218,7 +182,6 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
         batch.dispose();
         graphicalScene.dispose();
         stageForUI.dispose();
-        controller.interrupt();
     }
 
     /** Called when a finger or the mouse was dragged.
