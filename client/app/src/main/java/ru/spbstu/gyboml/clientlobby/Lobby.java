@@ -1,6 +1,7 @@
 package main.java.ru.spbstu.gyboml.clientlobby;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AlertDialog;
@@ -13,6 +14,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import main.java.ru.spbstu.gyboml.MainActivity;
+import main.java.ru.spbstu.gyboml.clientmenu.MainMenu;
 import ru.spbstu.gyboml.R;
 
 
@@ -26,6 +29,7 @@ public class Lobby extends AppCompatActivity {
     private Button exitButton;
     private String chosenSessionName;
     private int chosenSessionID;
+    private String username;
 
     private PlayerStatus playerStatus = PlayerStatus.FREE;
 
@@ -34,6 +38,9 @@ public class Lobby extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lobby);
+
+        Intent intent = getIntent();
+        username = intent.getStringExtra(MainMenu.PLAYER_NAME);
 
         gameSessionsView = findViewById(R.id.gameSessions);
         createNewSessionButton = findViewById(R.id.createSession);
@@ -145,6 +152,8 @@ public class Lobby extends AppCompatActivity {
         return new View.OnClickListener() {
             public void onClick(View v) {
                 //send message to server
+                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                startActivity(intent);
             }
         };
     }
