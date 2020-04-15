@@ -22,14 +22,19 @@ import main.java.ru.spbstu.gyboml.clientlobby.Lobby;
 import ru.spbstu.gyboml.R;
 
 public class MainMenu extends AppCompatActivity {
+    //Buttons
     private Button startButton;
     private Button exitButton;
+
+    //Name of the field that contains player's name and gets transferred on Lobby's startup
     public static final String PLAYER_NAME = "ru.spbstu.gyboml.clientmenu.PLAYER_NAME";
 
+    //Initializes the MainMenu
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_menu);
+
         startButton = findViewById(R.id.startButton);
         exitButton = findViewById(R.id.exitButton);
 

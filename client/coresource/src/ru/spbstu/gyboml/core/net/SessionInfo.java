@@ -30,4 +30,11 @@ public class SessionInfo {
         this.firstPlayer = firstPlayer;
         this.secondPlayer = secondPlayer;
     }
+
+    public String name() {return name;}
+    public int sessionId() {return sessionId;}
+    public int spaces() {return spaces;}
+    public Optional<Player> firstPlayer() {return firstPlayer;}
+    public Optional<Player> secondPlayer() {return secondPlayer;}
+
 }

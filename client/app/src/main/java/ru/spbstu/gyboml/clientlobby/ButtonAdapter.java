@@ -10,6 +10,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import ru.spbstu.gyboml.core.net.SessionInfo;
+
 public class ButtonAdapter extends RecyclerView.Adapter<ButtonAdapter.ButtonViewHolder> {
     private ArrayList<SessionInfo> sessions;
     private final HashMap<Integer, Integer> IDToPosMap = new HashMap<>();
@@ -25,38 +27,19 @@ public class ButtonAdapter extends RecyclerView.Adapter<ButtonAdapter.ButtonView
         }
     }
 
-    void add(int ID, String sessionName) {
-        sessions.add(new SessionInfo(ID, sessionName));
-        IDToPosMap.put(ID, sessions.size() - 1);
-        notifyItemInserted(sessions.size() - 1);
+    void update(ArrayList<SessionInfo> sessions) {
+        this.sessions = sessions;
+        notifyDataSetChanged();
     }
 
-    void remove(int ID) {
-        int pos = IDToPosMap.get(ID);
-        sessions.remove(pos);
-        IDToPosMap.remove(ID);
-        notifyItemRemoved(pos);
-    }
 
     ButtonAdapter() {
        sessions = new ArrayList<>();
+       sessions.add(new SessionInfo("EAT MY PANTS", 150, 2, null, null));
+       sessions.add(new SessionInfo("DRINK MY PANTS", 151, 2, null, null));
+       sessions.add(new SessionInfo("SNIFF MY PANTS", 152, 2, null, null));
     }
 
-    public ButtonAdapter(int[] IDs, String[] names) {
-        this();
-        for (int i = 0; i < IDs.length; i++) {
-            sessions.add(new SessionInfo(IDs[i], names[i]));
-            IDToPosMap.put(IDs[i], i);
-        }
-
-    }
-
-    public ButtonAdapter(ArrayList<SessionInfo> sessions) {
-        this.sessions = sessions;
-        for (int i = 0; i < sessions.size(); i++) {
-            IDToPosMap.put(sessions.get(i).ID, i);
-        }
-    }
 
     public void setOnClickListener(View.OnClickListener onClickListener) {
         this.onClickListener = onClickListener;
@@ -78,8 +61,8 @@ public class ButtonAdapter extends RecyclerView.Adapter<ButtonAdapter.ButtonView
     public void onBindViewHolder(ButtonViewHolder holder, int position) {
         SessionInfo session = sessions.get(position);
         holder.sessionButton.setEnabled(touchEnabled);
-        holder.sessionButton.setText(session.name);
-        holder.sessionButton.setId(session.ID);
+        holder.sessionButton.setText(session.name());
+        holder.sessionButton.setId(session.sessionId());
     }
 
     @Override
