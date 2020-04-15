@@ -1,8 +1,5 @@
-/out
-/target
-/build
-*.class
-/.idea
+.classpath
+.project
+/.vscode
 /.settings
-*.iml
-
+/target

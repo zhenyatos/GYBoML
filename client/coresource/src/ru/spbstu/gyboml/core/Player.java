@@ -1,5 +1,9 @@
 package ru.spbstu.gyboml.core;
 
+import com.esotericsoftware.kryonet.Connection;
+
+import java.util.Optional;
+
 /**
  * Class represents player in game.
  * */
@@ -11,14 +15,21 @@ public class Player {
     // current number of points
     private int points;
 
+    // kryonet connection
+    private Optional<Connection> connection = Optional.empty();
+    
+    // player name
+    private String name;
+
     /**
      * Class constructor.
      * @param initialPoints - initial number of points
      * @param isTurn - initial turn
      * */
-    public Player(int initialPoints, boolean isTurn) {
+    public Player(String name, int initialPoints, boolean isTurn) {
         points = initialPoints;
         this.isTurn = isTurn;
+        this.name = name;
     }
 
     /**
@@ -41,4 +52,16 @@ public class Player {
     public boolean isMyTurn() {
         return isTurn;
     }
+
+    public Optional<Connection> getConnection() {
+        return this.connection;
+    }
+    
+    public String name() { return this.name; }
+
+    public void setConnection(Connection conn) {
+        this.connection = Optional.of(conn);
+    }
+    
+    public void setName(String name) { this.name = name; }
 }
