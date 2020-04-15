@@ -5,20 +5,25 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.World;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.InputStream;
 
+import ru.spbstu.gyboml.core.damage.Damage;
 import ru.spbstu.gyboml.core.destructible.Destructible;
+import ru.spbstu.gyboml.core.destructible.DestructionEmitter;
 import ru.spbstu.gyboml.core.destructible.Material;
 import ru.spbstu.gyboml.core.util.PhysicsShapeCache;
 
 public class PhysicalBlock extends Destructible implements Physical, Movable, Interactable {
     private static final float BASE_HP = 100;
-
+    private DestructionEmitter destructionEmitter;
     private Body body;
     private Updatable sprite;
 
     public PhysicalBlock(Material material, Location location, World world) {
         super(BASE_HP, material);
+        destructionEmitter = new DestructionEmitter();
         InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(PHYSICS_PATH_OBJECTS);
 
         PhysicsShapeCache physicsShapeCache = new PhysicsShapeCache(is);
@@ -60,5 +65,16 @@ public class PhysicalBlock extends Destructible implements Physical, Movable, In
 
     public Body getBody() {
         return body;
+    }
+
+    public DestructionEmitter getDestructionEmitter() {
+        return destructionEmitter;
+    }
+
+    @Override
+    public void handleDamage(@NotNull Damage damage) {
+        if (damage.value > 0)
+            destructionEmitter.destruction(damage.value);
+        super.handleDamage(damage);
     }
 }

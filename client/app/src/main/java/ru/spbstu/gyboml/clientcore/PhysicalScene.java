@@ -8,10 +8,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ru.spbstu.gyboml.core.PlayerType;
+import ru.spbstu.gyboml.core.destructible.DestructionListener;
 import ru.spbstu.gyboml.core.destructible.Material;
 import ru.spbstu.gyboml.core.physical.CollisionHandler;
 import ru.spbstu.gyboml.core.physical.Location;
 import ru.spbstu.gyboml.core.physical.Movable;
+import ru.spbstu.gyboml.core.physical.Physical;
 import ru.spbstu.gyboml.core.physical.PhysicalBackground;
 import ru.spbstu.gyboml.core.physical.PhysicalBasicShot;
 import ru.spbstu.gyboml.core.physical.PhysicalBlock;
@@ -26,6 +28,11 @@ import ru.spbstu.gyboml.core.shot.ShotType;
  */
 class PhysicalScene {
     private final GraphicalScene graphicalScene;
+
+    // Sound
+    private final SoundEffects soundEffects;
+    private DestructionListener blockSounds;
+
     private final World world;
 
     private List<Movable> movables;
@@ -57,6 +64,14 @@ class PhysicalScene {
         SCALE               = graphicalScene.getScale();
         BLOCKS_SCALE        = graphicalScene.getBlockScale();
         SHOTS_SCALE         = graphicalScene.getShotsScale();
+
+        soundEffects = SoundEffects.get();
+        blockSounds = new DestructionListener() {
+            @Override
+            public void destructionOccured(float newHP) {
+                soundEffects.wood.play(1.f);
+            }
+        };
 
         world = new World(new Vector2(gravityAccelerationX, gravityAccelerationY), true);
         world.setContactListener(new CollisionHandler());
@@ -142,6 +157,12 @@ class PhysicalScene {
         physicalBlocksP1.add(new PhysicalBlock(material, new Location(castleP1X - 60 * SCALE - blockWoodTextureWidth * BLOCKS_SCALE, blockP1Y + 1.2f * blockWoodTextureHeight * BLOCKS_SCALE, 0, BLOCKS_SCALE), world));
         physicalBlocksP2.add(new PhysicalBlock(material, new Location(castleP2X + (castleTextureWidth + 60) * SCALE, blockP2Y, 0, BLOCKS_SCALE), world));
         physicalBlocksP2.add(new PhysicalBlock(material, new Location(castleP2X + (castleTextureWidth + 60) * SCALE, blockP2Y + 1.2f * blockWoodTextureHeight * BLOCKS_SCALE, 0, BLOCKS_SCALE), world));
+
+        for (PhysicalBlock block : physicalBlocksP1)
+            block.getDestructionEmitter().addListener(blockSounds);
+
+        for (PhysicalBlock block : physicalBlocksP2)
+            block.getDestructionEmitter().addListener(blockSounds);
     }
 
     void generateShot(PlayerType playerTurn, ShotType shotType) {
