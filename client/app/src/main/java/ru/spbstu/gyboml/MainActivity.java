@@ -15,13 +15,6 @@ public class MainActivity extends AndroidApplication {
     @Override
     protected void onCreate (Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Intent intent = new Intent(this, Lobby.class);
-        try {
-            startActivity(intent);
-        }
-        catch(Exception e) {
-            Log.e("ExceptionTag", e.getMessage(), e);
-        }
         AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
         initialize(new GameClient(), config);
 
