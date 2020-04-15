@@ -21,6 +21,7 @@ public class Network {
         kryo.register(Requests.CreateLobby.class);
         kryo.register(Responses.LobbyCreated.class);
         kryo.register(Responses.ServerError.class);
+        kryo.register(SessionInfo.class);
         kryo.register(String[].class);
     }
 }

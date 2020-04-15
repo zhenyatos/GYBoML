@@ -30,9 +30,9 @@ public class Responses {
      * Take lobbies from server response.
      */
     public static class TakeLobbies {
-        List<Lobby> lobbies;
+        List<SessionInfo> lobbies;
 
-        public TakeLobbies(List<Lobby> lobbies) {
+        public TakeLobbies(List<SessionInfo> lobbies) {
             this.lobbies = lobbies;
         }
     }

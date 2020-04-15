@@ -5,10 +5,10 @@ import java.util.Optional;
 import ru.spbstu.gyboml.core.Player;
 
 /**
- * Class repersents lobby
+ * Class repersents one session lobby menu
  * Only for serialization and transfer between server and client.
  * */
-public class Lobby {
+public class SessionInfo {
 
     // id of related server session
     private int sessionId;
@@ -23,7 +23,7 @@ public class Lobby {
     private Optional<Player> firstPlayer;
     private Optional<Player> secondPlayer;
 
-    public Lobby(String name, int sessionId, int spaces, Optional<Player> firstPlayer, Optional<Player> secondPlayer) {
+    public SessionInfo(String name, int sessionId, int spaces, Optional<Player> firstPlayer, Optional<Player> secondPlayer) {
         this.name = name;
         this.sessionId = sessionId;
         this.spaces = spaces;

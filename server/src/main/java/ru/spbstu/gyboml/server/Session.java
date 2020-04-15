@@ -6,7 +6,7 @@ import java.util.function.Function;
 import com.esotericsoftware.kryonet.Connection;
 
 import ru.spbstu.gyboml.core.Player;
-import ru.spbstu.gyboml.core.net.Lobby;
+import ru.spbstu.gyboml.core.net.SessionInfo;
 
 public class Session {
 
@@ -76,8 +76,8 @@ public class Session {
      * Need for transfering between server and client
      * @return
      */
-    public Lobby toLobby() {
-        return new Lobby(this.name, this.id, spaces(), firstPlayer, secondPlayer);
+    public SessionInfo toSessionInfo() {
+        return new SessionInfo(this.name, this.id, spaces(), firstPlayer, secondPlayer);
     }
 
     //getters

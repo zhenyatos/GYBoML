@@ -6,8 +6,8 @@ import java.util.stream.Collectors;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 
-import ru.spbstu.gyboml.core.net.Lobby;
 import ru.spbstu.gyboml.core.net.Responses;
+import ru.spbstu.gyboml.core.net.SessionInfo;
 import ru.spbstu.gyboml.core.net.Requests.ConnectLobby;
 import ru.spbstu.gyboml.core.net.Requests.CreateLobby;
 import ru.spbstu.gyboml.core.net.Requests.GetLobbies;
@@ -59,8 +59,8 @@ public class ServerListener extends Listener {
 
             session.add(connection, connection.name());
         } else if (object instanceof GetLobbies) {
-            List<Lobby> lobbies = main.sessionMap.values().stream()
-                                    .map(Session::toLobby)
+            List<SessionInfo> lobbies = main.sessionMap.values().stream()
+                                    .map(Session::toSessionInfo)
                                     .collect(Collectors.toList());
 
             c.sendTCP(new Responses.TakeLobbies(lobbies));
