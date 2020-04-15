@@ -4,6 +4,7 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -57,6 +58,7 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
 
     PhysicalScene  physicalScene;
     GraphicalScene graphicalScene;
+    SoundEffects soundEffects;
 
     // drawing and stuff
     private Box2DDebugRenderer debugRenderer;
@@ -99,6 +101,7 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
 
         graphicalScene = new GraphicalScene(canvasWidth, canvasHeight);
         physicalScene  = new PhysicalScene(graphicalScene, backgroundX, backgroundY);
+        soundEffects = SoundEffects.get();
 
         // UI is setup after main game objects was created
         setUpUI();
@@ -166,6 +169,7 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
                 physicalScene.generateShot(playerTurn, shotType);
+                soundEffects.shot.play(1.f);
             }
         });
         table.add(fireButton).width(buttonWidth).height(buttonHeight);

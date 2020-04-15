@@ -177,7 +177,7 @@ class PhysicalScene {
                 return;
         }
 
-        physicalShot.setVelocity(new Vector2(sign * 20.f * cos, sign * 20.f * sin));
+        physicalShot.setVelocity(new Vector2(sign * 25.f * cos, sign * 25.f * sin));
         movables.add(physicalShot);
         physicalShots.add(physicalShot);
         graphicalScene.generateGraphicalShot(physicalShot);
