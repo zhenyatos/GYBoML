@@ -10,7 +10,7 @@ public class DestructionEmitter {
         listeners.add(listener);
     }
 
-    public void destruction(int newHP) {
+    public void destruction(float newHP) {
         for (DestructionListener listener : listeners)
             listener.destructionOccured(newHP);
     }

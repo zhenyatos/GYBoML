@@ -12,7 +12,7 @@ import ru.spbstu.gyboml.core.destructible.Material;
 import ru.spbstu.gyboml.core.util.PhysicsShapeCache;
 
 public class PhysicalBlock extends Destructible implements Physical, Movable, Interactable {
-    private static final int BASE_HP = 100;
+    private static final float BASE_HP = 100;
 
     private Body body;
     private Updatable sprite;

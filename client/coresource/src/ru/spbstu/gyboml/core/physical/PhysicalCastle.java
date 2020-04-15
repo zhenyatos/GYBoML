@@ -23,7 +23,7 @@ public class PhysicalCastle extends Destructible implements Physical, Interactab
     private PlayerType playerType;
     private DestructionEmitter destructionEmitter;
 
-    public PhysicalCastle(int HP, Location location, PlayerType playerType, World world) {
+    public PhysicalCastle(float HP, Location location, PlayerType playerType, World world) {
         super(HP, Material.STONE);
         this.playerType = playerType;
 
