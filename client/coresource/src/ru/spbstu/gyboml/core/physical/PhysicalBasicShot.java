@@ -11,7 +11,7 @@ import ru.spbstu.gyboml.core.shot.ShotType;
 import ru.spbstu.gyboml.core.util.PhysicsShapeCache;
 
 public class PhysicalBasicShot extends PhysicalShot {
-    private static final int BASE_DAMAGE = 50;
+    private static final float BASE_DAMAGE = 50;
     private boolean damaged = false;
 
     public PhysicalBasicShot(Location location, World world) {
@@ -28,7 +28,7 @@ public class PhysicalBasicShot extends PhysicalShot {
     public Damage generateDamage(Destructible destructible) {
         if (!damaged) {
             damaged = true;
-            return new Damage((int) (BASE_DAMAGE * (1 - destructible.material.getDefenceRatio())));
+            return new Damage((BASE_DAMAGE * (1 - destructible.material.getDefenceRatio())));
         }
         return new Damage(0);
     }

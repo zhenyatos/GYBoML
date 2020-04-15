@@ -11,12 +11,12 @@ import ru.spbstu.gyboml.core.destructible.DestructionListener;
 
 public class HPBar implements DestructionListener {
     private ProgressBar healthBar;
-    private int basicHP;
+    private float basicHP;
     public static final float width = 290;
     public static final float height = 20;
     public static final float animateDuration = 0.25f;
 
-    public HPBar(int basicHP) {
+    public HPBar(float basicHP) {
         this.basicHP = basicHP;
         Pixmap pixmap = new Pixmap(10, 10, Pixmap.Format.RGBA8888);
         pixmap.setColor(Color.RED);
@@ -53,8 +53,8 @@ public class HPBar implements DestructionListener {
     }
 
     @Override
-    public void destructionOccured(int newHP) {
-        healthBar.setValue((float)newHP / basicHP);
+    public void destructionOccured(float newHP) {
+        healthBar.setValue(newHP / basicHP);
     }
 
     public ProgressBar getHealthBar() {

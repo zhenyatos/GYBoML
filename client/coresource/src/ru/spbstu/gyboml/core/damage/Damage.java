@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Damage {
-    public final int value;
+    public final float value;
     private List<Effect> effects;
 
-    public Damage(int value) {
+    public Damage(float value) {
         this.value = Math.max(value, 0);  // damage can't be negative
         effects = new ArrayList<>();
     }
