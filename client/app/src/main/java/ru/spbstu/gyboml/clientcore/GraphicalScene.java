@@ -136,10 +136,12 @@ class GraphicalScene {
         physicalShot.setUpdatableSprite(graphicalShot);
         shots.put(physicalShot, graphicalShot);
 
-        animations.add(new AnimatedExplosion(
-                physicalShot.getPosition().x - EXPLOSION_SCALE * Math.abs(AnimatedExplosion.FRAME_WIDTH  - objects.findRegion(spriteName).originalWidth)  / 2f,
-                physicalShot.getPosition().y - EXPLOSION_SCALE * Math.abs(AnimatedExplosion.FRAME_HEIGHT - objects.findRegion(spriteName).originalHeight) / 2f,
-                EXPLOSION_SCALE));
+        float explosionX = (physicalShot.playerType == PlayerType.FIRST_PLAYER) ?
+                physicalShot.getPosition().x -  SHOTS_SCALE * objects.findRegion(spriteName).originalWidth / 2f :
+                physicalShot.getPosition().x + (SHOTS_SCALE * objects.findRegion(spriteName).originalWidth - EXPLOSION_SCALE * AnimatedExplosion.FRAME_WIDTH) / 2f;
+        float explosionY = physicalShot.getPosition().y - Math.abs(EXPLOSION_SCALE * AnimatedExplosion.FRAME_HEIGHT - SHOTS_SCALE * objects.findRegion(spriteName).originalHeight) / 2f;
+
+        animations.add(new AnimatedExplosion(explosionX, explosionY, EXPLOSION_SCALE));
     }
 
     void generateGraphicalBlock(PhysicalBlock physicalBlock) {
