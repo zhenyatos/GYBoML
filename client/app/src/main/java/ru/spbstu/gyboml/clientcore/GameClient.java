@@ -1,34 +1,28 @@
 package main.java.ru.spbstu.gyboml.clientcore;
 
+import android.text.Layout;
+
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
-import com.badlogic.gdx.InputProcessor;
-import com.badlogic.gdx.audio.Sound;
-import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.InputProcessor;;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
-import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
-import com.badlogic.gdx.scenes.scene2d.ui.Container;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
-import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+
+import java.util.ArrayList;
 
 import main.java.ru.spbstu.gyboml.clientnet.Controller;
 
@@ -65,8 +59,12 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
     private SpriteBatch batch;
     private OrthographicCamera camera;
     private ExtendViewport viewport;
+
+    //UI
     private Stage stageForUI;
     private Table table;
+    private final ArrayList<Button> buttons = new ArrayList<>();
+    //private Label victoryLabel;
 
     // connection
     private Controller controller = null;
@@ -136,8 +134,10 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
 
         stageForUI.addActor(table);
 
+        Skin UISkin = new Skin(Gdx.files.internal("skin/flat-earth-ui.json"));
+
         // End turn button
-        Button endTurnButton = new TextButton("End Turn", new Skin(Gdx.files.internal("skin/flat-earth-ui.json")), "default");
+        Button endTurnButton = new TextButton("End Turn", UISkin, "default");
         endTurnButton.addListener(new InputListener() {
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
@@ -157,9 +157,10 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
         table.bottom().left();
         table.add(endTurnButton).width(buttonWidth).height(buttonHeight);
         table.getCell(endTurnButton).spaceRight(Gdx.graphics.getWidth() - 2 * buttonWidth);
+        buttons.add(endTurnButton);
 
         // Fire button
-        Button fireButton = new TextButton("Fire", new Skin(Gdx.files.internal("skin/flat-earth-ui.json")), "default");
+        Button fireButton = new TextButton("Fire", UISkin, "default");
         fireButton.addListener(new InputListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
@@ -173,6 +174,17 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
             }
         });
         table.add(fireButton).width(buttonWidth).height(buttonHeight);
+        buttons.add(fireButton);
+
+        //Game over labels
+        Label victoryLabel = new Label("Victory!", UISkin, "title");
+        victoryLabel.setPosition(Gdx.graphics.getWidth() / 2f - victoryLabel.getWidth() / 2f,
+                Gdx.graphics.getHeight() / 2f - victoryLabel.getHeight() / 2f);
+        stageForUI.addActor(victoryLabel);
+        Label defeatLabel = new Label("Defeat!", UISkin, "title");
+        defeatLabel.setPosition(Gdx.graphics.getWidth() / 2f - defeatLabel.getWidth() / 2f,
+                Gdx.graphics.getHeight() / 2f - defeatLabel.getHeight() / 2f);
+        physicalScene.connectWithGameOver(playerTurn, new GameOver(this, victoryLabel, defeatLabel));
 
         // HP progress bar
         HPBar bar1 = new HPBar(100);
@@ -205,6 +217,7 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
 
         stageForUI.act(Gdx.graphics.getDeltaTime());
         stageForUI.draw();
+
 
         debugRenderer.render(physicalScene.getWorld(), camera.combined);
     }
@@ -261,6 +274,11 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
     public void resize(int width, int height) {
         viewport.update(width, height, false);
         stageForUI.getViewport().update(width, height, false);
+    }
+
+    void disableButtons() {
+        for (Button button : buttons)
+            button.setTouchable(Touchable.disabled);
     }
 
     /** Called when key is pressed, fires with P1 cannon
