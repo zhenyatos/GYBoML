@@ -36,7 +36,6 @@ public class Lobby extends AppCompatActivity {
 
     //User info
     private String chosenSessionName;
-    private int chosenSessionID;
     private String username;
 
     private PlayerStatus playerStatus = PlayerStatus.FREE;
@@ -133,7 +132,7 @@ public class Lobby extends AppCompatActivity {
     private View.OnClickListener getSessionButtonListener() {
         return new View.OnClickListener() {
             public void onClick(View v) {
-                chosenSessionID = v.getId();
+                sessionsAdapter.chosenSessionID = v.getId();
                 //Send message to server
                 playerStatus = PlayerStatus.SESSIONJOINED; //Move to Lobby's listener
                 sessionsAdapter.disableTouch(); //Move to Lobby's listener
@@ -149,6 +148,7 @@ public class Lobby extends AppCompatActivity {
                 //tell server to remove player from session
                 playerStatus = PlayerStatus.FREE; //Move to Lobby's listener
                 sessionsAdapter.enableTouch(); //Move to Lobby's listener
+                sessionsAdapter.chosenSessionID = null; //Move to Lobby's listener
                 notInSessionView(); //Move to Lobby's listener
             }
         };
@@ -168,11 +168,13 @@ public class Lobby extends AppCompatActivity {
         return new ToggleButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
+                if (!isChecked) {
                     //Send message to server, player is not ready anymore
+                    exitButton.setEnabled(true);
                 }
                 else {
                     //Send message to server, player is ready now
+                    exitButton.setEnabled(false); //Can't leave session when you're ready
                 }
             }
         };
@@ -180,7 +182,7 @@ public class Lobby extends AppCompatActivity {
 
     //Starts up the game, duh
     private void gameStartUp() {
-        Intent intent = new Intent(getApplicationContext(), MainActivity.class); //Move to Lobby's listener
+        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
         startActivity(intent);
     }
 

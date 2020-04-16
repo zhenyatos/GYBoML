@@ -1,7 +1,9 @@
 package main.java.ru.spbstu.gyboml.clientlobby;
 
+import static android.graphics.Color.GREEN;
 import static android.view.ViewGroup.LayoutParams;
 
+import android.graphics.PorterDuff;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -17,6 +19,8 @@ public class ButtonAdapter extends RecyclerView.Adapter<ButtonAdapter.ButtonView
     private final HashMap<Integer, Integer> IDToPosMap = new HashMap<>();
     private boolean touchEnabled = true;
     private View.OnClickListener onClickListener;
+
+    Integer chosenSessionID = null;
 
     public static class ButtonViewHolder extends RecyclerView.ViewHolder {
 
@@ -40,7 +44,6 @@ public class ButtonAdapter extends RecyclerView.Adapter<ButtonAdapter.ButtonView
        sessions.add(new SessionInfo("SNIFF MY PANTS", 152, 2, null, null));
     }
 
-
     public void setOnClickListener(View.OnClickListener onClickListener) {
         this.onClickListener = onClickListener;
     }
@@ -63,6 +66,10 @@ public class ButtonAdapter extends RecyclerView.Adapter<ButtonAdapter.ButtonView
         holder.sessionButton.setEnabled(touchEnabled);
         holder.sessionButton.setText(session.name());
         holder.sessionButton.setId(session.sessionId());
+        if (chosenSessionID != null && chosenSessionID == session.sessionId())
+            holder.sessionButton.getBackground().setColorFilter(GREEN, PorterDuff.Mode.MULTIPLY);
+        else
+            holder.sessionButton.getBackground().clearColorFilter();
     }
 
     @Override
