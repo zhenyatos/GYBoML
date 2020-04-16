@@ -1,6 +1,5 @@
 package main.java.ru.spbstu.gyboml.clientcore;
 
-import android.text.Layout;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
@@ -23,6 +22,7 @@ import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import main.java.ru.spbstu.gyboml.clientnet.Controller;
 
@@ -63,7 +63,7 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
     //UI
     private Stage stageForUI;
     private Table table;
-    private final ArrayList<Button> buttons = new ArrayList<>();
+    private final List<Button> buttons = new ArrayList<>();
     //private Label victoryLabel;
 
     // connection
