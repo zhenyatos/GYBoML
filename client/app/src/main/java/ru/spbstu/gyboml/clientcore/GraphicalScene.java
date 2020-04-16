@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import main.java.ru.spbstu.gyboml.graphics.Animated;
+import main.java.ru.spbstu.gyboml.graphics.AnimatedExplosion;
 import main.java.ru.spbstu.gyboml.graphics.Drawable;
 import main.java.ru.spbstu.gyboml.graphics.GraphicalBackground;
 import main.java.ru.spbstu.gyboml.graphics.GraphicalShot;
@@ -33,6 +35,8 @@ class GraphicalScene {
     private final float canvasHeight;
     private final float resolutionWidth;
     private List<Drawable> drawables;
+    private List<Animated> animations;
+    private List<Animated> toRemoveFromAnimations;
     private List<GraphicalBlock> destroyed;
     private List<GraphicalBlock> toRemoveFromDestroyed;
     private List<GraphicalShot> stopped;
@@ -43,6 +47,7 @@ class GraphicalScene {
     private float SCALE;
     private float BLOCKS_SCALE;
     private float SHOTS_SCALE;
+    private float EXPLOSION_SCALE;
 
     // scene graphics
     private TextureAtlas backgroundBack;
@@ -53,10 +58,12 @@ class GraphicalScene {
         this.canvasWidth  = canvasWidth;
         this.canvasHeight = canvasHeight;
         drawables = new ArrayList<>();
+        animations = new ArrayList<>();
         destroyed = new ArrayList<>();
         stopped = new ArrayList<>();
         toRemoveFromDestroyed = new ArrayList<>();
         toRemoveFromStopped = new ArrayList<>();
+        toRemoveFromAnimations = new ArrayList<>();
         blocks = new HashMap<>();
         shots = new HashMap<>();
 
@@ -69,6 +76,7 @@ class GraphicalScene {
         SCALE = canvasWidth / resolutionWidth;
         BLOCKS_SCALE = SCALE * 0.35f;
         SHOTS_SCALE  = SCALE * 0.22f;
+        EXPLOSION_SCALE = SCALE * 0.85f;
     }
 
     void generateGraphicalBackground(PhysicalBackground physicalBackground) {
@@ -120,12 +128,20 @@ class GraphicalScene {
     }
 
     void generateGraphicalShot(PhysicalShot physicalShot) {
-        GraphicalShot graphicalShot = new GraphicalShot(objects.createSprite("shot_" + physicalShot.shotType.getName()), SHOTS_SCALE);
+        String spriteName = "shot_" + physicalShot.shotType.getName();
+        GraphicalShot graphicalShot = new GraphicalShot(objects.createSprite(spriteName), SHOTS_SCALE);
         graphicalShot.setOrigin(0, 0);
         graphicalShot.setPosition(physicalShot.getPosition().x, physicalShot.getPosition().y);
         drawables.add(graphicalShot);
         physicalShot.setUpdatableSprite(graphicalShot);
         shots.put(physicalShot, graphicalShot);
+
+        float explosionX = (physicalShot.playerType == PlayerType.FIRST_PLAYER) ?
+                physicalShot.getPosition().x -  SHOTS_SCALE * objects.findRegion(spriteName).originalWidth / 2f :
+                physicalShot.getPosition().x + (SHOTS_SCALE * objects.findRegion(spriteName).originalWidth - EXPLOSION_SCALE * AnimatedExplosion.FRAME_WIDTH) / 2f;
+        float explosionY = physicalShot.getPosition().y - Math.abs(EXPLOSION_SCALE * AnimatedExplosion.FRAME_HEIGHT - SHOTS_SCALE * objects.findRegion(spriteName).originalHeight) / 2f;
+
+        animations.add(new AnimatedExplosion(explosionX, explosionY, EXPLOSION_SCALE));
     }
 
     void generateGraphicalBlock(PhysicalBlock physicalBlock) {
@@ -212,6 +228,16 @@ class GraphicalScene {
 
         for (GraphicalShot shot : toRemoveFromStopped) {
             stopped.remove(shot);
+        }
+
+        for (Animated animated : animations) {
+            animated.draw(batch);
+            if (animated.isFinished())
+                toRemoveFromAnimations.add(animated);
+        }
+
+        for (Animated animated : toRemoveFromAnimations) {
+            animations.remove(animated);
         }
     }
 

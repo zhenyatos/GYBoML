@@ -198,6 +198,7 @@ class PhysicalScene {
                 return;
         }
 
+        physicalShot.playerType = playerTurn;
         physicalShot.setVelocity(new Vector2(sign * 25.f * cos, sign * 25.f * sin));
         movables.add(physicalShot);
         physicalShots.add(physicalShot);
