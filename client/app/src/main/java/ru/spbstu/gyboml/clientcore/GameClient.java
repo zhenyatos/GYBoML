@@ -4,7 +4,6 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -14,7 +13,6 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -48,8 +46,12 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
     private static final float canvasWidth  = worldWidth + minWidth * (maxXRatio / minRatio - 1);
     private static final float canvasHeight = worldHeight + minHeight * (minRatio / maxYRatio - 1);
 
-    private static final float buttonWidth  = 200;
-    private static final float buttonHeight = 100;
+    private static final float buttonWidth  = 200 / 1920.0f;
+    private static final float buttonHeight = 100 / 1080.0f;
+
+    private static final int armoryRowCount = 4;
+    private static final int armoryColumnCount = 4;
+    private static final float armoryChooseButtonWidthFactor = 2 / 3.0f;
 
     PhysicalScene  physicalScene;
     GraphicalScene graphicalScene;
@@ -141,13 +143,15 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
             }
         });
 
-        table.top().left();
+        table.bottom().left();
+        //table.row();
+        //table.add(new Actor());
         table.row();
+        table.add(endTurnButton).width(buttonWidth * Gdx.graphics.getWidth()).height(buttonHeight * Gdx.graphics.getHeight()).bottom();
+                //.spaceRight(Gdx.graphics.getWidth() - 2 * buttonWidth);
+
+        // here add button
         setUpArmoryStorage();
-        table.add(new Actor());
-        table.row();
-        table.add(endTurnButton).width(buttonWidth).height(buttonHeight).
-                spaceRight(Gdx.graphics.getWidth() - 2 * buttonWidth);
 
         // Fire button
         TextureRegionDrawable fireUp      = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("skin/buttons/fire_up.png"))));
@@ -165,7 +169,8 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
                 soundEffects.shot.play(1.f);
             }
         });
-        table.add(fireButton).width(buttonWidth).height(buttonHeight);
+        table.add(fireButton).width(buttonWidth * Gdx.graphics.getWidth()).height(buttonHeight * Gdx.graphics.getHeight()).bottom().
+            spaceLeft(Gdx.graphics.getWidth() * (1 - (3 + armoryColumnCount * armoryChooseButtonWidthFactor) * buttonWidth));
 
         // HP progress bar
         HPBar bar1 = new HPBar(100);
@@ -186,18 +191,13 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
         visibleArmory = false;
         armoryCells.setVisible(visibleArmory);
 
-
         earthSkin = new Skin(Gdx.files.internal("skin/flat-earth-ui.json"));
 
-        float heightFactor = 2 / 3.0f;
-        int
-                rowCount = 4,
-                columnCount = 4;
-        for (int y = 0; y < rowCount; y++) {
+        for (int y = 0; y < armoryRowCount; y++) {
             armoryCells.row();
-            for (int x = 0; x < columnCount; x++)
+            for (int x = 0; x < armoryColumnCount; x++)
                 armoryCells.add(new TextButton("Cell " + y + ", " + x, earthSkin, "default")).
-                        height(buttonHeight * heightFactor);
+                        width(buttonWidth * armoryChooseButtonWidthFactor * Gdx.graphics.getWidth());
         }
 
         // Show armory button
@@ -220,12 +220,13 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
         });
 
         armoryTable.row();
-        armoryTable.center().center();
-        armoryTable.add(showArmory).width(buttonWidth).height(buttonHeight);
+        armoryTable.bottom().left();
+        armoryTable.add(showArmory).width(buttonWidth * Gdx.graphics.getWidth()).height(buttonHeight * Gdx.graphics.getHeight()).bottom();
         armoryTable.add(armoryCells);
 
 
-        table.add(armoryTable).spaceBottom(Gdx.graphics.getHeight() - buttonHeight - rowCount * buttonHeight * heightFactor);
+        table.add(armoryTable);//.spaceBottom(Gdx.graphics.getHeight() -
+                //(buttonHeight + armoryRowCount * buttonHeight * heightFactor) * Gdx.graphics.getHeight());
     }
 
 
