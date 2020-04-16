@@ -4,50 +4,30 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.Vector2;
+
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
-import android.location.Location;
-import android.view.View;
-import android.widget.FrameLayout;
-
-import org.w3c.dom.Text;
-
-import main.java.ru.spbstu.gyboml.clientnet.Controller;
-
-import main.java.ru.spbstu.gyboml.clientnet.generating.ConnectionGenerator;
-import main.java.ru.spbstu.gyboml.clientnet.generating.PassTurnGenerator;
-// imported from core
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
-import main.java.ru.spbstu.gyboml.graphics.Drawable;
-import main.java.ru.spbstu.gyboml.graphics.GraphicalBackground;
-import main.java.ru.spbstu.gyboml.graphics.GraphicalBasicShot;
-import main.java.ru.spbstu.gyboml.graphics.GraphicalBlock;
-import main.java.ru.spbstu.gyboml.graphics.GraphicalCannon;
-import main.java.ru.spbstu.gyboml.graphics.GraphicalCastle;
-import main.java.ru.spbstu.gyboml.graphics.GraphicalForeground;
-import main.java.ru.spbstu.gyboml.graphics.GraphicalTower;
-import ru.spbstu.gyboml.R;
-
 import ru.spbstu.gyboml.core.PlayerType;
-import ru.spbstu.gyboml.core.physical.PhysicalBasicShot;
+import ru.spbstu.gyboml.core.shot.ShotType;
 
 /**
  * The GameClient class handles rendering, camera movement,
@@ -73,6 +53,7 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
 
     PhysicalScene  physicalScene;
     GraphicalScene graphicalScene;
+    SoundEffects soundEffects;
 
     // drawing and stuff
     private Box2DDebugRenderer debugRenderer;
@@ -85,9 +66,6 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
     private Skin earthSkin;
 
     // connection
-    private Controller controller = null;
-    private final String serverName = "34.91.65.96";
-    private final int serverPort = 4445;
     private MessageSender toServerMessageSender;
 
     private Table table;
@@ -97,6 +75,7 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
 
     // temp
     PlayerType playerTurn = PlayerType.FIRST_PLAYER;
+    ShotType shotType = ShotType.BASIC;
 
     /**
      * This is the method that is called on client's creation.
@@ -112,7 +91,6 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
         inputMultiplexer.addProcessor(stageForUI);
         inputMultiplexer.addProcessor(this);
         Gdx.input.setInputProcessor(inputMultiplexer);
-        setUpUI();
 
         debugRenderer = new Box2DDebugRenderer();
         batch = new SpriteBatch();
@@ -122,25 +100,15 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
 
         graphicalScene = new GraphicalScene(canvasWidth, canvasHeight);
         physicalScene  = new PhysicalScene(graphicalScene, backgroundX, backgroundY);
+        soundEffects = SoundEffects.get();
+
+        // UI is setup after main game objects was created
+        setUpUI();
 
         camera = new OrthographicCamera(minWidth, minHeight);
         viewport = new ExtendViewport(camera.viewportWidth, camera.viewportHeight, camera);
         camera.position.set(camera.viewportWidth / 2, camera.viewportHeight / 2, 0);
         camera.update();
-
-    
-        // create game net controller
-        try {
-            controller = new Controller(serverName, serverPort);
-        } catch (Exception error) {
-            System.out.println(error);
-
-        }
-        controller.start();
-
-        // establish connection to server
-        ConnectionGenerator generator = new ConnectionGenerator();
-        generator.generate(null, controller.getServerAddress(), controller.getServerPort(), controller);
     }
 
     /** This function sets up the UI. The name speaks for itself, really.
@@ -150,20 +118,21 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
         table = new Table();
         table.setDebug(true);
         table.setBounds(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+
         stageForUI.addActor(table);
 
-        earthSkin = new Skin(Gdx.files.internal("skin/flat-earth-ui.json"));
+        // End turn button
+        TextureRegionDrawable endTurnUp   = new TextureRegionDrawable(
+                new TextureRegion(
+                        new Texture(Gdx.files.internal("skin/buttons/endturn_up.png"))));
+        TextureRegionDrawable endTurnDown = new TextureRegionDrawable(
+                new TextureRegion(
+                        new Texture(Gdx.files.internal("skin/buttons/endturn_down.png"))));
+        ImageButton endTurnButton = new ImageButton(endTurnUp, endTurnDown);
 
-        com.badlogic.gdx.scenes.scene2d.ui.Button endTurnButton = new TextButton("End Turn", earthSkin, "default");
         endTurnButton.addListener(new InputListener() {
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                //toServerMessageSender.nextTurnMessage();
-                PassTurnGenerator generator = new PassTurnGenerator();
-                generator.generate(null, controller.getServerAddress(), controller.getServerPort(), controller);
-
-                // temp
-                playerTurn = (playerTurn == PlayerType.FIRST_PLAYER) ? PlayerType.SECOND_PLAYER : PlayerType.FIRST_PLAYER;
             }
 
             @Override
@@ -171,6 +140,7 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
                 return true;
             }
         });
+
         table.top().left();
         table.row();
         setUpArmoryStorage();
@@ -179,7 +149,10 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
         table.add(endTurnButton).width(buttonWidth).height(buttonHeight).
                 spaceRight(Gdx.graphics.getWidth() - 2 * buttonWidth);
 
-        Button fireButton = new TextButton("Fire", earthSkin, "default");
+        // Fire button
+        TextureRegionDrawable fireUp      = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("skin/buttons/fire_up.png"))));
+        TextureRegionDrawable fireDown    = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("skin/buttons/fire_down.png"))));
+        ImageButton fireButton = new ImageButton(fireUp, fireDown);
         fireButton.addListener(new InputListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
@@ -188,10 +161,23 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
 
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                physicalScene.generateShot(playerTurn);
+                physicalScene.generateShot(playerTurn, shotType);
+                soundEffects.shot.play(1.f);
             }
         });
         table.add(fireButton).width(buttonWidth).height(buttonHeight);
+
+        // HP progress bar
+        HPBar bar1 = new HPBar(100);
+        physicalScene.connectWithHPBar(PlayerType.FIRST_PLAYER, bar1);
+        bar1.getHealthBar().setPosition(10, Gdx.graphics.getHeight() - 30);
+        stageForUI.addActor(bar1.getHealthBar());
+
+        HPBar bar2 = new HPBar(100);
+        physicalScene.connectWithHPBar(PlayerType.SECOND_PLAYER, bar2);
+        bar2.getHealthBar().setPosition(Gdx.graphics.getWidth() - HPBar.width - 10,
+                Gdx.graphics.getHeight() - 30);
+        stageForUI.addActor(bar2.getHealthBar());
     }
 
     private void setUpArmoryStorage() {
@@ -200,6 +186,8 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
         visibleArmory = false;
         armoryCells.setVisible(visibleArmory);
 
+
+        earthSkin = new Skin(Gdx.files.internal("skin/flat-earth-ui.json"));
 
         float heightFactor = 2 / 3.0f;
         int
@@ -212,8 +200,12 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
                         height(buttonHeight * heightFactor);
         }
 
+        // Show armory button
+        TextureRegionDrawable armoryUp      = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("skin/buttons/armory_up.png"))));
+        TextureRegionDrawable armoryDown    = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("skin/buttons/armory_down.png"))));
+        TextureRegionDrawable armoryChecked = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("skin/buttons/armory_down.png"))));
+        ImageButton showArmory = new ImageButton(armoryUp, armoryDown, armoryChecked);
 
-        Button showArmory = new TextButton("Show armory", earthSkin, "default");
         showArmory.addListener(new InputListener() {
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
@@ -267,7 +259,6 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
         batch.dispose();
         graphicalScene.dispose();
         stageForUI.dispose();
-        controller.interrupt();
     }
 
     /** Called when a finger or the mouse was dragged.

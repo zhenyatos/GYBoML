@@ -51,4 +51,5 @@ dependencies {
     api "com.badlogicgames.gdx:gdx:$gdxVersion"
     api "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
     compile 'org.jetbrains:annotations:16.0.2'
+    api "com.esotericsoftware:kryonet:2.22.0-RC1"
 }

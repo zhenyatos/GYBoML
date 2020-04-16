@@ -6,9 +6,8 @@ import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Manifold;
 
+import ru.spbstu.gyboml.core.damage.Damage;
 import ru.spbstu.gyboml.core.destructible.Destructible;
-import ru.spbstu.gyboml.core.shot.Shot;
-import sun.security.krb5.internal.crypto.Des;
 
 public class CollisionHandler implements ContactListener {
     @Override
@@ -28,14 +27,43 @@ public class CollisionHandler implements ContactListener {
         // Shot - Block
         if (typeA == Type.BLOCK && typeB == Type.SHOT) {
             Destructible block = (Destructible) objA;
-            Shot shot = (Shot) objB;
+            PhysicalShot shot = (PhysicalShot) objB;
             block.handleDamage(shot.generateDamage(block));
             return;
         }
         if (typeA == Type.SHOT && typeB == Type.BLOCK) {
-            Shot shot = (Shot) objA;
+            PhysicalShot shot = (PhysicalShot) objA;
             Destructible block = (Destructible) objB;
             block.handleDamage(shot.generateDamage(block));
+            return;
+        }
+
+        // Shot - Castle
+        if (typeA == Type.SHOT && typeB == Type.CASTLE) {
+            PhysicalShot shot = (PhysicalShot) objA;
+            PhysicalCastle castle = (PhysicalCastle) objB;
+            if (bodyB == castle.getFront())
+                castle.handleDamage(shot.generateDamage(castle));
+            else {
+                Damage damage = shot.generateDamage(castle);
+                // Double the damage
+                castle.handleDamage(damage);
+                castle.handleDamage(damage);
+            }
+            System.out.println(castle.getHP());
+            return;
+        }
+        if (typeA == Type.CASTLE && typeB == Type.SHOT) {
+            PhysicalCastle castle = (PhysicalCastle) objA;
+            PhysicalShot shot = (PhysicalShot) objB;
+            if (bodyA == castle.getFront())
+                castle.handleDamage(shot.generateDamage(castle));
+            else {
+                Damage damage = shot.generateDamage(castle);
+                // Double the damage
+                castle.handleDamage(damage);
+                castle.handleDamage(damage);
+            }
             return;
         }
     }

@@ -2,7 +2,6 @@ package main.java.ru.spbstu.gyboml.graphics;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 
 import ru.spbstu.gyboml.core.physical.Updatable;
@@ -19,6 +18,8 @@ public class GraphicalBlock implements Drawable, Updatable {
         this.damagedBlock  = damagedBlock;
         this.currentSprite = intactBlock;
     }
+
+    public Sprite getCurrentSprite() { return currentSprite; }
 
     @Override
     public void draw(Batch batch) {

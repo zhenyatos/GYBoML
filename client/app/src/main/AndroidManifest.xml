@@ -1,22 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="ru.spbstu.gyboml" >
+    package="ru.spbstu.gyboml">
 
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:allowBackup="true"
+        android:appCategory="game"
         android:icon="@mipmap/ic_launcher"
         android:isGame="true"
-        android:appCategory="game"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/GdxTheme" >
+        android:theme="@style/GdxTheme">
+        <!--<activity
+            android:name="main.java.ru.spbstu.gyboml.clientmenu.MainMenu"
+            android:label="title_activity_main_menu"
+            android:theme="@style/GdxTheme.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="main.java.ru.spbstu.gyboml.clientlobby.Lobby"
+            android:label="gyboml"
+            android:theme="@style/GdxTheme.NoActionBar">
+        </activity>-->
         <activity
             android:name="main.java.ru.spbstu.gyboml.MainActivity"
+            android:configChanges="keyboard|keyboardHidden|navigation|orientation|screenSize|screenLayout"
             android:label="gyboml"
-            android:screenOrientation="landscape"
-            android:configChanges="keyboard|keyboardHidden|navigation|orientation|screenSize|screenLayout">
+            android:screenOrientation="landscape">
+            <!-- remove intent later-->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -24,4 +41,5 @@
             </intent-filter>
         </activity>
     </application>
+
 </manifest>

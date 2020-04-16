@@ -9,11 +9,11 @@ import java.util.List;
 
 public class Destructible {
     public final Material material;
-    protected final int initialHP;
-    private int HP;
+    protected final float initialHP;
+    private float HP;
     private List<Effect> activeEffects;
 
-    public Destructible(int HP, Material material) {
+    public Destructible(float HP, Material material) {
         this.material  = material;
         this.initialHP = HP;
         this.HP        = HP;
@@ -31,7 +31,7 @@ public class Destructible {
         activeEffects.removeIf(effect -> !effect.isActive());
     }
 
-    public int getHP() {
+    public float getHP() {
         return HP;
     }
 }
