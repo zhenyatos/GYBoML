@@ -34,7 +34,7 @@ public class Main
             }
         };
         Network.register(server);
-        server.addListener(new ServerListener(this));
+        server.addListener(new SessionListener(this));
         server.bind(Network.tcpPort, Network.udpPort);
     }
 

@@ -11,4 +11,10 @@ public class GybomlConnection extends Connection {
 
     // setters
     public void setName(String name) { this.name = name; }
+
+
+    // log new connection
+    public GybomlConnection() {
+        System.out.println("New connection");
+    }
 }

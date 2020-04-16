@@ -11,11 +11,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import ru.spbstu.gyboml.core.net.SessionInfo;
 
 public class ButtonAdapter extends RecyclerView.Adapter<ButtonAdapter.ButtonViewHolder> {
-    private ArrayList<SessionInfo> sessions;
+    List<SessionInfo> sessions;
     private final HashMap<Integer, Integer> IDToPosMap = new HashMap<>();
     private boolean touchEnabled = true;
     private View.OnClickListener onClickListener;

@@ -17,34 +17,48 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ToggleButton;
 
+import com.esotericsoftware.kryonet.Client;
+
+import java.io.IOException;
+
 import main.java.ru.spbstu.gyboml.MainActivity;
 import main.java.ru.spbstu.gyboml.clientmenu.MainMenu;
 import ru.spbstu.gyboml.R;
+import ru.spbstu.gyboml.core.net.Network;
+import ru.spbstu.gyboml.core.net.Requests;
 
 
 public class Lobby extends AppCompatActivity {
 
     //Objects that handle the visual representation of the session list
     private RecyclerView gameSessionsView;
-    private ButtonAdapter sessionsAdapter;
+    ButtonAdapter sessionsAdapter;
     private RecyclerView.LayoutManager layoutManager;
     //Buttons
     private ImageButton createNewSessionButton;
     private ToggleButton readyButton;
-    private ImageButton exitButton;
+    ImageButton exitButton;
     private ImageButton refreshButton;
 
     //User info
     private String chosenSessionName;
     private String username;
 
-    private PlayerStatus playerStatus = PlayerStatus.FREE;
+    PlayerStatus playerStatus = PlayerStatus.FREE;
+
+    private Client client;
 
     //Initializes the Lobby, establishes a connection with the server (not done yet), etc
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lobby);
+
+        // network client creation
+        client = new Client();
+        client.start();
+
+        client.addListener(new SessionListener(this));
 
         //Get user info from the main menu
         Intent intent = getIntent();
@@ -75,6 +89,13 @@ public class Lobby extends AppCompatActivity {
         //Set up the listener for game session buttons
         sessionsAdapter.setOnClickListener(getSessionButtonListener());
 
+        new Thread(() -> {
+            try {
+                client.connect(5000, Network.serverAddress, Network.tcpPort, Network.udpPort);
+            } catch (IOException error) {
+                error.printStackTrace();
+            }
+        }).start();
     }
 
     //Dialogue window for the createSession listener
@@ -90,11 +111,9 @@ public class Lobby extends AppCompatActivity {
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                chosenSessionName = input.getText().toString();
-                //Send message to server, retrieve session's ID
-                playerStatus = PlayerStatus.SESSIONJOINED; //Move to Lobby's listener
-                sessionsAdapter.disableTouch();             //Move to Lobby's listener
-                inSessionView();                              //Move to Lobby's listener
+                Requests.CreateSession request = new Requests.CreateSession();
+                request.sessionName = input.getText().toString().trim();
+                client.sendTCP(request);
             }
         });
 
@@ -110,20 +129,20 @@ public class Lobby extends AppCompatActivity {
     }
 
     //Removes creation button, makes ready and exit buttons visible
-    private void inSessionView() {
+    void inSessionView() {
         createNewSessionButton.setVisibility(View.GONE);
         readyButton.setVisibility(View.VISIBLE);
         exitButton.setVisibility(View.VISIBLE);
     }
 
     //Removes ready and exit buttons, adds creation button
-    private void notInSessionView() {
+    void notInSessionView() {
         createNewSessionButton.setVisibility(View.VISIBLE);
         readyButton.setVisibility(View.GONE);
         exitButton.setVisibility(View.GONE);
     }
 
-    private enum PlayerStatus {
+    enum PlayerStatus {
         FREE,
         SESSIONJOINED
     }
@@ -133,10 +152,9 @@ public class Lobby extends AppCompatActivity {
         return new View.OnClickListener() {
             public void onClick(View v) {
                 sessionsAdapter.chosenSessionID = v.getId();
-                //Send message to server
-                playerStatus = PlayerStatus.SESSIONJOINED; //Move to Lobby's listener
-                sessionsAdapter.disableTouch(); //Move to Lobby's listener
-                inSessionView(); //Move to Lobby's listener
+                Requests.ConnectSession request = new Requests.ConnectSession();
+                request.sessionId = sessionsAdapter.chosenSessionID;
+                client.sendTCP(request);
             }
         };
     }
@@ -146,10 +164,9 @@ public class Lobby extends AppCompatActivity {
         return new View.OnClickListener() {
             public void onClick(View v) {
                 //tell server to remove player from session
-                playerStatus = PlayerStatus.FREE; //Move to Lobby's listener
-                sessionsAdapter.enableTouch(); //Move to Lobby's listener
-                sessionsAdapter.chosenSessionID = null; //Move to Lobby's listener
-                notInSessionView(); //Move to Lobby's listener
+                Requests.ExitSession request = new Requests.ExitSession();
+                request.sessionId = sessionsAdapter.chosenSessionID;
+                client.sendTCP(request);
             }
         };
     }
@@ -158,7 +175,7 @@ public class Lobby extends AppCompatActivity {
     private View.OnClickListener getRefreshButtonListener() {
         return new View.OnClickListener() {
             public void onClick(View v) {
-                //send message to server
+                client.sendTCP(new Requests.GetSessions());
             }
         };
     }
@@ -169,12 +186,14 @@ public class Lobby extends AppCompatActivity {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (!isChecked) {
-                    //Send message to server, player is not ready anymore
-                    exitButton.setEnabled(true);
+                    Requests.Ready request = new Requests.Ready();
+                    request.isReady = false;
+                    client.sendTCP(request);
                 }
                 else {
-                    //Send message to server, player is ready now
-                    exitButton.setEnabled(false); //Can't leave session when you're ready
+                    Requests.Ready request = new Requests.Ready();
+                    request.isReady = true;
+                    client.sendTCP(request);
                 }
             }
         };

@@ -21,6 +21,9 @@ public class Player {
     // player name
     private String name;
 
+    // is player ready in session
+    private boolean ready;
+
     /**
      * Class constructor.
      * @param initialPoints - initial number of points
@@ -63,5 +66,10 @@ public class Player {
         this.connection = Optional.of(conn);
     }
     
+    public boolean ready() {
+        return this.ready;
+    }
+    
     public void setName(String name) { this.name = name; }
+    public void setReady(boolean ready) { this.ready = ready; }
 }

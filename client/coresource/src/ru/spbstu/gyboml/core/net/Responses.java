@@ -1,5 +1,7 @@
 package ru.spbstu.gyboml.core.net;
 
+import com.esotericsoftware.kryonet.Server;
+
 import java.util.List;
 
 /* All responses utility class
@@ -11,10 +13,8 @@ public class Responses {
      * Lobby created response.
      * Sent after client's CreateLobby response.
      */
-    public static class LobbyCreated {
-        public int lobbyId;
-
-        public LobbyCreated(int lobbyId) { this.lobbyId = lobbyId; }
+    public static class SessionCreated {
+        public int sessionId;
     }
     
     /*
@@ -29,11 +29,30 @@ public class Responses {
     /*
      * Take lobbies from server response.
      */
-    public static class TakeLobbies {
-        List<SessionInfo> lobbies;
+    public static class TakeSessions {
+        public List<SessionInfo> lobbies;
+    }
 
-        public TakeLobbies(List<SessionInfo> lobbies) {
-            this.lobbies = lobbies;
-        }
+    /*
+     * Approvement that player connected successfully
+     * Send after player's SessionConnect
+     */
+    public static class SessionConnected {
+        public int sessionId;
+    }
+
+    /*
+     * Approvement ready status
+     * Send afrer player's Ready request
+     */
+    public static class ReadyApproved {
+        public boolean isReady;
+    }
+
+    /*
+     * Approvement player exit from session
+     * Send afrer player's ExitSession request
+     */
+    public static class SessionExited {
     }
 }

@@ -17,20 +17,35 @@ public class Requests {
      * Create lobby request.
      * After this request, server respond's with LobbyCreated
      */
-    public static class CreateLobby {
-        public String lobbyName;
+    public static class CreateSession {
+        public String sessionName;
     }
 
     /*
      * Connect lobby by id request.
      */
-    public static class ConnectLobby {
-        public int lobbyId;
+    public static class ConnectSession {
+        public int sessionId;
     }
     
     /*
      * Get lobby list request.
      */
-    public static class GetLobbies {
+    public static class GetSessions {
+    }
+    
+    /*
+     * Ready message
+     */
+    public static class Ready {
+        public int sessionId;
+        public boolean isReady;
+    }
+    
+    /*
+     * Exit from room (session) message
+     */
+    public static class ExitSession {
+        public int sessionId;
     }
 }

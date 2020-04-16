@@ -71,6 +71,16 @@ public class Session {
         } else return false;
     }
 
+    public boolean ready(Connection connection, boolean isReady) {
+        if (firstPlayer.get().getConnection().get().equals(connection)) {
+            firstPlayer.get().setReady(isReady);
+            return true;
+        } else if (secondPlayer.get().getConnection().get().equals(connection)) {
+            secondPlayer.get().setReady(isReady);
+            return true;
+        } else return false;
+    }
+
     /**
      * Convert to session to lobby.
      * Need for transfering between server and client
