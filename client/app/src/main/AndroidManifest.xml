@@ -28,12 +28,12 @@
             android:label="gyboml"
             android:theme="@style/GdxTheme.NoActionBar">
         </activity>
-        <!--        <activity
+        <activity
             android:name="main.java.ru.spbstu.gyboml.MainActivity"
             android:configChanges="keyboard|keyboardHidden|navigation|orientation|screenSize|screenLayout"
             android:label="gyboml"
             android:screenOrientation="landscape">
-        </activity> -->
+        </activity>
     </application>
 
 </manifest>
