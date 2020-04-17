@@ -1,16 +1,19 @@
 package main.java.ru.spbstu.gyboml;
 
-import android.content.Intent;
 import android.os.Bundle;
 
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
 import com.esotericsoftware.kryonet.Client;
+import com.esotericsoftware.kryonet.Listener;
 import com.google.gson.Gson;
+
+import java.io.IOException;
 
 import main.java.ru.spbstu.gyboml.clientcore.GameClient;
 import main.java.ru.spbstu.gyboml.clientlobby.Lobby;
 import ru.spbstu.gyboml.core.Player;
+import ru.spbstu.gyboml.core.net.Network;
 
 public class MainActivity extends AndroidApplication {
 
