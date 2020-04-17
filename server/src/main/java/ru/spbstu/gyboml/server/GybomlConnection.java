@@ -6,6 +6,9 @@ public class GybomlConnection extends Connection {
     // player's name
     private String name;
 
+    // player's id
+    private Integer id;
+
     // getters
     public String name() { return this.name; }
 
