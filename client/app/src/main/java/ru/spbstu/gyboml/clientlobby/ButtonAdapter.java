@@ -61,12 +61,8 @@ public class ButtonAdapter extends RecyclerView.Adapter<ButtonAdapter.ButtonView
     public void onBindViewHolder(ButtonViewHolder holder, int position) {
         SessionInfo session = sessions.get(position);
         holder.sessionButton.setEnabled(touchEnabled);
-        holder.sessionButton.setText(session.name);
+        holder.sessionButton.setText(session.name +" : " + session.spaces + " / 2");
         holder.sessionButton.setId(session.sessionId);
-        if (chosenSessionID != null && chosenSessionID == session.sessionId)
-            holder.sessionButton.getBackground().setColorFilter(GREEN, PorterDuff.Mode.MULTIPLY);
-        else
-            holder.sessionButton.getBackground().clearColorFilter();
     }
 
     @Override
@@ -84,5 +80,9 @@ public class ButtonAdapter extends RecyclerView.Adapter<ButtonAdapter.ButtonView
     public void disableTouch() {
         touchEnabled = false;
         notifyDataSetChanged();
+    }
+
+    public SessionInfo findSessionByID(int ID) {
+        return sessions.stream().filter(session -> session.sessionId  == ID).findFirst().get();
     }
 }

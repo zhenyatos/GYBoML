@@ -1,11 +1,14 @@
 package main.java.ru.spbstu.gyboml.clientlobby;
 
+import android.view.View;
+
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 
 import ru.spbstu.gyboml.core.Player;
 import ru.spbstu.gyboml.core.net.Requests;
 import ru.spbstu.gyboml.core.net.Responses;
+import ru.spbstu.gyboml.core.net.SessionInfo;
 
 /**
  * Listener to all TCP events
@@ -80,7 +83,6 @@ public class SessionListener extends Listener {
         lobby.runOnUiThread(() -> {
             lobby.playerStatus = Lobby.PlayerStatus.SESSIONJOINED;
             lobby.sessionsAdapter.chosenSessionID = player.sessionId;
-            lobby.sessionsAdapter.disableTouch();
             lobby.inSessionView();
         });
     }
@@ -89,12 +91,25 @@ public class SessionListener extends Listener {
         lobby.runOnUiThread(() -> {
             lobby.sessionsAdapter.sessions = object.lobbies;
             lobby.sessionsAdapter.notifyDataSetChanged();
+            if (lobby.playerStatus == Lobby.PlayerStatus.SESSIONJOINED) {
+                SessionInfo currentSession = lobby.sessionsAdapter.findSessionByID(lobby.player.sessionId);
+                    lobby.firstPlayerName.setText(currentSession.firstPlayer.name);
+                    lobby.firstPlayerReady.setVisibility(currentSession.firstPlayer.ready ? View.VISIBLE : View.INVISIBLE);
+                    if (currentSession.spaces == 2) {
+                        lobby.secondPlayerName.setText(currentSession.secondPlayer.name);
+                        lobby.secondPlayerReady.setVisibility(currentSession.secondPlayer.ready ? View.VISIBLE : View.INVISIBLE);
+                    }
+            }
         });
     }
 
     private void readyApproved(Connection connection, Responses.ReadyApproved object) {
         lobby.runOnUiThread(() -> {
-            lobby.exitButton.setEnabled(!object.isReady);
+            lobby.player.ready = lobby.readyButton.isChecked();
+            if (lobby.readyButton.isChecked())
+                lobby.exitButton.setVisibility(View.GONE);
+            else
+                lobby.exitButton.setVisibility(View.VISIBLE);
         });
     }
 }
