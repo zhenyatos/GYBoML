@@ -6,6 +6,7 @@ import com.badlogic.gdx.physics.box2d.World;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
 
 import ru.spbstu.gyboml.core.PlayerType;
 import ru.spbstu.gyboml.core.destructible.DestructionListener;
@@ -42,8 +43,6 @@ public class PhysicalScene {
     private ArrayList<PhysicalBlock> physicalBlocksP1;
     private ArrayList<PhysicalBlock> physicalBlocksP2;
     private ArrayList<PhysicalShot> physicalShots;
-    private List<PhysicalBlock> blocksToRemove;
-    private List<PhysicalShot> shotsToRemove;
 
     // physics
     private static final float gravityAccelerationX = 0f;
@@ -63,8 +62,6 @@ public class PhysicalScene {
         physicalBlocksP1 = new ArrayList<>();
         physicalBlocksP2 = new ArrayList<>();
         physicalShots = new ArrayList<>();
-        blocksToRemove = new ArrayList<>();
-        shotsToRemove = new ArrayList<>();
 
         final float castleIndentX   = 860;  // manually set value for castle placement on platform
         final float towerIndentX    = 450;  // manually set value for tower  placement on platform
@@ -92,13 +89,15 @@ public class PhysicalScene {
         movables.addAll(physicalBlocksP1);
         movables.addAll(physicalBlocksP2);
 
-        graphicalScene.generateGraphicalBackground(physicalBackground);
-        graphicalScene.generateGraphicalCastle(physicalCastleP1);
-        graphicalScene.generateGraphicalCastle(physicalCastleP2);
-        graphicalScene.generateGraphicalTower(physicalTowerP1);
-        graphicalScene.generateGraphicalTower(physicalTowerP2);
-        graphicalScene.bindBlocksGraphics(physicalBlocksP1, physicalBlocksP2);
-        graphicalScene.generateGraphicalForeground(physicalBackground);
+        if (graphicalScene != null) {
+            graphicalScene.generateGraphicalBackground(physicalBackground);
+            graphicalScene.generateGraphicalCastle(physicalCastleP1);
+            graphicalScene.generateGraphicalCastle(physicalCastleP2);
+            graphicalScene.generateGraphicalTower(physicalTowerP1);
+            graphicalScene.generateGraphicalTower(physicalTowerP2);
+            graphicalScene.bindBlocksGraphics(physicalBlocksP1, physicalBlocksP2);
+            graphicalScene.generateGraphicalForeground(physicalBackground);
+        }
     }
 
     /**
@@ -207,39 +206,40 @@ public class PhysicalScene {
     }
 
     private void removeDeadBodies() {
-        blocksToRemove.clear();
-        for (PhysicalBlock block : physicalBlocksP1) {
+        ListIterator<PhysicalBlock> physicalBlocksP1Iterator = physicalBlocksP1.listIterator();
+        while (physicalBlocksP1Iterator.hasNext()) {
+            PhysicalBlock block = physicalBlocksP1Iterator.next();
             if (block.getHP() <= 0) {
-                blocksToRemove.add(block);
+                world.destroyBody(block.getBody());
+                movables.remove(block);
+                if (graphicalScene != null)
+                    graphicalScene.removeObject(block);
+                physicalBlocksP1Iterator.remove();
             }
         }
-        for (PhysicalBlock block : physicalBlocksP2) {
+
+        ListIterator<PhysicalBlock> physicalBlocksP2Iterator = physicalBlocksP2.listIterator();
+        while (physicalBlocksP2Iterator.hasNext()) {
+            PhysicalBlock block = physicalBlocksP2Iterator.next();
             if (block.getHP() <= 0) {
-                blocksToRemove.add(block);
+                world.destroyBody(block.getBody());
+                movables.remove(block);
+                if (graphicalScene != null)
+                    graphicalScene.removeObject(block);
+                physicalBlocksP2Iterator.remove();
             }
         }
 
-        for (PhysicalBlock block : blocksToRemove) {
-            world.destroyBody(block.getBody());
-            movables.remove(block);
-            if (graphicalScene != null)
-                graphicalScene.removeObject(block);
-            physicalBlocksP1.remove(block);
-            physicalBlocksP2.remove(block);
-        }
-
-        shotsToRemove.clear();
-        for (PhysicalShot shot : physicalShots) {
-            if (shot.getVelocity().isZero(0.1f))
-                shotsToRemove.add(shot);
-        }
-
-        for (PhysicalShot shot : shotsToRemove) {
-            world.destroyBody(shot.getBody());
-            movables.remove(shot);
-            if (graphicalScene != null)
-                graphicalScene.removeObject(shot);
-            physicalShots.remove(shot);
+        ListIterator<PhysicalShot> physicalShotsIterator = physicalShots.listIterator();
+        while (physicalShotsIterator.hasNext()) {
+            PhysicalShot shot = physicalShotsIterator.next();
+            if (shot.getVelocity().isZero(0.1f)) {
+                world.destroyBody(shot.getBody());
+                movables.remove(shot);
+                if (graphicalScene != null)
+                    graphicalScene.removeObject(shot);
+                physicalShotsIterator.remove();
+            }
         }
     }
 
