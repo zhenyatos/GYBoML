@@ -173,6 +173,8 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
         bar2.getHealthBar().setPosition(Gdx.graphics.getWidth() - HPBar.width - 10,
                 Gdx.graphics.getHeight() - 30);
         stageForUI.addActor(bar2.getHealthBar());
+
+        physicalScene.connectWithSoundEffects(soundEffects);
     }
 
     private void setUpArmoryStorage() {

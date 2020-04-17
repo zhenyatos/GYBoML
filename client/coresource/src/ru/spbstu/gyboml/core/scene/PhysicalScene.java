@@ -29,7 +29,6 @@ public class PhysicalScene {
     private final GraphicalScene graphicalScene;
 
     // Sound
-    private final SoundEffects soundEffects;
     private DestructionListener blockSounds;
 
     private final World world;
@@ -56,14 +55,6 @@ public class PhysicalScene {
 
     public PhysicalScene(GraphicalScene graphicalScene) {
         this.graphicalScene = graphicalScene;
-
-        soundEffects = SoundEffects.get();
-        blockSounds = new DestructionListener() {
-            @Override
-            public void destructionOccured(float newHP) {
-                soundEffects.wood.play(1.f);
-            }
-        };
 
         world = new World(new Vector2(gravityAccelerationX, gravityAccelerationY), true);
         world.setContactListener(new CollisionHandler());
@@ -145,12 +136,6 @@ public class PhysicalScene {
         physicalBlocksP1.add(new PhysicalBlock(material, new Location(castleP1X - 60 * SceneConstants.SCALE - SceneConstants.blockWoodWidth * SceneConstants.BLOCKS_SCALE, blockP1Y + 1.2f * SceneConstants.blockWoodHeight * SceneConstants.BLOCKS_SCALE, 0, SceneConstants.BLOCKS_SCALE), world));
         physicalBlocksP2.add(new PhysicalBlock(material, new Location(castleP2X + (SceneConstants.castleWidth + 60) * SceneConstants.SCALE, blockP2Y, 0, SceneConstants.BLOCKS_SCALE), world));
         physicalBlocksP2.add(new PhysicalBlock(material, new Location(castleP2X + (SceneConstants.castleWidth + 60) * SceneConstants.SCALE, blockP2Y + 1.2f * SceneConstants.blockWoodHeight * SceneConstants.BLOCKS_SCALE, 0, SceneConstants.BLOCKS_SCALE), world));
-
-        for (PhysicalBlock block : physicalBlocksP1)
-            block.getDestructionEmitter().addListener(blockSounds);
-
-        for (PhysicalBlock block : physicalBlocksP2)
-            block.getDestructionEmitter().addListener(blockSounds);
     }
 
     public void generateShot(PlayerType playerTurn, ShotType shotType) {
@@ -263,5 +248,20 @@ public class PhysicalScene {
             physicalCastleP1.getDestructionEmitter().addListener(bar);
         else
             physicalCastleP2.getDestructionEmitter().addListener(bar);
+    }
+
+    public void connectWithSoundEffects(SoundEffects soundEffects) {
+        blockSounds = new DestructionListener() {
+            @Override
+            public void destructionOccured(float newHP) {
+                soundEffects.wood.play(1.f);
+            }
+        };
+
+        for (PhysicalBlock block : physicalBlocksP1)
+            block.getDestructionEmitter().addListener(blockSounds);
+
+        for (PhysicalBlock block : physicalBlocksP2)
+            block.getDestructionEmitter().addListener(blockSounds);
     }
 }
