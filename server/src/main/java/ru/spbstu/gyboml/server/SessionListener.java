@@ -158,9 +158,11 @@ public class SessionListener extends Listener {
         notifySessionPlayers(session);
 
         // check if both players are ready
-        NetPlayer firstPlayer = session.firstPlayer.get();
-        NetPlayer secondPlayer = session.secondPlayer.get();
-        if (firstPlayer.getPlayer().ready && secondPlayer.getPlayer().ready) {
+        NetPlayer firstPlayer = session.firstPlayer.orElse(null);
+        NetPlayer secondPlayer = session.secondPlayer.orElse(null);
+        if (firstPlayer != null && secondPlayer != null &&
+            firstPlayer.getPlayer().ready && secondPlayer.getPlayer().ready) {
+
             Responses.SessionStarted sessionStarted = new Responses.SessionStarted();
             firstPlayer.getConnection().sendTCP(sessionStarted);
             secondPlayer.getConnection().sendTCP(sessionStarted);
