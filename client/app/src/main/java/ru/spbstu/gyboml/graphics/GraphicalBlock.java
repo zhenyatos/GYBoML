@@ -19,7 +19,8 @@ public class GraphicalBlock implements Drawable, Updatable {
         this.currentSprite = intactBlock;
     }
 
-    public Sprite getCurrentSprite() { return currentSprite; }
+    @Override
+    public Sprite getSprite() { return currentSprite; }
 
     @Override
     public void draw(Batch batch) {

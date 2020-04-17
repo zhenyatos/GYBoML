@@ -14,6 +14,7 @@ public class GraphicalShot implements Drawable, Updatable {
         this.sprite = sprite;
     }
 
+    @Override
     public Sprite getSprite() { return sprite; }
 
     @Override
