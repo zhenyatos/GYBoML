@@ -1,8 +1,7 @@
 package ru.spbstu.gyboml.core.net;
 
-import com.esotericsoftware.kryonet.Server;
-
 import java.util.List;
+import ru.spbstu.gyboml.core.Player;
 
 /* All responses utility class
  * Most often, responses send from server to client
@@ -23,7 +22,8 @@ public class Responses {
     public static class ServerError {
         public String message;
 
-        public ServerError(String message) { this.message = message; }
+        public String message() { return this.message; }
+        public void setMessage(String message) { this.message = message; }
     }
     
     /*
@@ -38,7 +38,7 @@ public class Responses {
      * Send after player's SessionConnect
      */
     public static class SessionConnected {
-        public int sessionId;
+        public Player player;
     }
 
     /*

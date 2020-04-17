@@ -11,30 +11,15 @@ import ru.spbstu.gyboml.core.Player;
 public class SessionInfo {
 
     // id of related server session
-    private int sessionId;
+    public int sessionId;
 
     // number of free spaces in lobby
-    private int spaces;
+    public int spaces;
 
     // lobby name
-    private String name;
+    public String name;
 
     // players
-    private Optional<Player> firstPlayer;
-    private Optional<Player> secondPlayer;
-
-    public SessionInfo(String name, int sessionId, int spaces, Optional<Player> firstPlayer, Optional<Player> secondPlayer) {
-        this.name = name;
-        this.sessionId = sessionId;
-        this.spaces = spaces;
-        this.firstPlayer = firstPlayer;
-        this.secondPlayer = secondPlayer;
-    }
-
-    public String name() {return name;}
-    public int sessionId() {return sessionId;}
-    public int spaces() {return spaces;}
-    public Optional<Player> firstPlayer() {return firstPlayer;}
-    public Optional<Player> secondPlayer() {return secondPlayer;}
-
+    public Player firstPlayer;
+    public Player secondPlayer;
 }
