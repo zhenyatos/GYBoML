@@ -95,7 +95,7 @@ public class SessionListener extends Listener {
                 SessionInfo currentSession = lobby.sessionsAdapter.findSessionByID(lobby.player.sessionId);
                     lobby.firstPlayerName.setText(currentSession.firstPlayer.name);
                     lobby.firstPlayerReady.setVisibility(currentSession.firstPlayer.ready ? View.VISIBLE : View.INVISIBLE);
-                    if (currentSession.spaces == 2) {
+                    if (currentSession.spaces == 0) {
                         lobby.secondPlayerName.setText(currentSession.secondPlayer.name);
                         lobby.secondPlayerReady.setVisibility(currentSession.secondPlayer.ready ? View.VISIBLE : View.INVISIBLE);
                     }
