@@ -46,7 +46,6 @@ public class Responses {
      * Send afrer player's Ready request
      */
     public static class ReadyApproved {
-        public boolean isReady;
     }
 
     /*
