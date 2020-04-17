@@ -1,4 +1,4 @@
-package main.java.ru.spbstu.gyboml.clientcore;
+package ru.spbstu.gyboml.core.scene;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;

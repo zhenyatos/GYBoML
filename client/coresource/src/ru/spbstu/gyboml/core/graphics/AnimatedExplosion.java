@@ -1,4 +1,4 @@
-package main.java.ru.spbstu.gyboml.graphics;
+package ru.spbstu.gyboml.core.graphics;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;

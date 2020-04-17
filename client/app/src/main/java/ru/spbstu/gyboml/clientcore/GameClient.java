@@ -25,6 +25,11 @@ import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 import ru.spbstu.gyboml.core.PlayerType;
+import ru.spbstu.gyboml.core.scene.GraphicalScene;
+import ru.spbstu.gyboml.core.scene.HPBar;
+import ru.spbstu.gyboml.core.scene.PhysicalScene;
+import ru.spbstu.gyboml.core.scene.SceneConstants;
+import ru.spbstu.gyboml.core.scene.SoundEffects;
 import ru.spbstu.gyboml.core.shot.ShotType;
 
 /**
@@ -34,18 +39,6 @@ import ru.spbstu.gyboml.core.shot.ShotType;
  * @since   2020-03-11
  */
 public class GameClient extends ApplicationAdapter implements InputProcessor {
-    // canvas / world constants
-    private static final float minRatio     = 3f / 2f;
-    private static final float minWidth     = 50;
-    private static final float minHeight    = minWidth / minRatio;
-    private static final float worldScale   = 1.5f;
-    private static final float worldWidth   = minWidth * worldScale;
-    private static final float worldHeight  = minHeight;
-    private static final float maxXRatio    = 19.5f / 9f;
-    private static final float maxYRatio    = 4f / 3f;
-    private static final float canvasWidth  = worldWidth + minWidth * (maxXRatio / minRatio - 1);
-    private static final float canvasHeight = worldHeight + minHeight * (minRatio / maxYRatio - 1);
-
     private static final float buttonWidth  = 200 / 1920.0f;
     private static final float buttonHeight = 100 / 1080.0f;
 
@@ -53,8 +46,8 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
     private static final int armoryColumnCount = 4;
     private static final float armoryChooseButtonWidthFactor = 2 / 3.0f;
 
-    PhysicalScene  physicalScene;
-    GraphicalScene graphicalScene;
+    private PhysicalScene physicalScene;
+    private GraphicalScene graphicalScene;
     SoundEffects soundEffects;
 
     // drawing and stuff
@@ -97,17 +90,14 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
         debugRenderer = new Box2DDebugRenderer();
         batch = new SpriteBatch();
 
-        float backgroundX = 0 - (canvasWidth - worldWidth) / 2;
-        float backgroundY = 0 - (canvasHeight - worldHeight) / 2;
-
-        graphicalScene = new GraphicalScene(canvasWidth, canvasHeight);
-        physicalScene  = new PhysicalScene(graphicalScene, backgroundX, backgroundY);
+        graphicalScene = new GraphicalScene();
+        physicalScene = new PhysicalScene(graphicalScene);
         soundEffects = SoundEffects.get();
 
         // UI is setup after main game objects was created
         setUpUI();
 
-        camera = new OrthographicCamera(minWidth, minHeight);
+        camera = new OrthographicCamera(SceneConstants.minWidth, SceneConstants.minHeight);
         viewport = new ExtendViewport(camera.viewportWidth, camera.viewportHeight, camera);
         camera.position.set(camera.viewportWidth / 2, camera.viewportHeight / 2, 0);
         camera.update();
@@ -148,7 +138,7 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
         //table.add(new Actor());
         table.row();
         table.add(endTurnButton).width(buttonWidth * Gdx.graphics.getWidth()).height(buttonHeight * Gdx.graphics.getHeight()).bottom();
-                //.spaceRight(Gdx.graphics.getWidth() - 2 * buttonWidth);
+        //.spaceRight(Gdx.graphics.getWidth() - 2 * buttonWidth);
 
         // here add button
         setUpArmoryStorage();
@@ -170,7 +160,7 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
             }
         });
         table.add(fireButton).width(buttonWidth * Gdx.graphics.getWidth()).height(buttonHeight * Gdx.graphics.getHeight()).bottom().
-            spaceLeft(Gdx.graphics.getWidth() * (1 - (3 + armoryColumnCount * armoryChooseButtonWidthFactor) * buttonWidth));
+                spaceLeft(Gdx.graphics.getWidth() * (1 - (3 + armoryColumnCount * armoryChooseButtonWidthFactor) * buttonWidth));
 
         // HP progress bar
         HPBar bar1 = new HPBar(100);
@@ -226,7 +216,7 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
 
 
         table.add(armoryTable);//.spaceBottom(Gdx.graphics.getHeight() -
-                //(buttonHeight + armoryRowCount * buttonHeight * heightFactor) * Gdx.graphics.getHeight());
+        //(buttonHeight + armoryRowCount * buttonHeight * heightFactor) * Gdx.graphics.getHeight());
     }
 
 
@@ -271,20 +261,20 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
      */
     @Override
     public boolean touchDragged(int screenX, int screenY, int pointer) {
-        float x = Gdx.input.getDeltaX() * graphicalScene.getScale();
-        float y = Gdx.input.getDeltaY() * graphicalScene.getScale();
+        float x = Gdx.input.getDeltaX() * SceneConstants.SCALE;
+        float y = Gdx.input.getDeltaY() * SceneConstants.SCALE;
 
-        float leftEdgePos = camera.position.x - minWidth / 2;
-        float rightEdgePos = leftEdgePos + minWidth;
+        float leftEdgePos = camera.position.x - SceneConstants.minWidth / 2;
+        float rightEdgePos = leftEdgePos + SceneConstants.minWidth;
         if (leftEdgePos  - x < 0)
             x = leftEdgePos;
-        else if (rightEdgePos - x > worldWidth)
-            x = rightEdgePos - worldWidth;
+        else if (rightEdgePos - x > SceneConstants.worldWidth)
+            x = rightEdgePos - SceneConstants.worldWidth;
 
-        float topEdgePos = camera.position.y + minHeight / 2;
-        float bottomEdgePos = topEdgePos - minHeight;
-        if (topEdgePos + y > worldHeight)
-            y = worldHeight - topEdgePos;
+        float topEdgePos = camera.position.y + SceneConstants.minHeight / 2;
+        float bottomEdgePos = topEdgePos - SceneConstants.minHeight;
+        if (topEdgePos + y > SceneConstants.worldHeight)
+            y = SceneConstants.worldHeight - topEdgePos;
         else if (bottomEdgePos + y < 0)
             y = -bottomEdgePos;
 
