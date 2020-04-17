@@ -5,6 +5,7 @@ import android.view.View;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 
+import main.java.ru.spbstu.gyboml.GybomlClient;
 import ru.spbstu.gyboml.core.Player;
 import ru.spbstu.gyboml.core.net.Requests;
 import ru.spbstu.gyboml.core.net.Responses;
@@ -43,7 +44,6 @@ public class SessionListener extends Listener {
     // called when received object via TCP
     @Override
     public void received(Connection connection, Object object) {
-
         if (object instanceof Responses.ServerError) { serverError(connection, (Responses.ServerError)object); }
         else if (object instanceof Responses.SessionCreated) { sessionCreated(connection, (Responses.SessionCreated)object); }
         else if (object instanceof Responses.TakeSessions) { takeSessions(connection, (Responses.TakeSessions)object); }
@@ -83,7 +83,7 @@ public class SessionListener extends Listener {
 
     private void sessionConnected(Connection connection, Responses.SessionConnected object) {
         Player player = object.player;
-        lobby.player = player;
+        GybomlClient.setPlayer(player);
 
         lobby.runOnUiThread(() -> {
             lobby.playerStatus = Lobby.PlayerStatus.SESSIONJOINED;
@@ -97,7 +97,7 @@ public class SessionListener extends Listener {
             lobby.sessionsAdapter.sessions = object.lobbies;
             lobby.sessionsAdapter.notifyDataSetChanged();
             if (lobby.playerStatus == Lobby.PlayerStatus.SESSIONJOINED) {
-                SessionInfo currentSession = lobby.sessionsAdapter.findSessionByID(lobby.player.sessionId);
+                SessionInfo currentSession = lobby.sessionsAdapter.findSessionByID(GybomlClient.getPlayer().sessionId);
                     lobby.firstPlayerName.setText(currentSession.firstPlayer.name);
                     lobby.firstPlayerReady.setVisibility(currentSession.firstPlayer.ready ? View.VISIBLE : View.INVISIBLE);
                     if (currentSession.spaces == 0) {
@@ -114,7 +114,7 @@ public class SessionListener extends Listener {
 
     private void readyApproved(Connection connection, Responses.ReadyApproved object) {
         lobby.runOnUiThread(() -> {
-            lobby.player.ready = lobby.readyButton.isChecked();
+            GybomlClient.getPlayer().ready = lobby.readyButton.isChecked();
             if (lobby.readyButton.isChecked())
                 lobby.exitButton.setVisibility(View.GONE);
             else

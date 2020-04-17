@@ -11,7 +11,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.text.InputType;
-import android.text.Layout;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.EditText;
@@ -20,16 +19,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
-import com.esotericsoftware.kryonet.Client;
-import com.google.gson.Gson;
-
-import java.io.IOException;
-
+import main.java.ru.spbstu.gyboml.GybomlClient;
 import main.java.ru.spbstu.gyboml.MainActivity;
 import main.java.ru.spbstu.gyboml.clientmenu.MainMenu;
 import ru.spbstu.gyboml.R;
-import ru.spbstu.gyboml.core.Player;
-import ru.spbstu.gyboml.core.net.Network;
 import ru.spbstu.gyboml.core.net.Requests;
 
 
@@ -55,35 +48,16 @@ public class Lobby extends AppCompatActivity {
 
     // player info
     PlayerStatus playerStatus = PlayerStatus.FREE;
-    Player player;
 
     //Constants describing names of the extras transferred to the game client
     public static final String clientExtraName = "CLIENT_JSON";
     public static final String playerExtraName = "PLAYER_JSON";
-
-    private Client client;
 
     //Initializes the Lobby, establishes a connection with the server (not done yet), etc
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lobby);
-
-        // network client creation
-        client = new Client();
-        client.start();
-
-        Network.register(client);
-
-        Thread clientThread = new Thread("Connect") {
-            @Override
-            public void run() {
-                try { client.connect(5000, Network.serverAddress, Network.tcpPort/*, Network.udpPort*/); }
-                catch (IOException error) { error.printStackTrace(); }
-            }
-        };
-
-        client.addListener(new SessionListener(this));
 
         //Get user info from the main menu
         Intent intent = getIntent();
@@ -119,7 +93,7 @@ public class Lobby extends AppCompatActivity {
         //Set up the listener for game session buttons
         sessionsAdapter.setOnClickListener(getSessionButtonListener());
 
-        clientThread.start();
+        GybomlClient.connect(new SessionListener(this));
     }
 
     //Dialogue window for the createSession listener
@@ -138,8 +112,8 @@ public class Lobby extends AppCompatActivity {
                 Requests.CreateSession createSession = new Requests.CreateSession();
                 createSession.sessionName = input.getText().toString().trim();
 
-                sendTCP(createSession);
-                sendTCP(new Requests.GetSessions());
+                GybomlClient.sendTCP(createSession);
+                GybomlClient.sendTCP(new Requests.GetSessions());
             }
         });
 
@@ -184,7 +158,7 @@ public class Lobby extends AppCompatActivity {
                 sessionsAdapter.chosenSessionID = v.getId();
                 Requests.ConnectSession request = new Requests.ConnectSession();
                 request.sessionId = sessionsAdapter.chosenSessionID;
-                sendTCP(request);
+                GybomlClient.sendTCP(request);
             }
         };
     }
@@ -195,8 +169,8 @@ public class Lobby extends AppCompatActivity {
             public void onClick(View v) {
                 //tell server to remove player from session
                 Requests.ExitSession request = new Requests.ExitSession();
-                request.player = player;
-                sendTCP(request);
+                request.player = GybomlClient.getPlayer();
+                GybomlClient.sendTCP(request);
             }
         };
     }
@@ -208,8 +182,8 @@ public class Lobby extends AppCompatActivity {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 Requests.Ready request = new Requests.Ready();
-                request.player = player;
-                sendTCP(request);
+                request.player = GybomlClient.getPlayer();
+                GybomlClient.sendTCP(request);
             }
         };
     }
@@ -217,13 +191,6 @@ public class Lobby extends AppCompatActivity {
     //Starts up the game, duh
     void gameStartUp() {
         Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-
-        Gson jsonPacker =  new Gson();
-        String clientJson = jsonPacker.toJson(client);
-        String playerJson = jsonPacker.toJson(player);
-        intent.putExtra(clientExtraName, clientJson);
-        intent.putExtra(playerExtraName, playerJson);
-
         startActivity(intent);
     }
 
@@ -235,15 +202,6 @@ public class Lobby extends AppCompatActivity {
     void leaveSession() {
         notInSessionView();
         playerStatus = PlayerStatus.FREE;
-    }
-
-    private void sendTCP( Object object ) {
-        new Thread("Handle") {
-            @Override
-            public void run() {
-                client.sendTCP(object);
-            }
-        }.start();
     }
 
 }
