@@ -3,6 +3,11 @@ package ru.spbstu.gyboml.core.net;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.EndPoint;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+import ru.spbstu.gyboml.core.Player;
 import ru.spbstu.gyboml.core.net.Requests.ExitSession;
 import ru.spbstu.gyboml.core.net.Requests.GetSessions;
 import ru.spbstu.gyboml.core.net.Requests.Ready;
@@ -23,18 +28,26 @@ public class Network {
     // register request/response type for kryo serialization
     public static void register(EndPoint endPoint) {
         Kryo kryo = endPoint.getKryo();
+        kryo.register(String[].class);
+        kryo.register(List.class);
+        kryo.register(ArrayList.class);
+        kryo.register(Player.class);
+        kryo.register(Optional.class);
+
         kryo.register(Requests.RegisterName.class);
         kryo.register(Requests.ConnectSession.class);
         kryo.register(Requests.CreateSession.class);
-        kryo.register(Responses.SessionCreated.class);
-        kryo.register(Responses.SessionConnected.class);
-        kryo.register(Responses.ServerError.class);
         kryo.register(SessionInfo.class);
-        kryo.register(String[].class);
         kryo.register(GetSessions.class);
         kryo.register(Ready.class);
         kryo.register(ExitSession.class);
+        kryo.register(ExitSession.class);
+
         kryo.register(Responses.ReadyApproved.class);
         kryo.register(Responses.SessionExited.class);
+        kryo.register(Responses.SessionCreated.class);
+        kryo.register(Responses.SessionConnected.class);
+        kryo.register(Responses.ServerError.class);
+        kryo.register(Responses.TakeSessions.class);
     }
 }

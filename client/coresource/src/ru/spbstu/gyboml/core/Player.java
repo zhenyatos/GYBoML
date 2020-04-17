@@ -1,28 +1,30 @@
 package ru.spbstu.gyboml.core;
 
-import com.esotericsoftware.kryonet.Connection;
-
-import java.util.Optional;
-
 /**
  * Class represents player in game.
  * */
 public class Player {
 
     // is now my turn
-    private boolean isTurn;
+    public boolean isTurn;
 
     // current number of points
-    private int points;
+    public int points;
 
-    // kryonet connection
-    private Optional<Connection> connection = Optional.empty();
-    
+    // player unique id
+    public long id;
+
+    // session unique id
+    public int sessionId;
+
     // player name
-    private String name;
+    public String name;
 
     // is player ready in session
-    private boolean ready;
+    public boolean ready;
+
+    // default ctor
+    public Player(){}
 
     /**
      * Class constructor.
@@ -49,27 +51,18 @@ public class Player {
         return false;
     }
 
-    /**
-     * @return true if it is my turn, false otherwise
-     * */
-    public boolean isMyTurn() {
-        return isTurn;
-    }
-
-    public Optional<Connection> getConnection() {
-        return this.connection;
-    }
-    
+    // getters
+    public boolean isMyTurn() { return isTurn; }
     public String name() { return this.name; }
-
-    public void setConnection(Connection conn) {
-        this.connection = Optional.of(conn);
-    }
-    
+    public long id() { return this.id; }
+    public int sessionid() { return this.sessionId; }
     public boolean ready() {
         return this.ready;
     }
-    
+
+    // setters
     public void setName(String name) { this.name = name; }
     public void setReady(boolean ready) { this.ready = ready; }
+    public void setId(long id) { this.id = id; }
+    public void setSessionId(int id) { this.sessionId = id; }
 }

@@ -11,7 +11,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.text.InputType;
 import android.view.View;
-import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -24,6 +23,7 @@ import java.io.IOException;
 import main.java.ru.spbstu.gyboml.MainActivity;
 import main.java.ru.spbstu.gyboml.clientmenu.MainMenu;
 import ru.spbstu.gyboml.R;
+import ru.spbstu.gyboml.core.Player;
 import ru.spbstu.gyboml.core.net.Network;
 import ru.spbstu.gyboml.core.net.Requests;
 
@@ -32,19 +32,21 @@ public class Lobby extends AppCompatActivity {
 
     //Objects that handle the visual representation of the session list
     private RecyclerView gameSessionsView;
-    ButtonAdapter sessionsAdapter;
     private RecyclerView.LayoutManager layoutManager;
-    //Buttons
     private ImageButton createNewSessionButton;
     private ToggleButton readyButton;
-    ImageButton exitButton;
     private ImageButton refreshButton;
 
-    //User info
-    private String chosenSessionName;
-    private String username;
+    ButtonAdapter sessionsAdapter;
+    ImageButton exitButton;
 
+    //User info
+    String chosenSessionName;
+    String chosenPlayerName;
+
+    // player info
     PlayerStatus playerStatus = PlayerStatus.FREE;
+    Player player;
 
     private Client client;
 
@@ -58,11 +60,21 @@ public class Lobby extends AppCompatActivity {
         client = new Client();
         client.start();
 
+        Network.register(client);
+
+        Thread clientThread = new Thread("Connect") {
+            @Override
+            public void run() {
+                try { client.connect(5000, Network.serverAddress, Network.tcpPort/*, Network.udpPort*/); }
+                catch (IOException error) { error.printStackTrace(); }
+            }
+        };
+
         client.addListener(new SessionListener(this));
 
         //Get user info from the main menu
         Intent intent = getIntent();
-        username = intent.getStringExtra(MainMenu.PLAYER_NAME);
+        chosenPlayerName = intent.getStringExtra(MainMenu.PLAYER_NAME);
 
         gameSessionsView = findViewById(R.id.gameSessions);
         createNewSessionButton = findViewById(R.id.createSession);
@@ -89,13 +101,7 @@ public class Lobby extends AppCompatActivity {
         //Set up the listener for game session buttons
         sessionsAdapter.setOnClickListener(getSessionButtonListener());
 
-        new Thread(() -> {
-            try {
-                client.connect(5000, Network.serverAddress, Network.tcpPort, Network.udpPort);
-            } catch (IOException error) {
-                error.printStackTrace();
-            }
-        }).start();
+        clientThread.start();
     }
 
     //Dialogue window for the createSession listener
@@ -111,9 +117,11 @@ public class Lobby extends AppCompatActivity {
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                Requests.CreateSession request = new Requests.CreateSession();
-                request.sessionName = input.getText().toString().trim();
-                client.sendTCP(request);
+                Requests.CreateSession createSession = new Requests.CreateSession();
+                createSession.sessionName = input.getText().toString().trim();
+
+                sendTCP(createSession);
+                sendTCP(new Requests.GetSessions());
             }
         });
 
@@ -154,7 +162,7 @@ public class Lobby extends AppCompatActivity {
                 sessionsAdapter.chosenSessionID = v.getId();
                 Requests.ConnectSession request = new Requests.ConnectSession();
                 request.sessionId = sessionsAdapter.chosenSessionID;
-                client.sendTCP(request);
+                sendTCP(request);
             }
         };
     }
@@ -165,8 +173,8 @@ public class Lobby extends AppCompatActivity {
             public void onClick(View v) {
                 //tell server to remove player from session
                 Requests.ExitSession request = new Requests.ExitSession();
-                request.sessionId = sessionsAdapter.chosenSessionID;
-                client.sendTCP(request);
+                request.player = player;
+                sendTCP(request);
             }
         };
     }
@@ -175,7 +183,7 @@ public class Lobby extends AppCompatActivity {
     private View.OnClickListener getRefreshButtonListener() {
         return new View.OnClickListener() {
             public void onClick(View v) {
-                client.sendTCP(new Requests.GetSessions());
+                sendTCP(new Requests.GetSessions());
             }
         };
     }
@@ -187,13 +195,13 @@ public class Lobby extends AppCompatActivity {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (!isChecked) {
                     Requests.Ready request = new Requests.Ready();
-                    request.isReady = false;
-                    client.sendTCP(request);
+                    request.player = player;
+                    sendTCP(request);
                 }
                 else {
                     Requests.Ready request = new Requests.Ready();
-                    request.isReady = true;
-                    client.sendTCP(request);
+                    request.player = player;
+                    sendTCP(request);
                 }
             }
         };
@@ -213,6 +221,15 @@ public class Lobby extends AppCompatActivity {
     void leaveSession() {
         notInSessionView();
         playerStatus = PlayerStatus.FREE;
+    }
+
+    private void sendTCP( Object object ) {
+        new Thread("Handle") {
+            @Override
+            public void run() {
+                client.sendTCP(object);
+            }
+        }.start();
     }
 
 }

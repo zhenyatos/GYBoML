@@ -1,5 +1,7 @@
 package ru.spbstu.gyboml.core.net;
 
+import ru.spbstu.gyboml.core.Player;
+
 /* All requests utility class
  * Most often, requests send from client to server
  */
@@ -38,14 +40,13 @@ public class Requests {
      * Ready message
      */
     public static class Ready {
-        public int sessionId;
-        public boolean isReady;
+        public Player player;
     }
     
     /*
      * Exit from room (session) message
      */
     public static class ExitSession {
-        public int sessionId;
+        public Player player;
     }
 }

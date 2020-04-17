@@ -3,8 +3,7 @@ package main.java.ru.spbstu.gyboml.clientlobby;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 
-import java.io.FileOutputStream;
-
+import ru.spbstu.gyboml.core.Player;
 import ru.spbstu.gyboml.core.net.Requests;
 import ru.spbstu.gyboml.core.net.Responses;
 
@@ -22,6 +21,11 @@ public class SessionListener extends Listener {
     @Override
     public void connected(Connection connection) {
         //TODO: output message in with green border 'Connected' to the screen corner
+
+        // register name
+        Requests.RegisterName request = new Requests.RegisterName();
+        request.playerName = lobby.chosenPlayerName;
+        connection.sendTCP(request);
 
         // request session list
         connection.sendTCP(new Requests.GetSessions());
@@ -46,10 +50,14 @@ public class SessionListener extends Listener {
     }
 
     private void sessionExited(Connection connection, Responses.SessionExited object) {
-        lobby.playerStatus = Lobby.PlayerStatus.FREE;
-        lobby.sessionsAdapter.enableTouch();
-        lobby.sessionsAdapter.chosenSessionID = null;
-        lobby.notInSessionView();
+        lobby.runOnUiThread(() -> {
+            lobby.playerStatus = Lobby.PlayerStatus.FREE;
+            lobby.sessionsAdapter.enableTouch();
+            lobby.sessionsAdapter.chosenSessionID = null;
+            lobby.notInSessionView();
+        });
+
+        connection.sendTCP(new Requests.GetSessions());
     }
 
     private void serverError(Connection connection, Responses.ServerError error) {
@@ -58,22 +66,36 @@ public class SessionListener extends Listener {
     }
 
     private void sessionCreated(Connection connection, Responses.SessionCreated object) {
-        lobby.playerStatus = Lobby.PlayerStatus.SESSIONJOINED;
-        lobby.sessionsAdapter.disableTouch();
-        lobby.inSessionView();
+        int id = object.sessionId;
+
+        Requests.ConnectSession connectSession = new Requests.ConnectSession();
+        connectSession.sessionId = id;
+        connection.sendTCP(connectSession);
     }
 
     private void sessionConnected(Connection connection, Responses.SessionConnected object) {
-        lobby.playerStatus = Lobby.PlayerStatus.SESSIONJOINED;
-        lobby.sessionsAdapter.disableTouch();
-        lobby.inSessionView();
+        Player player = object.player;
+        lobby.player = player;
+
+        lobby.runOnUiThread(() -> {
+            lobby.playerStatus = Lobby.PlayerStatus.SESSIONJOINED;
+            lobby.sessionsAdapter.chosenSessionID = player.sessionId;
+            lobby.sessionsAdapter.disableTouch();
+            lobby.inSessionView();
+        });
     }
 
     private void takeSessions(Connection connection, Responses.TakeSessions object) {
-        lobby.sessionsAdapter.sessions = object.lobbies;
+        lobby.runOnUiThread(() -> {
+            lobby.sessionsAdapter.sessions = object.lobbies;
+            lobby.sessionsAdapter.notifyDataSetChanged();
+        });
     }
 
     private void readyApproved(Connection connection, Responses.ReadyApproved object) {
-        lobby.exitButton.setEnabled(object.isReady);
+        lobby.runOnUiThread(() -> {
+            lobby.exitButton.setEnabled(!object.isReady);
+        });
     }
 }
+
