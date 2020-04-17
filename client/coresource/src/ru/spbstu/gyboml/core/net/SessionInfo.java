@@ -1,7 +1,5 @@
 package ru.spbstu.gyboml.core.net;
 
-import java.util.Optional;
-
 import ru.spbstu.gyboml.core.Player;
 
 /**

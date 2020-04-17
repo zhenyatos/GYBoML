@@ -55,4 +55,15 @@ public class Responses {
      */
     public static class SessionExited {
     }
+
+    /*
+     * Game started message
+     * Sent after both players connected to session and ready
+     */
+    public static class SessionStarted {
+        // initial player object
+        // previous player state is meaningless now and
+        // needed only for session operations
+        Player player;
+    }
 }
