@@ -99,6 +99,10 @@ public class SessionListener extends Listener {
                         lobby.secondPlayerName.setText(currentSession.secondPlayer.name);
                         lobby.secondPlayerReady.setVisibility(currentSession.secondPlayer.ready ? View.VISIBLE : View.INVISIBLE);
                     }
+                    else {
+                        lobby.secondPlayerName.setText("None");
+                        lobby.secondPlayerReady.setVisibility(View.INVISIBLE);
+                    }
             }
         });
     }
