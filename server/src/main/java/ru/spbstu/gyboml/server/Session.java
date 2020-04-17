@@ -3,16 +3,14 @@ package ru.spbstu.gyboml.server;
 import java.util.Optional;
 import java.util.function.Function;
 
-import com.esotericsoftware.kryonet.Connection;
-
 import ru.spbstu.gyboml.core.Player;
 import ru.spbstu.gyboml.core.net.SessionInfo;
 
 public class Session {
 
     // players
-    Optional<Player> firstPlayer;
-    Optional<Player> secondPlayer;
+    Optional<Player> firstPlayer = Optional.empty();
+    Optional<Player> secondPlayer = Optional.empty();
 
     private final int id;
     private static int nextAvailable = 0;
@@ -33,17 +31,22 @@ public class Session {
 
     /**
      * Add player to sesion method      
-     * @return true if player was added, false if there are no spaces in session.
+     * @return New instance of Player
      */
-    public boolean add(final GybomlConnection connection, final String name) {
+    public Player add(final String name) {
         Function<Boolean, Player> create = isTurn -> {
             Player player = new Player(name, 0, isTurn);
-            player.setConnection(connection);
+            player.name = name;
+            player.points = 0;
+            player.isTurn = isTurn;
+            player.id = Main.nextAvailablePlayerId();
+            player.sessionId = id;
+
             return player;
         };
-        if (!firstPlayer.isPresent()) {firstPlayer = Optional.of(create.apply(true)); return true;}
-        else if (!secondPlayer.isPresent()) {secondPlayer = Optional.of(create.apply(false)); return true;}
-        else {return false;}        
+        if (!firstPlayer.isPresent()) {firstPlayer = Optional.of(create.apply(true)); return firstPlayer.get();}
+        else if (!secondPlayer.isPresent()) {secondPlayer = Optional.of(create.apply(false)); return secondPlayer.get();}
+        else {return null;}        
     }
 
     /**
@@ -60,22 +63,22 @@ public class Session {
      * @param connection to delete by
      * @return true if player removed, false if there is no player with this connection 
      */
-    public boolean remove(Connection connection) { 
-        if (firstPlayer.get().getConnection().get().equals(connection)) {
+    public boolean remove(long playerId) { 
+        if (firstPlayer.isPresent() && firstPlayer.get().id == playerId) {
             firstPlayer = secondPlayer;
             secondPlayer = Optional.empty();
             return true;
-        } else if (secondPlayer.get().getConnection().get().equals(connection)) {
+        } else if (secondPlayer.isPresent() && secondPlayer.get().id == playerId) {
             secondPlayer = Optional.empty();
             return true;
         } else return false;
     }
 
-    public boolean ready(Connection connection, boolean isReady) {
-        if (firstPlayer.get().getConnection().get().equals(connection)) {
+    public boolean ready(long playerId, boolean isReady) {
+        if (firstPlayer.isPresent() && firstPlayer.get().id == playerId) {
             firstPlayer.get().setReady(isReady);
             return true;
-        } else if (secondPlayer.get().getConnection().get().equals(connection)) {
+        } else if (secondPlayer.isPresent() && secondPlayer.get().id == playerId) {
             secondPlayer.get().setReady(isReady);
             return true;
         } else return false;
@@ -87,7 +90,14 @@ public class Session {
      * @return
      */
     public SessionInfo toSessionInfo() {
-        return new SessionInfo(this.name, this.id, spaces(), firstPlayer, secondPlayer);
+        SessionInfo sessionInfo = new SessionInfo();
+        sessionInfo.name = this.name;
+        sessionInfo.sessionId = this.id;
+        sessionInfo.spaces = spaces();
+        sessionInfo.firstPlayer = firstPlayer.orElse(null);
+        sessionInfo.secondPlayer = secondPlayer.orElse(null);
+
+        return sessionInfo;
     }
 
     //getters

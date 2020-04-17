@@ -22,6 +22,8 @@ public class Main
     // mapping from int to session with same id
     Map<Integer, Session> sessionMap;
 
+    private static long nextAvailablePlayerId = 0;
+
     private Main() throws IOException {
 
         // init fields
@@ -35,7 +37,7 @@ public class Main
         };
         Network.register(server);
         server.addListener(new SessionListener(this));
-        server.bind(Network.tcpPort, Network.udpPort);
+        server.bind(Network.tcpPort/*TODO: , Network.udpPort*/);
     }
 
     private void start() { 
@@ -57,4 +59,6 @@ public class Main
     public static void main(final String[] args) throws IOException {
         new Main().start();
     }
+
+    public static long nextAvailablePlayerId() { return nextAvailablePlayerId++; }
 }
