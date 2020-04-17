@@ -46,7 +46,6 @@ public class Responses {
      * Send afrer player's Ready request
      */
     public static class ReadyApproved {
-        public boolean isReady;
     }
 
     /*
@@ -54,5 +53,16 @@ public class Responses {
      * Send afrer player's ExitSession request
      */
     public static class SessionExited {
+    }
+
+    /*
+     * Game started message
+     * Sent after both players connected to session and ready
+     */
+    public static class SessionStarted {
+        // initial player object
+        // previous player state is meaningless now and
+        // needed only for session operations
+        Player player;
     }
 }

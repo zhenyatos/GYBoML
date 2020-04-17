@@ -4,16 +4,19 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#FFFF"
     tools:context="main.java.ru.spbstu.gyboml.clientmenu.MainMenu">
 
 
     <Button
         android:id="@+id/exitButton"
+        style="@style/Widget.MaterialComponents.Button"
         android:layout_width="0dp"
         android:layout_height="70dp"
         android:layout_marginTop="128dp"
         android:gravity="center"
         android:text="Exit"
+        android:textColor="@android:color/black"
         android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="@+id/startButton"
         app:layout_constraintHorizontal_bias="1.0"
@@ -22,6 +25,7 @@
 
     <Button
         android:id="@+id/aboutButton"
+        style="@android:style/Widget.Material.Button"
         android:layout_width="0dp"
         android:layout_height="70dp"
         android:layout_marginTop="128dp"
@@ -35,6 +39,7 @@
 
     <Button
         android:id="@+id/startButton"
+        style="@android:style/Widget.Material.Button"
         android:layout_width="250dp"
         android:layout_height="70dp"
         android:layout_marginTop="80dp"
@@ -48,11 +53,13 @@
 
     <TextView
         android:id="@+id/gameTitle"
-        android:layout_width="307dp"
-        android:layout_height="38dp"
+        style="@android:style/Widget.Material.Light.TextView"
+        android:layout_width="313dp"
+        android:layout_height="59dp"
         android:layout_marginTop="16dp"
         android:gravity="center"
         android:text="Get Your Bombs Off My Lawn!"
+        android:textColor="@android:color/black"
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
