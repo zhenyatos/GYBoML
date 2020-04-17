@@ -142,16 +142,29 @@ public class SessionListener extends Listener {
      */
     private void ready(GybomlConnection connection, Requests.Ready object) {
         if (connection.name() == null) {sendError(connection, "Choose player name!"); return;}
+
+        // get data
         Player player = object.player;
+        Session session = main.sessionMap.get(player.sessionId);
         System.out.println(String.format("Ready request from %s#%s. Attempt to set ready %s", player.name, player.id, !player.ready));
 
-        Session session = main.sessionMap.get(player.sessionId);
         if (session == null) {sendError(connection, "Attempt to set Ready, but from unexistent session"); return;}
 
+        // main logic
         session.ready(player.id, !player.ready);
 
+        // repspond an approve message
         connection.sendTCP(new Responses.ReadyApproved());
         notifySessionPlayers(session);
+
+        // check if both players are ready
+        NetPlayer firstPlayer = session.firstPlayer.get();
+        NetPlayer secondPlayer = session.secondPlayer.get();
+        if (firstPlayer.getPlayer().ready && secondPlayer.getPlayer().ready) {
+            Responses.SessionStarted sessionStarted = new Responses.SessionStarted();
+            firstPlayer.getConnection().sendTCP(sessionStarted);
+            secondPlayer.getConnection().sendTCP(sessionStarted);
+        }
     }
 
     private void notifySessionPlayers(Session session) {
