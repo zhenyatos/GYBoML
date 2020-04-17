@@ -50,6 +50,11 @@ public class SessionListener extends Listener {
         else if (object instanceof Responses.SessionConnected) { sessionConnected(connection, (Responses.SessionConnected)object); }
         else if (object instanceof Responses.ReadyApproved) { readyApproved(connection, (Responses.ReadyApproved)object); }
         else if (object instanceof Responses.SessionExited) { sessionExited(connection, (Responses.SessionExited)object); }
+        else if (object instanceof Responses.SessionStarted) { sessionStarted(connection, (Responses.SessionStarted)object); }
+    }
+
+    private void sessionStarted(Connection connection, Responses.SessionStarted object) {
+        lobby.gameStartUp();
     }
 
     private void sessionExited(Connection connection, Responses.SessionExited object) {
