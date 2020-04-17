@@ -6,21 +6,32 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
+import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.esotericsoftware.kryonet.Client;
 
 import ru.spbstu.gyboml.core.Player;
 import ru.spbstu.gyboml.core.PlayerType;
+import ru.spbstu.gyboml.core.scene.GraphicalScene;
+import ru.spbstu.gyboml.core.scene.HPBar;
+import ru.spbstu.gyboml.core.scene.PhysicalScene;
+import ru.spbstu.gyboml.core.scene.SceneConstants;
+import ru.spbstu.gyboml.core.scene.SoundEffects;
 import ru.spbstu.gyboml.core.shot.ShotType;
 
 /**
@@ -30,20 +41,15 @@ import ru.spbstu.gyboml.core.shot.ShotType;
  * @since   2020-03-11
  */
 public class GameClient extends ApplicationAdapter implements InputProcessor {
-    // canvas / world constants
-    private static final float minRatio     = 3f / 2f;
-    private static final float minWidth     = 50;
-    private static final float minHeight    = minWidth / minRatio;
-    private static final float worldScale   = 1.5f;
-    private static final float worldWidth   = minWidth * worldScale;
-    private static final float worldHeight  = minHeight;
-    private static final float maxXRatio    = 19.5f / 9f;
-    private static final float maxYRatio    = 4f / 3f;
-    private static final float canvasWidth  = worldWidth + minWidth * (maxXRatio / minRatio - 1);
-    private static final float canvasHeight = worldHeight + minHeight * (minRatio / maxYRatio - 1);
+    private static final float buttonWidth  = 200 / 1920.0f;
+    private static final float buttonHeight = 100 / 1080.0f;
 
-    PhysicalScene  physicalScene;
-    GraphicalScene graphicalScene;
+    private static final int armoryRowCount = 4;
+    private static final int armoryColumnCount = 4;
+    private static final float armoryChooseButtonWidthFactor = 2 / 3.0f;
+
+    private PhysicalScene physicalScene;
+    private GraphicalScene graphicalScene;
     SoundEffects soundEffects;
 
     // drawing and stuff
@@ -52,11 +58,18 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
     private OrthographicCamera camera;
     private ExtendViewport viewport;
     private Stage stageForUI;
-    private Table table;
+    private World world;
+
+    private Skin earthSkin;
 
     //connection
     Client client;
     Player player;
+
+    private Table table;
+
+    private Table armoryCells;
+    private boolean visibleArmory;
 
     // temp
     PlayerType playerTurn = PlayerType.FIRST_PLAYER;
@@ -86,17 +99,14 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
         debugRenderer = new Box2DDebugRenderer();
         batch = new SpriteBatch();
 
-        float backgroundX = 0 - (canvasWidth - worldWidth) / 2;
-        float backgroundY = 0 - (canvasHeight - worldHeight) / 2;
-
-        graphicalScene = new GraphicalScene(canvasWidth, canvasHeight);
-        physicalScene  = new PhysicalScene(graphicalScene, backgroundX, backgroundY);
+        graphicalScene = new GraphicalScene();
+        physicalScene = new PhysicalScene(graphicalScene);
         soundEffects = SoundEffects.get();
 
         // UI is setup after main game objects was created
         setUpUI();
 
-        camera = new OrthographicCamera(minWidth, minHeight);
+        camera = new OrthographicCamera(SceneConstants.minWidth, SceneConstants.minHeight);
         viewport = new ExtendViewport(camera.viewportWidth, camera.viewportHeight, camera);
         camera.position.set(camera.viewportWidth / 2, camera.viewportHeight / 2, 0);
         camera.update();
@@ -106,15 +116,21 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
      * Creates the UI table and creates the layout of the UI elements.
      */
     private void setUpUI() {
-        final float buttonWidth  = 200;
-        final float buttonHeight = 100;
         table = new Table();
+        table.setDebug(true);
         table.setBounds(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
         stageForUI.addActor(table);
 
         // End turn button
-        Button endTurnButton = new TextButton("End Turn", new Skin(Gdx.files.internal("skin/flat-earth-ui.json")), "default");
+        TextureRegionDrawable endTurnUp   = new TextureRegionDrawable(
+                new TextureRegion(
+                        new Texture(Gdx.files.internal("skin/buttons/endturn_up.png"))));
+        TextureRegionDrawable endTurnDown = new TextureRegionDrawable(
+                new TextureRegion(
+                        new Texture(Gdx.files.internal("skin/buttons/endturn_down.png"))));
+        ImageButton endTurnButton = new ImageButton(endTurnUp, endTurnDown);
+
         endTurnButton.addListener(new InputListener() {
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
@@ -125,12 +141,21 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
                 return true;
             }
         });
+
         table.bottom().left();
-        table.add(endTurnButton).width(buttonWidth).height(buttonHeight);
-        table.getCell(endTurnButton).spaceRight(Gdx.graphics.getWidth() - 2 * buttonWidth);
+        //table.row();
+        //table.add(new Actor());
+        table.row();
+        table.add(endTurnButton).width(buttonWidth * Gdx.graphics.getWidth()).height(buttonHeight * Gdx.graphics.getHeight()).bottom();
+        //.spaceRight(Gdx.graphics.getWidth() - 2 * buttonWidth);
+
+        // here add button
+        setUpArmoryStorage();
 
         // Fire button
-        Button fireButton = new TextButton("Fire", new Skin(Gdx.files.internal("skin/flat-earth-ui.json")), "default");
+        TextureRegionDrawable fireUp      = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("skin/buttons/fire_up.png"))));
+        TextureRegionDrawable fireDown    = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("skin/buttons/fire_down.png"))));
+        ImageButton fireButton = new ImageButton(fireUp, fireDown);
         fireButton.addListener(new InputListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
@@ -143,7 +168,8 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
                 soundEffects.shot.play(1.f);
             }
         });
-        table.add(fireButton).width(buttonWidth).height(buttonHeight);
+        table.add(fireButton).width(buttonWidth * Gdx.graphics.getWidth()).height(buttonHeight * Gdx.graphics.getHeight()).bottom().
+                spaceLeft(Gdx.graphics.getWidth() * (1 - (3 + armoryColumnCount * armoryChooseButtonWidthFactor) * buttonWidth));
 
         // HP progress bar
         HPBar bar1 = new HPBar(100);
@@ -156,6 +182,52 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
         bar2.getHealthBar().setPosition(Gdx.graphics.getWidth() - HPBar.width - 10,
                 Gdx.graphics.getHeight() - 30);
         stageForUI.addActor(bar2.getHealthBar());
+
+        physicalScene.connectWithSoundEffects(soundEffects);
+    }
+
+    private void setUpArmoryStorage() {
+        Table armoryTable = new Table();
+        armoryCells = new Table();
+        visibleArmory = false;
+        armoryCells.setVisible(visibleArmory);
+
+        earthSkin = new Skin(Gdx.files.internal("skin/flat-earth-ui.json"));
+
+        for (int y = 0; y < armoryRowCount; y++) {
+            armoryCells.row();
+            for (int x = 0; x < armoryColumnCount; x++)
+                armoryCells.add(new TextButton("Cell " + y + ", " + x, earthSkin, "default")).
+                        width(buttonWidth * armoryChooseButtonWidthFactor * Gdx.graphics.getWidth());
+        }
+
+        // Show armory button
+        TextureRegionDrawable armoryUp      = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("skin/buttons/armory_up.png"))));
+        TextureRegionDrawable armoryDown    = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("skin/buttons/armory_down.png"))));
+        TextureRegionDrawable armoryChecked = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("skin/buttons/armory_down.png"))));
+        ImageButton showArmory = new ImageButton(armoryUp, armoryDown, armoryChecked);
+
+        showArmory.addListener(new InputListener() {
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                visibleArmory = !visibleArmory;
+                armoryCells.setVisible(visibleArmory);
+            }
+
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                return true;
+            }
+        });
+
+        armoryTable.row();
+        armoryTable.bottom().left();
+        armoryTable.add(showArmory).width(buttonWidth * Gdx.graphics.getWidth()).height(buttonHeight * Gdx.graphics.getHeight()).bottom();
+        armoryTable.add(armoryCells);
+
+
+        table.add(armoryTable);//.spaceBottom(Gdx.graphics.getHeight() -
+        //(buttonHeight + armoryRowCount * buttonHeight * heightFactor) * Gdx.graphics.getHeight());
     }
 
 
@@ -200,20 +272,20 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
      */
     @Override
     public boolean touchDragged(int screenX, int screenY, int pointer) {
-        float x = Gdx.input.getDeltaX() * graphicalScene.getScale();
-        float y = Gdx.input.getDeltaY() * graphicalScene.getScale();
+        float x = Gdx.input.getDeltaX() * SceneConstants.SCALE;
+        float y = Gdx.input.getDeltaY() * SceneConstants.SCALE;
 
-        float leftEdgePos = camera.position.x - minWidth / 2;
-        float rightEdgePos = leftEdgePos + minWidth;
+        float leftEdgePos = camera.position.x - SceneConstants.minWidth / 2;
+        float rightEdgePos = leftEdgePos + SceneConstants.minWidth;
         if (leftEdgePos  - x < 0)
             x = leftEdgePos;
-        else if (rightEdgePos - x > worldWidth)
-            x = rightEdgePos - worldWidth;
+        else if (rightEdgePos - x > SceneConstants.worldWidth)
+            x = rightEdgePos - SceneConstants.worldWidth;
 
-        float topEdgePos = camera.position.y + minHeight / 2;
-        float bottomEdgePos = topEdgePos - minHeight;
-        if (topEdgePos + y > worldHeight)
-            y = worldHeight - topEdgePos;
+        float topEdgePos = camera.position.y + SceneConstants.minHeight / 2;
+        float bottomEdgePos = topEdgePos - SceneConstants.minHeight;
+        if (topEdgePos + y > SceneConstants.worldHeight)
+            y = SceneConstants.worldHeight - topEdgePos;
         else if (bottomEdgePos + y < 0)
             y = -bottomEdgePos;
 

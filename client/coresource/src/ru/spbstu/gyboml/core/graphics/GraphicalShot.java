@@ -1,4 +1,4 @@
-package main.java.ru.spbstu.gyboml.graphics;
+package ru.spbstu.gyboml.core.graphics;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
@@ -14,6 +14,7 @@ public class GraphicalShot implements Drawable, Updatable {
         this.sprite = sprite;
     }
 
+    @Override
     public Sprite getSprite() { return sprite; }
 
     @Override

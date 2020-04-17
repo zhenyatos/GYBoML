@@ -1,4 +1,4 @@
-package main.java.ru.spbstu.gyboml.graphics;
+package ru.spbstu.gyboml.core.graphics;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
@@ -19,7 +19,8 @@ public class GraphicalBlock implements Drawable, Updatable {
         this.currentSprite = intactBlock;
     }
 
-    public Sprite getCurrentSprite() { return currentSprite; }
+    @Override
+    public Sprite getSprite() { return currentSprite; }
 
     @Override
     public void draw(Batch batch) {

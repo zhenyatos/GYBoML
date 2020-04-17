@@ -9,6 +9,7 @@ import com.esotericsoftware.kryonet.Client;
 import com.google.gson.Gson;
 
 import main.java.ru.spbstu.gyboml.clientcore.GameClient;
+
 import main.java.ru.spbstu.gyboml.clientlobby.Lobby;
 import ru.spbstu.gyboml.core.Player;
 
@@ -30,7 +31,7 @@ public class MainActivity extends AndroidApplication {
             game = new GameClient(null, null);
 
         AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
-        initialize(game, config);
+        setContentView(initializeForView(game, config));
 
     }
 }
