@@ -4,6 +4,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 
+import org.apache.commons.lang3.time.StopWatch;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
@@ -33,6 +35,9 @@ public class PhysicalScene {
     private DestructionListener blockSounds;
 
     private final World world;
+
+    private final StopWatch stopWatch = new StopWatch();
+    private float previousTime;
 
     private List<Movable> movables;
     private PhysicalBackground physicalBackground;
@@ -181,9 +186,14 @@ public class PhysicalScene {
     public World getWorld() { return world; }
 
     public void stepWorld() {
-        float delta = Gdx.graphics.getDeltaTime();
-
-        accumulator += Math.min(delta, 0.25f);
+        if (!stopWatch.isStarted()) {
+            stopWatch.start();
+            previousTime = (float) (stopWatch.getTime() * 1000);
+        }
+        stopWatch.split();
+        float currentTime = stopWatch.getSplitTime() * 1000f;
+        accumulator += Math.min(currentTime - previousTime, 0.25f);
+        previousTime = currentTime;
 
         if (accumulator >= STEP_TIME) {
             accumulator -= STEP_TIME;

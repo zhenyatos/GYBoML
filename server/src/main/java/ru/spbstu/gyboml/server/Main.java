@@ -9,6 +9,7 @@ import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Server;
 
 import ru.spbstu.gyboml.core.net.*;
+import ru.spbstu.gyboml.core.scene.PhysicalScene;
 
 /**
  * Server main class
@@ -18,6 +19,7 @@ public class Main
 {
     // kryonet server object
     Server server;
+    PhysicalScene scene = new PhysicalScene(null);
 
     // mapping from int to session with same id
     Map<Integer, Session> sessionMap;
@@ -45,6 +47,7 @@ public class Main
 
         Scanner scanner = new Scanner(System.in);
         while (true) {
+            scene.stepWorld();
             System.out.print("control> ");
             String line = scanner.nextLine();
 
