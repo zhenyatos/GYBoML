@@ -21,6 +21,7 @@ import android.widget.TextView;
 import android.widget.ToggleButton;
 
 import com.esotericsoftware.kryonet.Client;
+import com.google.gson.Gson;
 
 import java.io.IOException;
 
@@ -56,6 +57,10 @@ public class Lobby extends AppCompatActivity {
     // player info
     PlayerStatus playerStatus = PlayerStatus.FREE;
     Player player;
+
+    //Constants describing names of the extras transferred to the game client
+    public static final String clientExtraName = "CLIENT_JSON";
+    public static final String playerExtraName = "PLAYER_JSON";
 
     private Client client;
 
@@ -223,6 +228,13 @@ public class Lobby extends AppCompatActivity {
     //Starts up the game, duh
     private void gameStartUp() {
         Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+
+        Gson jsonPacker =  new Gson();
+        String clientJson = jsonPacker.toJson(client);
+        String playerJson = jsonPacker.toJson(player);
+        intent.putExtra(clientExtraName, clientJson);
+        intent.putExtra(playerExtraName, playerJson);
+
         startActivity(intent);
     }
 

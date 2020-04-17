@@ -4,8 +4,6 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
-import com.badlogic.gdx.audio.Sound;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -19,7 +17,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.esotericsoftware.kryonet.Client;
 
+import ru.spbstu.gyboml.core.Player;
 import ru.spbstu.gyboml.core.PlayerType;
 import ru.spbstu.gyboml.core.shot.ShotType;
 
@@ -54,12 +54,19 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
     private Stage stageForUI;
     private Table table;
 
-    // connection
-    private MessageSender toServerMessageSender;
+    //connection
+    Client client;
+    Player player;
 
     // temp
     PlayerType playerTurn = PlayerType.FIRST_PLAYER;
     ShotType shotType = ShotType.BASIC;
+
+    //Initalize fields passed by MainActivity
+    public GameClient(Client client, Player player) {
+        this.client = client;
+        this.player = player;
+    }
 
     /**
      * This is the method that is called on client's creation.
