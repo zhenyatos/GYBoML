@@ -272,4 +272,17 @@ class PhysicalScene {
         else
             physicalCastleP2.getDestructionEmitter().addListener(bar);
     }
+
+    public void connectWithGameOver(PlayerType type, GameOver gameOver) {
+        if (type == PlayerType.FIRST_PLAYER) {
+            physicalCastleP1.getDestructionEmitter().addListener(gameOver.defeatListener());
+            physicalCastleP2.getDestructionEmitter().addListener(gameOver.victoryListener());
+        }
+        else{
+            physicalCastleP1.getDestructionEmitter().addListener(gameOver.victoryListener());
+            physicalCastleP2.getDestructionEmitter().addListener(gameOver.defeatListener());
+        }
+
+    }
+
 }

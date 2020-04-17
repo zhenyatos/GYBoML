@@ -1,5 +1,6 @@
 package main.java.ru.spbstu.gyboml.clientcore;
 
+
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
@@ -16,13 +17,19 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import ru.spbstu.gyboml.core.PlayerType;
 import ru.spbstu.gyboml.core.shot.ShotType;
@@ -62,15 +69,18 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
     private SpriteBatch batch;
     private OrthographicCamera camera;
     private ExtendViewport viewport;
+
+    //UI
     private Stage stageForUI;
+    private Table table;
+    private final List<Button> buttons = new ArrayList<>();
+    //private Label victoryLabel;
     private World world;
 
     private Skin earthSkin;
 
     // connection
     private MessageSender toServerMessageSender;
-
-    private Table table;
 
     private Table armoryCells;
     private boolean visibleArmory;
@@ -123,6 +133,8 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
 
         stageForUI.addActor(table);
 
+        Skin UISkin = new Skin(Gdx.files.internal("skin/flat-earth-ui.json"));
+
         // End turn button
         TextureRegionDrawable endTurnUp   = new TextureRegionDrawable(
                 new TextureRegion(
@@ -157,6 +169,8 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
         TextureRegionDrawable fireUp      = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("skin/buttons/fire_up.png"))));
         TextureRegionDrawable fireDown    = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("skin/buttons/fire_down.png"))));
         ImageButton fireButton = new ImageButton(fireUp, fireDown);
+        buttons.add(endTurnButton);
+
         fireButton.addListener(new InputListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
@@ -170,7 +184,18 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
             }
         });
         table.add(fireButton).width(buttonWidth * Gdx.graphics.getWidth()).height(buttonHeight * Gdx.graphics.getHeight()).bottom().
-            spaceLeft(Gdx.graphics.getWidth() * (1 - (3 + armoryColumnCount * armoryChooseButtonWidthFactor) * buttonWidth));
+                spaceLeft(Gdx.graphics.getWidth() * (1 - (3 + armoryColumnCount * armoryChooseButtonWidthFactor) * buttonWidth));
+        buttons.add(fireButton);
+
+        //Game over labels
+        Label victoryLabel = new Label("Victory!", UISkin, "title");
+        victoryLabel.setPosition(Gdx.graphics.getWidth() / 2f - victoryLabel.getWidth() / 2f,
+                Gdx.graphics.getHeight() / 2f - victoryLabel.getHeight() / 2f);
+        stageForUI.addActor(victoryLabel);
+        Label defeatLabel = new Label("Defeat!", UISkin, "title");
+        defeatLabel.setPosition(Gdx.graphics.getWidth() / 2f - defeatLabel.getWidth() / 2f,
+                Gdx.graphics.getHeight() / 2f - defeatLabel.getHeight() / 2f);
+        physicalScene.connectWithGameOver(playerTurn, new GameOver(this, victoryLabel, defeatLabel));
 
         // HP progress bar
         HPBar bar1 = new HPBar(100);
@@ -248,6 +273,7 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
         stageForUI.act(Gdx.graphics.getDeltaTime());
         stageForUI.draw();
 
+
         debugRenderer.render(physicalScene.getWorld(), camera.combined);
     }
 
@@ -303,6 +329,12 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
         viewport.update(width, height, false);
         stageForUI.getViewport().update(width, height, false);
     }
+
+    void disableButtons() {
+        for (Button button : buttons)
+            button.setTouchable(Touchable.disabled);
+    }
+
 
     /** Called when key is pressed, fires with P1 cannon
      * @param keycode key code (one of the Input.Keys)
