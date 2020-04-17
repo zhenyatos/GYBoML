@@ -20,6 +20,18 @@ public class SessionListener extends Listener {
 
     public SessionListener( Main main ) {this.main = main;}
 
+    @Override
+    public void disconnected(Connection c) {
+        GybomlConnection connection = (GybomlConnection)c;
+
+        // remove player from session if he was in session
+        if (connection.sessionId() != null) {
+            removeIdFromSession(main.sessionMap.get(connection.sessionId()), connection.id());
+        }
+
+        notifyAllPlayers();
+    }
+
     /**
      * All session-side events listener
      */
@@ -95,10 +107,14 @@ public class SessionListener extends Listener {
 
         Player newPlayer = session.add(connection, connection.name());
 
+        connection.setId(newPlayer.id);
+        connection.setSessionId(newPlayer.sessionId);
+
         // send approvement
         Responses.SessionConnected response = new Responses.SessionConnected();
         response.player = newPlayer;
         connection.sendTCP(response);
+
 
         notifyAllPlayers();
     }
@@ -128,10 +144,10 @@ public class SessionListener extends Listener {
         Session session = main.sessionMap.get(player.sessionId);
         if (session == null) {sendError(connection, "Attempt to leave from unexistent session"); return;}
 
-        session.remove(player.id);
+        removeIdFromSession(session, player.id);
 
-        // remove session if it become empty
-        if (session.spaces() == 2) { main.sessionMap.remove(session.id()); }
+        connection.setSessionId(null);
+        connection.setId(null);
 
         connection.sendTCP(new Responses.SessionExited());
         notifyAllPlayers();
@@ -187,5 +203,10 @@ public class SessionListener extends Listener {
         Responses.TakeSessions response = new Responses.TakeSessions();
         response.lobbies = lobbies;
         main.server.sendToAllTCP(response);
+    }
+
+    private void removeIdFromSession( Session session, long id ) {
+        session.remove(id);
+        if (session.spaces() == 2) { main.sessionMap.remove(session.id()); }
     }
 }
