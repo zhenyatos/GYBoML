@@ -1,6 +1,8 @@
 package ru.spbstu.gyboml.server;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.esotericsoftware.kryonet.Connection;
@@ -53,8 +55,6 @@ public class SessionListener extends Listener {
      * Called when player inputed his name when entered lobby menu
      */
     private void registerName(GybomlConnection connection, Requests.RegisterName object) {
-        System.out.println("RegisterName request");
-
         if (connection.name() != null) {sendError(connection, "Name was already chosen"); return;}
 
         String playerName = object.playerName.trim();
@@ -67,8 +67,6 @@ public class SessionListener extends Listener {
      * Called when player attempts to create lobby
      */
     private void createSession(GybomlConnection connection, Requests.CreateSession object) {
-        System.out.println("CreateSession request");
-
         if (connection.name() == null) { sendError(connection, "Choose player name!"); return; }
 
         String lobbyName = object.sessionName.trim();
@@ -85,7 +83,6 @@ public class SessionListener extends Listener {
      * Called when player attempt to connect to existing lobby
      */
     private void connectSession(GybomlConnection connection, Requests.ConnectSession object) {
-        System.out.println("Connect session request");
         if (connection.name() == null) {sendError(connection, "Choose player name!"); return;}
 
         int lobbyId = object.sessionId;
@@ -94,19 +91,28 @@ public class SessionListener extends Listener {
         if (session.spaces() == 0) {sendError(connection, "There is no spaces in that lobby"); return;}
         if (session.isStarted()) {sendError(connection, "Game was already started"); return;}
 
-        Player newPlayer = session.add(connection.name());
+        Player newPlayer = session.add(connection, connection.name());
 
         // send approvement
         Responses.SessionConnected response = new Responses.SessionConnected();
         response.player = newPlayer;
         connection.sendTCP(response);
+
+        // send session info to players in this session
+        // TODO: FIX IT AND SEND INFO ABOUT ONLY ONE SESSION, BUT NOT ALL LIST
+        Function<Optional<NetPlayer>, GybomlConnection> connectionSupplier = netPlayer -> {
+            return netPlayer.isPresent() ? netPlayer.get().getConnection() : null;
+        };
+        getSessions(connectionSupplier.apply(session.firstPlayer), null);
+        getSessions(connectionSupplier.apply(session.secondPlayer), null);
     }
 
     /**
      * Called when player attempts to get session list
      */
     private void getSessions(GybomlConnection connection, Requests.GetSessions object) {
-        System.out.println("Get sessions request");
+        if (connection == null) return;
+
         List<SessionInfo> lobbies = main.sessionMap.values().stream()
                                 .map(Session::toSessionInfo)
                                 .collect(Collectors.toList());
@@ -120,7 +126,6 @@ public class SessionListener extends Listener {
      * Called when player attempts to leave from session, which contains this player
      */
     private void exitSession(GybomlConnection connection, Requests.ExitSession object) {
-        System.out.println("Exit session request");
         if (connection.name() == null) {sendError(connection, "Choose player name!"); return;}
 
         Player player = object.player;
@@ -149,5 +154,13 @@ public class SessionListener extends Listener {
         session.ready(player.id, !player.ready);
 
         connection.sendTCP(new Responses.ReadyApproved());
+
+        // send session info to players in this session
+        // TODO: FIX IT AND SEND INFO ABOUT ONLY ONE SESSION, BUT NOT ALL LIST
+        Function<Optional<NetPlayer>, GybomlConnection> connectionSupplier = netPlayer -> {
+            return netPlayer.isPresent() ? netPlayer.get().getConnection() : null;
+        };
+        getSessions(connectionSupplier.apply(session.firstPlayer), null);
+        getSessions(connectionSupplier.apply(session.secondPlayer), null);
     }
 }

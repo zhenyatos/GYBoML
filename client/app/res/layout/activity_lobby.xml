@@ -3,13 +3,15 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="#FFFF">
 
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/inSessionLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="#FFFF"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="@id/gameSessions"
         app:layout_constraintEnd_toEndOf="parent"
@@ -87,29 +89,31 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginBottom="95dp"
+        android:background="#FFFF"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" >
+        app:layout_constraintTop_toTopOf="parent">
 
     </androidx.recyclerview.widget.RecyclerView>
 
     <ImageButton
         android:id="@+id/createSession"
+        style="@android:style/Widget.Material.ImageButton"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:scaleType="fitCenter"
         android:src="@android:drawable/ic_input_add"
         android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/refreshButton"
-        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintEnd_toStartOf="@id/exit"
         app:layout_constraintStart_toEndOf="@+id/ready"
         app:layout_constraintTop_toBottomOf="@+id/gameSessions" />
 
     <ImageButton
         android:id="@+id/exit"
+        style="@android:style/Widget.Material.ImageButton"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:scaleType="fitCenter"
@@ -117,8 +121,7 @@
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@+id/refreshButton"
+        app:layout_constraintStart_toEndOf="@id/createSession"
         app:layout_constraintTop_toBottomOf="@+id/gameSessions"
         app:layout_constraintVertical_bias="1.0" />
 
@@ -137,19 +140,5 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/gameSessions"
         app:layout_constraintVertical_bias="0.0" />
-
-    <ImageButton
-        android:id="@+id/refreshButton"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:scaleType="fitCenter"
-        android:visibility="visible"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/exit"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@id/createSession"
-        app:layout_constraintTop_toBottomOf="@+id/gameSessions"
-        app:srcCompat="@android:drawable/ic_menu_rotate"
-        tools:srcCompat="@android:drawable/ic_menu_rotate" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

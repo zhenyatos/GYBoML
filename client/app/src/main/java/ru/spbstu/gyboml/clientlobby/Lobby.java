@@ -21,6 +21,7 @@ import android.widget.TextView;
 import android.widget.ToggleButton;
 
 import com.esotericsoftware.kryonet.Client;
+import com.google.gson.Gson;
 
 import java.io.IOException;
 
@@ -38,7 +39,6 @@ public class Lobby extends AppCompatActivity {
     private RecyclerView gameSessionsView;
     private RecyclerView.LayoutManager layoutManager;
     private ImageButton createNewSessionButton;
-    private ImageButton refreshButton;
     private ConstraintLayout inSessionLayout;
 
     ButtonAdapter sessionsAdapter;
@@ -56,6 +56,10 @@ public class Lobby extends AppCompatActivity {
     // player info
     PlayerStatus playerStatus = PlayerStatus.FREE;
     Player player;
+
+    //Constants describing names of the extras transferred to the game client
+    public static final String clientExtraName = "CLIENT_JSON";
+    public static final String playerExtraName = "PLAYER_JSON";
 
     private Client client;
 
@@ -89,7 +93,6 @@ public class Lobby extends AppCompatActivity {
         createNewSessionButton = findViewById(R.id.createSession);
         readyButton = findViewById(R.id.ready);
         exitButton = findViewById(R.id.exit);
-        refreshButton = findViewById(R.id.refreshButton);
 
         firstPlayerReady = findViewById(R.id.firstPlayerReady);
         secondPlayerReady = findViewById(R.id.secondPlayerReady);
@@ -112,7 +115,6 @@ public class Lobby extends AppCompatActivity {
                     createDialogueWindow();
                 }
         });
-        refreshButton.setOnClickListener(getRefreshButtonListener());
 
         //Set up the listener for game session buttons
         sessionsAdapter.setOnClickListener(getSessionButtonListener());
@@ -199,14 +201,6 @@ public class Lobby extends AppCompatActivity {
         };
     }
 
-    //REFRESH SESSIONS LISTENER
-    private View.OnClickListener getRefreshButtonListener() {
-        return new View.OnClickListener() {
-            public void onClick(View v) {
-                sendTCP(new Requests.GetSessions());
-            }
-        };
-    }
 
     //READY BUTTON LISTENER
     private ToggleButton.OnCheckedChangeListener getReadyButtonListener() {
@@ -223,6 +217,13 @@ public class Lobby extends AppCompatActivity {
     //Starts up the game, duh
     private void gameStartUp() {
         Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+
+        Gson jsonPacker =  new Gson();
+        String clientJson = jsonPacker.toJson(client);
+        String playerJson = jsonPacker.toJson(player);
+        intent.putExtra(clientExtraName, clientJson);
+        intent.putExtra(playerExtraName, playerJson);
+
         startActivity(intent);
     }
 
