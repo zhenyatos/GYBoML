@@ -6,6 +6,8 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
 
 import main.java.ru.spbstu.gyboml.graphics.Animated;
 import main.java.ru.spbstu.gyboml.graphics.AnimatedExplosion;
@@ -19,6 +21,7 @@ import main.java.ru.spbstu.gyboml.graphics.GraphicalForeground;
 import main.java.ru.spbstu.gyboml.graphics.GraphicalTower;
 import ru.spbstu.gyboml.core.PlayerType;
 import ru.spbstu.gyboml.core.destructible.Material;
+import ru.spbstu.gyboml.core.physical.Physical;
 import ru.spbstu.gyboml.core.physical.PhysicalBackground;
 import ru.spbstu.gyboml.core.physical.PhysicalBlock;
 import ru.spbstu.gyboml.core.physical.PhysicalCastle;
@@ -35,14 +38,9 @@ class GraphicalScene {
     private final float canvasHeight;
     private final float resolutionWidth;
     private List<Drawable> drawables;
+    private List<Drawable> destroyed;
     private List<Animated> animations;
-    private List<Animated> toRemoveFromAnimations;
-    private List<GraphicalBlock> destroyed;
-    private List<GraphicalBlock> toRemoveFromDestroyed;
-    private List<GraphicalShot> stopped;
-    private List<GraphicalShot> toRemoveFromStopped;
-    private HashMap<PhysicalBlock, GraphicalBlock> blocks;
-    private HashMap<PhysicalShot, GraphicalShot> shots;
+    private Map<Physical, Drawable> objectsMap;
 
     private float SCALE;
     private float BLOCKS_SCALE;
@@ -60,12 +58,7 @@ class GraphicalScene {
         drawables = new ArrayList<>();
         animations = new ArrayList<>();
         destroyed = new ArrayList<>();
-        stopped = new ArrayList<>();
-        toRemoveFromDestroyed = new ArrayList<>();
-        toRemoveFromStopped = new ArrayList<>();
-        toRemoveFromAnimations = new ArrayList<>();
-        blocks = new HashMap<>();
-        shots = new HashMap<>();
+        objectsMap = new HashMap<>();
 
         backgroundBack  = new TextureAtlas("sprites/background_1.txt");
         backgroundFront = new TextureAtlas("sprites/background_2.txt");
@@ -134,7 +127,7 @@ class GraphicalScene {
         graphicalShot.setPosition(physicalShot.getPosition().x, physicalShot.getPosition().y);
         drawables.add(graphicalShot);
         physicalShot.setUpdatableSprite(graphicalShot);
-        shots.put(physicalShot, graphicalShot);
+        objectsMap.put(physicalShot, graphicalShot);
 
         float explosionX = (physicalShot.playerType == PlayerType.FIRST_PLAYER) ?
                 physicalShot.getPosition().x -  SHOTS_SCALE * objects.findRegion(spriteName).originalWidth / 2f :
@@ -153,7 +146,7 @@ class GraphicalScene {
         graphicalBlock.setPosition(physicalBlock.getPosition().x, physicalBlock.getPosition().y);
         drawables.add(graphicalBlock);
         physicalBlock.setUpdatableSprite(graphicalBlock);
-        blocks.put(physicalBlock, graphicalBlock);
+        objectsMap.put(physicalBlock, graphicalBlock);
     }
 
     /**
@@ -169,16 +162,10 @@ class GraphicalScene {
         }
     }
 
-    void removeBlock(PhysicalBlock block) {
-        destroyed.add(blocks.get(block));
-        drawables.remove(blocks.get(block));
-        blocks.remove(block);
-    }
-
-    void removeShot(PhysicalShot shot) {
-        stopped.add(shots.get(shot));
-        drawables.remove(shots.get(shot));
-        shots.remove(shot);
+    void removeObject(Physical object) {
+        destroyed.add(objectsMap.get(object));
+        drawables.remove(objectsMap.get(object));
+        objectsMap.remove(object);
     }
 
     float getScale() { return SCALE; }
@@ -206,38 +193,22 @@ class GraphicalScene {
             object.draw(batch);
         }
 
-        toRemoveFromDestroyed.clear();
-        for (GraphicalBlock block : destroyed) {
-            block.draw(batch);
-            block.getCurrentSprite().setAlpha(block.getCurrentSprite().getColor().a - 0.03f);
-            if (block.getCurrentSprite().getColor().a <= 0.03f)
-                toRemoveFromDestroyed.add(block);
+        ListIterator<Drawable> destroyedIterator = destroyed.listIterator();
+        while (destroyedIterator.hasNext()) {
+            Drawable drawable = destroyedIterator.next();
+            drawable.draw(batch);
+            drawable.getSprite().setAlpha(drawable.getSprite().getColor().a - 0.03f);
+            if (drawable.getSprite().getColor().a <= 0.03f) {
+                destroyedIterator.remove();
+            }
         }
 
-        for (GraphicalBlock block : toRemoveFromDestroyed) {
-            destroyed.remove(block);
-        }
-
-        toRemoveFromStopped.clear();
-        for (GraphicalShot shot : stopped) {
-            shot.draw(batch);
-            shot.getSprite().setAlpha(shot.getSprite().getColor().a - 0.03f);
-            if (shot.getSprite().getColor().a <= 0.03f)
-                toRemoveFromStopped.add(shot);
-        }
-
-        for (GraphicalShot shot : toRemoveFromStopped) {
-            stopped.remove(shot);
-        }
-
-        for (Animated animated : animations) {
+        ListIterator<Animated> animationsIterator = animations.listIterator();
+        while (animationsIterator.hasNext()) {
+            Animated animated = animationsIterator.next();
             animated.draw(batch);
             if (animated.isFinished())
-                toRemoveFromAnimations.add(animated);
-        }
-
-        for (Animated animated : toRemoveFromAnimations) {
-            animations.remove(animated);
+                animationsIterator.remove();
         }
     }
 

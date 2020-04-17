@@ -1,6 +1,7 @@
 package main.java.ru.spbstu.gyboml.graphics;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 
 public interface Drawable {
     void draw(Batch batch);
@@ -10,4 +11,5 @@ public interface Drawable {
     void setOrigin(float x, float y);
     float getWidth();
     float getHeight();
+    default Sprite getSprite() { return null; }
 }

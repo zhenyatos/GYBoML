@@ -13,7 +13,6 @@ import ru.spbstu.gyboml.core.destructible.Material;
 import ru.spbstu.gyboml.core.physical.CollisionHandler;
 import ru.spbstu.gyboml.core.physical.Location;
 import ru.spbstu.gyboml.core.physical.Movable;
-import ru.spbstu.gyboml.core.physical.Physical;
 import ru.spbstu.gyboml.core.physical.PhysicalBackground;
 import ru.spbstu.gyboml.core.physical.PhysicalBasicShot;
 import ru.spbstu.gyboml.core.physical.PhysicalBlock;
@@ -248,7 +247,7 @@ class PhysicalScene {
         for (PhysicalBlock block : blocksToRemove) {
             world.destroyBody(block.getBody());
             movables.remove(block);
-            graphicalScene.removeBlock(block);
+            graphicalScene.removeObject(block);
             physicalBlocksP1.remove(block);
             physicalBlocksP2.remove(block);
         }
@@ -262,7 +261,7 @@ class PhysicalScene {
         for (PhysicalShot shot : shotsToRemove) {
             world.destroyBody(shot.getBody());
             movables.remove(shot);
-            graphicalScene.removeShot(shot);
+            graphicalScene.removeObject(shot);
             physicalShots.remove(shot);
         }
     }
