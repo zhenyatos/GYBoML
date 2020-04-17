@@ -77,6 +77,8 @@ public class SessionListener extends Listener {
         Responses.SessionCreated response = new Responses.SessionCreated();
         response.sessionId = session.id();
         connection.sendTCP(response);
+
+        notifyAllPlayers();
     }
 
     /**
@@ -98,13 +100,7 @@ public class SessionListener extends Listener {
         response.player = newPlayer;
         connection.sendTCP(response);
 
-        // send session info to players in this session
-        // TODO: FIX IT AND SEND INFO ABOUT ONLY ONE SESSION, BUT NOT ALL LIST
-        Function<Optional<NetPlayer>, GybomlConnection> connectionSupplier = netPlayer -> {
-            return netPlayer.isPresent() ? netPlayer.get().getConnection() : null;
-        };
-        getSessions(connectionSupplier.apply(session.firstPlayer), null);
-        getSessions(connectionSupplier.apply(session.secondPlayer), null);
+        notifyAllPlayers();
     }
 
     /**
@@ -138,6 +134,7 @@ public class SessionListener extends Listener {
         if (session.spaces() == 2) { main.sessionMap.remove(session.id()); }
 
         connection.sendTCP(new Responses.SessionExited());
+        notifyAllPlayers();
     }
 
     /**
@@ -154,7 +151,10 @@ public class SessionListener extends Listener {
         session.ready(player.id, !player.ready);
 
         connection.sendTCP(new Responses.ReadyApproved());
+        notifySessionPlayers(session);
+    }
 
+    private void notifySessionPlayers(Session session) {
         // send session info to players in this session
         // TODO: FIX IT AND SEND INFO ABOUT ONLY ONE SESSION, BUT NOT ALL LIST
         Function<Optional<NetPlayer>, GybomlConnection> connectionSupplier = netPlayer -> {
@@ -162,5 +162,15 @@ public class SessionListener extends Listener {
         };
         getSessions(connectionSupplier.apply(session.firstPlayer), null);
         getSessions(connectionSupplier.apply(session.secondPlayer), null);
+    }
+
+    private void notifyAllPlayers() {
+        List<SessionInfo> lobbies = main.sessionMap.values().stream()
+                                .map(Session::toSessionInfo)
+                                .collect(Collectors.toList());
+
+        Responses.TakeSessions response = new Responses.TakeSessions();
+        response.lobbies = lobbies;
+        main.server.sendToAllTCP(response);
     }
 }

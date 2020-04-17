@@ -11,10 +11,10 @@ import com.esotericsoftware.kryonet.Server;
 import ru.spbstu.gyboml.core.net.*;
 
 /**
- * Server main class 
+ * Server main class
  *
  */
-public class Main 
+public class Main
 {
     // kryonet server object
     Server server;
@@ -40,7 +40,7 @@ public class Main
         server.bind(Network.tcpPort/*TODO: , Network.udpPort*/);
     }
 
-    private void start() { 
+    private void start() {
         server.start();
 
         Scanner scanner = new Scanner(System.in);
