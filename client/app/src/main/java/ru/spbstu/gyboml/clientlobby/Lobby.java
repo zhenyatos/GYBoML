@@ -215,7 +215,7 @@ public class Lobby extends AppCompatActivity {
     }
 
     //Starts up the game, duh
-    private void gameStartUp() {
+    void gameStartUp() {
         Intent intent = new Intent(getApplicationContext(), MainActivity.class);
 
         Gson jsonPacker =  new Gson();

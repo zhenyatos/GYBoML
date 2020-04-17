@@ -48,5 +48,6 @@ public class Network {
         kryo.register(Responses.SessionConnected.class);
         kryo.register(Responses.ServerError.class);
         kryo.register(Responses.TakeSessions.class);
+        kryo.register(Responses.SessionStarted.class);
     }
 }
