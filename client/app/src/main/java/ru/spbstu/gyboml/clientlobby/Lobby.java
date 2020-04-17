@@ -39,7 +39,6 @@ public class Lobby extends AppCompatActivity {
     private RecyclerView gameSessionsView;
     private RecyclerView.LayoutManager layoutManager;
     private ImageButton createNewSessionButton;
-    private ImageButton refreshButton;
     private ConstraintLayout inSessionLayout;
 
     ButtonAdapter sessionsAdapter;
@@ -94,7 +93,6 @@ public class Lobby extends AppCompatActivity {
         createNewSessionButton = findViewById(R.id.createSession);
         readyButton = findViewById(R.id.ready);
         exitButton = findViewById(R.id.exit);
-        refreshButton = findViewById(R.id.refreshButton);
 
         firstPlayerReady = findViewById(R.id.firstPlayerReady);
         secondPlayerReady = findViewById(R.id.secondPlayerReady);
@@ -117,7 +115,6 @@ public class Lobby extends AppCompatActivity {
                     createDialogueWindow();
                 }
         });
-        refreshButton.setOnClickListener(getRefreshButtonListener());
 
         //Set up the listener for game session buttons
         sessionsAdapter.setOnClickListener(getSessionButtonListener());
@@ -204,14 +201,6 @@ public class Lobby extends AppCompatActivity {
         };
     }
 
-    //REFRESH SESSIONS LISTENER
-    private View.OnClickListener getRefreshButtonListener() {
-        return new View.OnClickListener() {
-            public void onClick(View v) {
-                sendTCP(new Requests.GetSessions());
-            }
-        };
-    }
 
     //READY BUTTON LISTENER
     private ToggleButton.OnCheckedChangeListener getReadyButtonListener() {
