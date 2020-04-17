@@ -187,15 +187,6 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
                 spaceLeft(Gdx.graphics.getWidth() * (1 - (3 + armoryColumnCount * armoryChooseButtonWidthFactor) * buttonWidth));
         buttons.add(fireButton);
 
-        //Game over labels
-        Label victoryLabel = new Label("Victory!", UISkin, "title");
-        victoryLabel.setPosition(Gdx.graphics.getWidth() / 2f - victoryLabel.getWidth() / 2f,
-                Gdx.graphics.getHeight() / 2f - victoryLabel.getHeight() / 2f);
-        stageForUI.addActor(victoryLabel);
-        Label defeatLabel = new Label("Defeat!", UISkin, "title");
-        defeatLabel.setPosition(Gdx.graphics.getWidth() / 2f - defeatLabel.getWidth() / 2f,
-                Gdx.graphics.getHeight() / 2f - defeatLabel.getHeight() / 2f);
-        physicalScene.connectWithGameOver(playerTurn, new GameOver(this, victoryLabel, defeatLabel));
 
         // HP progress bar
         HPBar bar1 = new HPBar(100);
@@ -208,6 +199,16 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
         bar2.getHealthBar().setPosition(Gdx.graphics.getWidth() - HPBar.width - 10,
                 Gdx.graphics.getHeight() - 30);
         stageForUI.addActor(bar2.getHealthBar());
+
+        //Game over labels
+        Label victoryLabel = new Label("Victory!", UISkin, "title");
+        victoryLabel.setPosition(Gdx.graphics.getWidth() / 2f - victoryLabel.getWidth() / 2f,
+                Gdx.graphics.getHeight() / 2f - victoryLabel.getHeight() / 2f);
+        stageForUI.addActor(victoryLabel);
+        Label defeatLabel = new Label("Defeat!", UISkin, "title");
+        defeatLabel.setPosition(Gdx.graphics.getWidth() / 2f - defeatLabel.getWidth() / 2f,
+                Gdx.graphics.getHeight() / 2f - defeatLabel.getHeight() / 2f);
+        physicalScene.connectWithGameOver(playerTurn, new GameOver(this, victoryLabel, defeatLabel));
     }
 
     private void setUpArmoryStorage() {
@@ -220,9 +221,13 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
 
         for (int y = 0; y < armoryRowCount; y++) {
             armoryCells.row();
-            for (int x = 0; x < armoryColumnCount; x++)
-                armoryCells.add(new TextButton("Cell " + y + ", " + x, earthSkin, "default")).
+            for (int x = 0; x < armoryColumnCount; x++){
+                TextButton cell = new TextButton("Cell " + y + ", " + x, earthSkin, "default");
+                armoryCells.add(cell).
                         width(buttonWidth * armoryChooseButtonWidthFactor * Gdx.graphics.getWidth());
+                buttons.add(cell);
+            }
+
         }
 
         // Show armory button
@@ -230,6 +235,7 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
         TextureRegionDrawable armoryDown    = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("skin/buttons/armory_down.png"))));
         TextureRegionDrawable armoryChecked = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("skin/buttons/armory_down.png"))));
         ImageButton showArmory = new ImageButton(armoryUp, armoryDown, armoryChecked);
+        buttons.add(showArmory);
 
         showArmory.addListener(new InputListener() {
             @Override
