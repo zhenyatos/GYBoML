@@ -117,7 +117,7 @@ public class Game extends ApplicationAdapter implements InputProcessor {
      */
     private void setUpUI() {
         table = new Table();
-        table.setDebug(true);
+        //table.setDebug(true);
         table.setBounds(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
         stageForUI.addActor(table);
@@ -266,7 +266,7 @@ public class Game extends ApplicationAdapter implements InputProcessor {
         stageForUI.act(Gdx.graphics.getDeltaTime());
         stageForUI.draw();
 
-        debugRenderer.render(physicalScene.getWorld(), camera.combined);
+        //debugRenderer.render(physicalScene.getWorld(), camera.combined);
     }
 
     /**
