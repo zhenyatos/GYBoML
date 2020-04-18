@@ -141,16 +141,19 @@ public class PhysicalScene {
         physicalBlocksP2.add(new PhysicalBlock(material, new Location(castleP2X + (SceneConstants.castleWidth + 60) * SceneConstants.SCALE, blockP2Y + 1.2f * SceneConstants.blockWoodHeight * SceneConstants.BLOCKS_SCALE, 0, SceneConstants.BLOCKS_SCALE), world));
     }
 
-    public void generateShot(PlayerType playerTurn, ShotType shotType, float angle) {
+    public void generateShot(PlayerType playerTurn, ShotType shotType) {
         int sign;
+        float angle;
         Vector2 jointPosition;
 
         if (playerTurn == PlayerType.FIRST_PLAYER) {
             sign = 1;
+            angle = physicalTowerP1.getMovablePartAngle();
             jointPosition = physicalTowerP1.getJointPosition();
         }
         else {
             sign = -1;
+            angle = physicalTowerP2.getMovablePartAngle();
             jointPosition = physicalTowerP2.getJointPosition();
         }
 
@@ -290,4 +293,6 @@ public class PhysicalScene {
             return physicalTowerP2.getMovablePartAngle();
         }
     }
+
+    public PhysicalShot getLastShot() { return physicalShots.get(physicalShots.size() -1); }
 }

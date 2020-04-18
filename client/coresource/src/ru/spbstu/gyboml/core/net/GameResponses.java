@@ -7,12 +7,11 @@ public class GameResponses {
      * Called when server accepted shoot request
      * */
     public static class Shooted {
+        public float ballPositionX;
+        public float ballPositionY;
 
-        // is it your shoot (if true) or opponent's shoot (if false)
-        public boolean yourShoot;
-
-        // angle of cannon
-        public float angle;
+        public float ballVelocityX;
+        public float ballVelocityY;
     }
 
     /**
