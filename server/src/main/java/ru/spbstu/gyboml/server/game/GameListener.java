@@ -2,12 +2,15 @@ package ru.spbstu.gyboml.server.game;
 
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
+import com.esotericsoftware.kryonet.FrameworkMessage.KeepAlive;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import ru.spbstu.gyboml.core.net.GameRequests;
 import ru.spbstu.gyboml.core.net.GameResponses;
 import ru.spbstu.gyboml.server.GybomlConnection; import ru.spbstu.gyboml.server.Main;
+
+import static com.esotericsoftware.minlog.Log.*;
 
 @RequiredArgsConstructor
 public class GameListener extends Listener {
@@ -16,15 +19,28 @@ public class GameListener extends Listener {
 
     @Override
     public void connected(Connection connection) {
-        System.out.println("GameListener");
     }
 
     @Override
     public void received(Connection c, Object object) {
         GybomlConnection connection = (GybomlConnection)c;
 
-        if (object instanceof GameRequests.Shoot) {
-            shoot(connection, (GameRequests.Shoot)object);
+        try {
+            // log
+            if (object.getClass() != KeepAlive.class) {
+                info("SessionListener received packet " +
+                    object.getClass().getSimpleName() +
+                    " from " +
+                    c.getRemoteAddressTCP());
+            }
+
+            if (object instanceof GameRequests.Shoot) {
+                shoot(connection, (GameRequests.Shoot)object);
+            }
+        } catch (Error | Exception ex) {
+            error("Error occured in GameListener", ex);
+            main.server.close();
+            System.exit(2);
         }
     }
 
@@ -43,6 +59,7 @@ public class GameListener extends Listener {
         // if it is not player's turn
         if (fromFirstPlayer && game.getCurrentStage() != Game.Stage.FISRT_PLAYER_ATTACK ||
             !fromFirstPlayer && game.getCurrentStage() != Game.Stage.SECOND_PLAYER_ATTACK) {
+            info(connection + ": attempted to shoot not in his turn");
             return;
         }
 
@@ -62,6 +79,8 @@ public class GameListener extends Listener {
             .getFirstPlayer()
             .getConnection();
         to.sendTCP(shootResponse);
+
+        info(connection + " shooted");
 
         // send pass turn responses
         GameResponses.PassTurned firstPassedResponse = new GameResponses.PassTurned();

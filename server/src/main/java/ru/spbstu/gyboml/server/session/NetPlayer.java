@@ -14,4 +14,5 @@ public class NetPlayer {
     private Player player;
     //kryonet connection
     private GybomlConnection connection;
+
 }

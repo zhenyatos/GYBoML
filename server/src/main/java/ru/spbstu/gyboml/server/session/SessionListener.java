@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
+import com.esotericsoftware.kryonet.FrameworkMessage.KeepAlive;
 
 import ru.spbstu.gyboml.core.Player;
 import ru.spbstu.gyboml.core.PlayerType;
@@ -15,6 +16,7 @@ import ru.spbstu.gyboml.server.GybomlConnection;
 import ru.spbstu.gyboml.server.Main;
 import ru.spbstu.gyboml.server.game.Game;
 import ru.spbstu.gyboml.core.net.SessionInfo;
+import static com.esotericsoftware.minlog.Log.*;
 
 public class SessionListener extends Listener {
 
@@ -42,21 +44,32 @@ public class SessionListener extends Listener {
     public void received(Connection c, Object object)  {
         GybomlConnection connection = (GybomlConnection)c;
 
-        // log
-        System.out.println("Received " + object.getClass() + " from " + connection.getRemoteAddressTCP());
+        try {
+            // log
+            if (object.getClass() != KeepAlive.class) {
+                info("SessionListener received packet " +
+                    object.getClass().getSimpleName() +
+                    " from " +
+                    c.getRemoteAddressTCP());
+            }
 
-        if (object instanceof SessionRequests.RegisterName) {
-            registerName(connection, (SessionRequests.RegisterName)object);
-        } else if (object instanceof SessionRequests.CreateSession) {
-            createSession(connection, (SessionRequests.CreateSession)object);
-        } else if (object instanceof SessionRequests.ConnectSession) {
-            connectSession(connection, (SessionRequests.ConnectSession)object);
-        } else if (object instanceof SessionRequests.GetSessions) {
-            getSessions(connection, (SessionRequests.GetSessions)object);
-        } else if (object instanceof SessionRequests.ExitSession) {
-            exitSession(connection, (SessionRequests.ExitSession)object);
-        } else if (object instanceof SessionRequests.Ready) {
-            ready(connection, (SessionRequests.Ready)object);
+            if (object instanceof SessionRequests.RegisterName) {
+                registerName(connection, (SessionRequests.RegisterName)object);
+            } else if (object instanceof SessionRequests.CreateSession) {
+                createSession(connection, (SessionRequests.CreateSession)object);
+            } else if (object instanceof SessionRequests.ConnectSession) {
+                connectSession(connection, (SessionRequests.ConnectSession)object);
+            } else if (object instanceof SessionRequests.GetSessions) {
+                getSessions(connection, (SessionRequests.GetSessions)object);
+            } else if (object instanceof SessionRequests.ExitSession) {
+                exitSession(connection, (SessionRequests.ExitSession)object);
+            } else if (object instanceof SessionRequests.Ready) {
+                ready(connection, (SessionRequests.Ready)object);
+            }
+        } catch (Error | Exception ex) {
+            error("Error occured in SessionListener", ex);
+            main.server.close();
+            System.exit(2);
         }
     }
 
@@ -165,7 +178,6 @@ public class SessionListener extends Listener {
         // get data
         Player player = object.player;
         Session session = main.sessionMap.get(player.sessionId);
-        System.out.println(String.format("Ready request from %s#%s. Attempt to set ready %s", player.name, player.id, !player.ready));
 
         if (session == null) {sendError(connection, "Attempt to set Ready, but from unexistent session"); return;}
 
@@ -181,6 +193,7 @@ public class SessionListener extends Listener {
         NetPlayer secondPlayer = session.secondPlayer;
         if (firstPlayer != null && secondPlayer != null &&
             firstPlayer.getPlayer().ready && secondPlayer.getPlayer().ready) {
+            info("Session " + session.getId() + " has two ready players, starting it");
 
             SessionResponses.SessionStarted firstSessionStarted = new SessionResponses.SessionStarted();
             firstSessionStarted.player = firstPlayer.getPlayer();
