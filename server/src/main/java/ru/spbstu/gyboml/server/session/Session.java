@@ -1,22 +1,27 @@
-package ru.spbstu.gyboml.server;
+package ru.spbstu.gyboml.server.session;
 
-import java.util.Optional;
 import java.util.function.Function;
 
-import com.esotericsoftware.kryonet.Connection;
-
+import lombok.Getter;
+import lombok.Setter;
 import ru.spbstu.gyboml.core.Player;
 import ru.spbstu.gyboml.core.net.SessionInfo;
+import ru.spbstu.gyboml.server.GybomlConnection;
+import ru.spbstu.gyboml.server.Main;
+import ru.spbstu.gyboml.server.game.Game;
 
+@Getter
+@Setter
 public class Session {
 
     // players
-    Optional<NetPlayer> firstPlayer = Optional.empty();
-    Optional<NetPlayer> secondPlayer = Optional.empty();
+    NetPlayer firstPlayer;
+    NetPlayer secondPlayer;
+
+    Game game;
 
     private final int id;
     private static int nextAvailable = 0;
-    private boolean isStarted = false;
 
     private String name;
 
@@ -46,12 +51,12 @@ public class Session {
 
             return new NetPlayer(player, connection);
         };
-        if (!firstPlayer.isPresent()) {
-            firstPlayer = Optional.of(create.apply(true)); return firstPlayer.get().getPlayer();
+        if (firstPlayer == null) {
+            firstPlayer = create.apply(true); return firstPlayer.getPlayer();
         }
-        else if (!secondPlayer.isPresent()) {
-            secondPlayer = Optional.of(create.apply(false));
-            return secondPlayer.get().getPlayer();
+        else if (secondPlayer == null) {
+            secondPlayer = create.apply(false);
+            return secondPlayer.getPlayer();
         }
         else {
             return null;
@@ -62,8 +67,8 @@ public class Session {
      * Returns number of free spaces in session
      */
     public int spaces() {
-        if (!firstPlayer.isPresent()) {return 2;}
-        else if (!secondPlayer.isPresent()) {return 1;}
+        if (firstPlayer == null) {return 2;}
+        else if (secondPlayer == null) {return 1;}
         else {return 0;}
     }
 
@@ -73,22 +78,22 @@ public class Session {
      * @return true if player removed, false if there is no player with this connection
      */
     public boolean remove(long playerId) {
-        if (firstPlayer.isPresent() && firstPlayer.get().getPlayer().id == playerId) {
+        if (firstPlayer != null && firstPlayer.getPlayer().id == playerId) {
             firstPlayer = secondPlayer;
-            secondPlayer = Optional.empty();
+            secondPlayer = null;
             return true;
-        } else if (secondPlayer.isPresent() && secondPlayer.get().getPlayer().id == playerId) {
-            secondPlayer = Optional.empty();
+        } else if (secondPlayer != null && secondPlayer.getPlayer().id == playerId) {
+            secondPlayer = null;
             return true;
         } else return false;
     }
 
     public boolean ready(long playerId, boolean isReady) {
-        if (firstPlayer.isPresent() && firstPlayer.get().getPlayer().id == playerId) {
-            firstPlayer.get().getPlayer().setReady(isReady);
+        if (firstPlayer != null && firstPlayer.getPlayer().id == playerId) {
+            firstPlayer.getPlayer().setReady(isReady);
             return true;
-        } else if (secondPlayer.isPresent() && secondPlayer.get().getPlayer().id == playerId) {
-            secondPlayer.get().getPlayer().setReady(isReady);
+        } else if (secondPlayer != null && secondPlayer.getPlayer().id == playerId) {
+            secondPlayer.getPlayer().setReady(isReady);
             return true;
         } else return false;
     }
@@ -103,13 +108,11 @@ public class Session {
         sessionInfo.name = this.name;
         sessionInfo.sessionId = this.id;
         sessionInfo.spaces = spaces();
-        sessionInfo.firstPlayer = firstPlayer.isPresent() ? firstPlayer.get().getPlayer() : null;
-        sessionInfo.secondPlayer = secondPlayer.isPresent() ? secondPlayer.get().getPlayer() : null;
+        sessionInfo.firstPlayer = firstPlayer != null ? firstPlayer.getPlayer() : null;
+        sessionInfo.secondPlayer = secondPlayer != null ? secondPlayer.getPlayer() : null;
 
         return sessionInfo;
     }
 
-    //getters
-    public int id() {return this.id;}
-    public boolean isStarted() {return this.isStarted;}
+    public boolean isStarted() { return game != null; }
 }

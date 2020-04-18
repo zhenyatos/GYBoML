@@ -1,7 +1,6 @@
-package ru.spbstu.gyboml.server;
+package ru.spbstu.gyboml.server.session;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -9,8 +8,11 @@ import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 
 import ru.spbstu.gyboml.core.Player;
-import ru.spbstu.gyboml.core.net.Requests;
-import ru.spbstu.gyboml.core.net.Responses;
+import ru.spbstu.gyboml.core.net.SessionRequests;
+import ru.spbstu.gyboml.core.net.SessionResponses;
+import ru.spbstu.gyboml.server.GybomlConnection;
+import ru.spbstu.gyboml.server.Main;
+import ru.spbstu.gyboml.server.game.Game;
 import ru.spbstu.gyboml.core.net.SessionInfo;
 
 public class SessionListener extends Listener {
@@ -25,8 +27,8 @@ public class SessionListener extends Listener {
         GybomlConnection connection = (GybomlConnection)c;
 
         // remove player from session if he was in session
-        if (connection.sessionId() != null) {
-            removeIdFromSession(main.sessionMap.get(connection.sessionId()), connection.id());
+        if (connection.getSessionId() != null) {
+            removeIdFromSession(main.sessionMap.get(connection.getSessionId()), connection.getPlayerId());
         }
 
         notifyAllPlayers();
@@ -42,52 +44,52 @@ public class SessionListener extends Listener {
         // log
         System.out.println("Received " + object.getClass() + " from " + connection.getRemoteAddressTCP());
 
-        if (object instanceof Requests.RegisterName) {
-            registerName(connection, (Requests.RegisterName)object);
-        } else if (object instanceof Requests.CreateSession) {
-            createSession(connection, (Requests.CreateSession)object);
-        } else if (object instanceof Requests.ConnectSession) {
-            connectSession(connection, (Requests.ConnectSession)object);
-        } else if (object instanceof Requests.GetSessions) {
-            getSessions(connection, (Requests.GetSessions)object);
-        } else if (object instanceof Requests.ExitSession) {
-            exitSession(connection, (Requests.ExitSession)object);
-        } else if (object instanceof Requests.Ready) {
-            ready(connection, (Requests.Ready)object);
+        if (object instanceof SessionRequests.RegisterName) {
+            registerName(connection, (SessionRequests.RegisterName)object);
+        } else if (object instanceof SessionRequests.CreateSession) {
+            createSession(connection, (SessionRequests.CreateSession)object);
+        } else if (object instanceof SessionRequests.ConnectSession) {
+            connectSession(connection, (SessionRequests.ConnectSession)object);
+        } else if (object instanceof SessionRequests.GetSessions) {
+            getSessions(connection, (SessionRequests.GetSessions)object);
+        } else if (object instanceof SessionRequests.ExitSession) {
+            exitSession(connection, (SessionRequests.ExitSession)object);
+        } else if (object instanceof SessionRequests.Ready) {
+            ready(connection, (SessionRequests.Ready)object);
         }
     }
 
     private void sendError(GybomlConnection connection, String message) {
-        Responses.ServerError request = new Responses.ServerError();
+        SessionResponses.ServerError request = new SessionResponses.ServerError();
         request.message = message;
         connection.sendTCP(request);
     }
 
     /**
-     * Called when player inputed his name when entered lobby menu
+     * Called when player inputed his.getName when entered lobby menu
      */
-    private void registerName(GybomlConnection connection, Requests.RegisterName object) {
-        if (connection.name() != null) {sendError(connection, "Name was already chosen"); return;}
+    private void registerName(GybomlConnection connection, SessionRequests.RegisterName object) {
+        if (connection.getName() != null) {sendError(connection, "Name was already chosen"); return;}
 
         String playerName = object.playerName.trim();
 
-        if (playerName.length() == 0) {sendError(connection, "Invalid player name"); return;}
+        if (playerName.length() == 0) {sendError(connection, "Invalid player.getName"); return;}
         connection.setName(playerName);
     }
 
     /**
      * Called when player attempts to create lobby
      */
-    private void createSession(GybomlConnection connection, Requests.CreateSession object) {
-        if (connection.name() == null) { sendError(connection, "Choose player name!"); return; }
+    private void createSession(GybomlConnection connection, SessionRequests.CreateSession object) {
+        if (connection.getName() == null) { sendError(connection, "Choose player.getName!"); return; }
 
         String lobbyName = object.sessionName.trim();
-        if (lobbyName.length() == 0) { sendError(connection, "Invalid lobby name!"); return; }
+        if (lobbyName.length() == 0) { sendError(connection, "Invalid lobby.getName!"); return; }
         Session session = Session.create(lobbyName);
-        main.sessionMap.put(session.id(), session);
+        main.sessionMap.put(session.getId(), session);
 
-        Responses.SessionCreated response = new Responses.SessionCreated();
-        response.sessionId = session.id();
+        SessionResponses.SessionCreated response = new SessionResponses.SessionCreated();
+        response.sessionId = session.getId();
         connection.sendTCP(response);
 
         notifyAllPlayers();
@@ -96,8 +98,8 @@ public class SessionListener extends Listener {
     /**
      * Called when player attempt to connect to existing lobby
      */
-    private void connectSession(GybomlConnection connection, Requests.ConnectSession object) {
-        if (connection.name() == null) {sendError(connection, "Choose player name!"); return;}
+    private void connectSession(GybomlConnection connection, SessionRequests.ConnectSession object) {
+        if (connection.getName() == null) {sendError(connection, "Choose player.getName!"); return;}
 
         int lobbyId = object.sessionId;
         Session session = main.sessionMap.get(lobbyId);
@@ -105,13 +107,13 @@ public class SessionListener extends Listener {
         if (session.spaces() == 0) {sendError(connection, "There is no spaces in that lobby"); return;}
         if (session.isStarted()) {sendError(connection, "Game was already started"); return;}
 
-        Player newPlayer = session.add(connection, connection.name());
+        Player newPlayer = session.add(connection, connection.getName());
 
-        connection.setId(newPlayer.id);
+        connection.setPlayerId(newPlayer.id);
         connection.setSessionId(newPlayer.sessionId);
 
         // send approvement
-        Responses.SessionConnected response = new Responses.SessionConnected();
+        SessionResponses.SessionConnected response = new SessionResponses.SessionConnected();
         response.player = newPlayer;
         connection.sendTCP(response);
 
@@ -122,14 +124,14 @@ public class SessionListener extends Listener {
     /**
      * Called when player attempts to get session list
      */
-    private void getSessions(GybomlConnection connection, Requests.GetSessions object) {
+    private void getSessions(GybomlConnection connection, SessionRequests.GetSessions object) {
         if (connection == null) return;
 
         List<SessionInfo> lobbies = main.sessionMap.values().stream()
                                 .map(Session::toSessionInfo)
                                 .collect(Collectors.toList());
 
-        Responses.TakeSessions response = new Responses.TakeSessions();
+        SessionResponses.TakeSessions response = new SessionResponses.TakeSessions();
         response.lobbies = lobbies;
         connection.sendTCP(response);
     }
@@ -137,8 +139,8 @@ public class SessionListener extends Listener {
     /**
      * Called when player attempts to leave from session, which contains this player
      */
-    private void exitSession(GybomlConnection connection, Requests.ExitSession object) {
-        if (connection.name() == null) {sendError(connection, "Choose player name!"); return;}
+    private void exitSession(GybomlConnection connection, SessionRequests.ExitSession object) {
+        if (connection.getName() == null) {sendError(connection, "Choose player.getName!"); return;}
 
         Player player = object.player;
         Session session = main.sessionMap.get(player.sessionId);
@@ -147,17 +149,17 @@ public class SessionListener extends Listener {
         removeIdFromSession(session, player.id);
 
         connection.setSessionId(null);
-        connection.setId(null);
+        connection.setPlayerId(null);
 
-        connection.sendTCP(new Responses.SessionExited());
+        connection.sendTCP(new SessionResponses.SessionExited());
         notifyAllPlayers();
     }
 
     /**
      * Called when player attempts to set ready flag
      */
-    private void ready(GybomlConnection connection, Requests.Ready object) {
-        if (connection.name() == null) {sendError(connection, "Choose player name!"); return;}
+    private void ready(GybomlConnection connection, SessionRequests.Ready object) {
+        if (connection.getName() == null) {sendError(connection, "Choose player.getName!"); return;}
 
         // get data
         Player player = object.player;
@@ -170,26 +172,27 @@ public class SessionListener extends Listener {
         session.ready(player.id, !player.ready);
 
         // repspond an approve message
-        connection.sendTCP(new Responses.ReadyApproved());
+        connection.sendTCP(new SessionResponses.ReadyApproved());
         notifySessionPlayers(session);
 
         // check if both players are ready
-        NetPlayer firstPlayer = session.firstPlayer.orElse(null);
-        NetPlayer secondPlayer = session.secondPlayer.orElse(null);
+        NetPlayer firstPlayer = session.firstPlayer;
+        NetPlayer secondPlayer = session.secondPlayer;
         if (firstPlayer != null && secondPlayer != null &&
             firstPlayer.getPlayer().ready && secondPlayer.getPlayer().ready) {
 
-            Responses.SessionStarted sessionStarted = new Responses.SessionStarted();
+            SessionResponses.SessionStarted sessionStarted = new SessionResponses.SessionStarted();
             firstPlayer.getConnection().sendTCP(sessionStarted);
             secondPlayer.getConnection().sendTCP(sessionStarted);
+            session.game = new Game(firstPlayer.getPlayer(), secondPlayer.getPlayer());
         }
     }
 
     private void notifySessionPlayers(Session session) {
         // send session info to players in this session
         // TODO: FIX IT AND SEND INFO ABOUT ONLY ONE SESSION, BUT NOT ALL LIST
-        Function<Optional<NetPlayer>, GybomlConnection> connectionSupplier = netPlayer -> {
-            return netPlayer.isPresent() ? netPlayer.get().getConnection() : null;
+        Function<NetPlayer, GybomlConnection> connectionSupplier = netPlayer -> {
+            return netPlayer != null ? netPlayer.getConnection() : null;
         };
         getSessions(connectionSupplier.apply(session.firstPlayer), null);
         getSessions(connectionSupplier.apply(session.secondPlayer), null);
@@ -200,13 +203,13 @@ public class SessionListener extends Listener {
                                 .map(Session::toSessionInfo)
                                 .collect(Collectors.toList());
 
-        Responses.TakeSessions response = new Responses.TakeSessions();
+        SessionResponses.TakeSessions response = new SessionResponses.TakeSessions();
         response.lobbies = lobbies;
         main.server.sendToAllTCP(response);
     }
 
     private void removeIdFromSession( Session session, long id ) {
         session.remove(id);
-        if (session.spaces() == 2) { main.sessionMap.remove(session.id()); }
+        if (session.spaces() == 2) { main.sessionMap.remove(session.getId()); }
     }
 }

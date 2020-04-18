@@ -10,6 +10,9 @@ import com.esotericsoftware.kryonet.Server;
 
 import ru.spbstu.gyboml.core.net.*;
 import ru.spbstu.gyboml.core.scene.PhysicalScene;
+import ru.spbstu.gyboml.server.game.GameListener;
+import ru.spbstu.gyboml.server.session.Session;
+import ru.spbstu.gyboml.server.session.SessionListener;
 
 /**
  * Server main class
@@ -18,11 +21,11 @@ import ru.spbstu.gyboml.core.scene.PhysicalScene;
 public class Main
 {
     // kryonet server object
-    Server server;
+    public Server server;
     PhysicalScene scene = new PhysicalScene(null);
 
     // mapping from int to session with same id
-    Map<Integer, Session> sessionMap;
+    public Map<Integer, Session> sessionMap;
 
     private static long nextAvailablePlayerId = 0;
 
@@ -39,6 +42,7 @@ public class Main
         };
         Network.register(server);
         server.addListener(new SessionListener(this));
+        server.addListener(new GameListener(this));
         server.bind(Network.tcpPort/*TODO: , Network.udpPort*/);
     }
 
