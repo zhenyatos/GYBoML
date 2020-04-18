@@ -233,7 +233,7 @@ public class Game extends ApplicationAdapter implements InputProcessor {
      * Renders all objects on the screen.
      */
     @Override
-    public void render() {
+    synchronized public void render() {
         Gdx.gl.glClearColor(1, 0, 0, 0);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         physicalScene.stepWorld();
