@@ -18,79 +18,131 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <ImageView
-            android:id="@+id/secondPlayerReady"
-            android:layout_width="0dp"
-            android:layout_height="34dp"
-            android:visibility="invisible"
-            app:layout_constraintEnd_toStartOf="@+id/secondPlayerName"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="@+id/secondPlayerTitle"
-            app:layout_constraintTop_toTopOf="@+id/secondPlayerName"
-            app:srcCompat="@android:drawable/checkbox_on_background" />
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/secondPlayerGuideline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.7175" />
 
-        <TextView
-            android:id="@+id/secondPlayerName"
-            android:layout_width="116dp"
-            android:layout_height="34dp"
-            android:text="None"
-            android:textAlignment="center"
-            android:visibility="visible"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/secondPlayerReady"
-            app:layout_constraintTop_toBottomOf="@+id/secondPlayerTitle" />
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/firstPlayerGuideline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.2825" />
 
-        <TextView
-            android:id="@+id/firstPlayerName"
-            android:layout_width="116dp"
-            android:layout_height="34dp"
-            android:text="None"
-            android:textAlignment="center"
-            android:visibility="visible"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/firstPlayerTitle" />
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/leftVertGuideline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.365" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/upperHorGuideline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.075" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/rightVertGuideLine"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.635" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/lowerHorGuideline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.12" />
 
         <TextView
             android:id="@+id/firstPlayerTitle"
-            android:layout_width="150dp"
-            android:layout_height="54dp"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
             android:text="Player 1:"
             android:textAlignment="center"
             android:visibility="visible"
-            app:layout_constraintBottom_toTopOf="@id/firstPlayerName"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintBottom_toBottomOf="@id/upperHorGuideline"
+            app:layout_constraintRight_toRightOf="@+id/leftVertGuideline"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0" />
 
         <TextView
-            android:id="@+id/secondPlayerTitle"
-            android:layout_width="150dp"
-            android:layout_height="54dp"
-            android:text="Player 2:"
+            android:id="@+id/firstPlayerName"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:text="None"
             android:textAlignment="center"
             android:visibility="visible"
-            app:layout_constraintBottom_toTopOf="@id/secondPlayerName"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintBottom_toBottomOf="@+id/lowerHorGuideline"
+            app:layout_constraintRight_toRightOf="@+id/firstPlayerGuideline"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/firstPlayerTitle" />
 
         <ImageView
             android:id="@+id/firstPlayerReady"
             android:layout_width="0dp"
-            android:layout_height="34dp"
+            android:layout_height="0dp"
             android:visibility="invisible"
-            app:layout_constraintEnd_toEndOf="@+id/firstPlayerTitle"
+            app:layout_constraintBottom_toBottomOf="@+id/lowerHorGuideline"
             app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toEndOf="@+id/firstPlayerName"
+            app:layout_constraintLeft_toLeftOf="@+id/firstPlayerGuideline"
+            app:layout_constraintRight_toRightOf="@+id/leftVertGuideline"
             app:layout_constraintTop_toTopOf="@+id/firstPlayerName"
             app:srcCompat="@android:drawable/checkbox_on_background" />
+
+        <TextView
+            android:id="@+id/secondPlayerTitle"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:text="Player 2:"
+            android:textAlignment="center"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="@+id/upperHorGuideline"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintLeft_toRightOf="@+id/rightVertGuideLine"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0" />
+
+        <TextView
+            android:id="@+id/secondPlayerName"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:text="None"
+            android:textAlignment="center"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="@+id/lowerHorGuideline"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintLeft_toLeftOf="@id/secondPlayerGuideline"
+            app:layout_constraintTop_toBottomOf="@+id/secondPlayerTitle" />
+
+        <ImageView
+            android:id="@+id/secondPlayerReady"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:visibility="invisible"
+            app:layout_constraintLeft_toLeftOf="@+id/rightVertGuideLine"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintRight_toRightOf="@+id/secondPlayerGuideline"
+            app:layout_constraintTop_toTopOf="@+id/secondPlayerName"
+            app:layout_constraintBottom_toBottomOf="@+id/lowerHorGuideline"
+            app:srcCompat="@android:drawable/checkbox_on_background" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/gameSessions"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginBottom="95dp"
         android:background="#FFFF"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toBottomOf="@+id/sessionsGuideline"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -123,7 +175,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/createSession"
         app:layout_constraintTop_toBottomOf="@+id/gameSessions"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintVertical_bias="0" />
 
     <ToggleButton
         android:id="@+id/ready"
@@ -140,5 +192,12 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/gameSessions"
         app:layout_constraintVertical_bias="0.0" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/sessionsGuideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.875" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

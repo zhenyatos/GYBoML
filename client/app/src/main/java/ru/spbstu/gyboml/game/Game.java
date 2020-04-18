@@ -17,6 +17,7 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -51,7 +52,7 @@ public class Game extends ApplicationAdapter implements InputProcessor {
     private static final float armoryChooseButtonWidthFactor = 2 / 3.0f;
 
     PhysicalScene physicalScene;
-    private GraphicalScene graphicalScene;
+    GraphicalScene graphicalScene;
     SoundEffects soundEffects;
 
     // drawing and stuff
@@ -73,6 +74,8 @@ public class Game extends ApplicationAdapter implements InputProcessor {
 
     // temp
     ShotType shotType = ShotType.BASIC;
+
+    ImageButton fireButton;
 
     /**
      * This is the method that is called on client's creation.
@@ -114,7 +117,7 @@ public class Game extends ApplicationAdapter implements InputProcessor {
      */
     private void setUpUI() {
         table = new Table();
-        table.setDebug(true);
+        //table.setDebug(true);
         table.setBounds(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
         stageForUI.addActor(table);
@@ -152,7 +155,7 @@ public class Game extends ApplicationAdapter implements InputProcessor {
         // Fire button
         TextureRegionDrawable fireUp      = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("skin/buttons/fire_up.png"))));
         TextureRegionDrawable fireDown    = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("skin/buttons/fire_down.png"))));
-        ImageButton fireButton = new ImageButton(fireUp, fireDown);
+        fireButton = new ImageButton(fireUp, fireDown);
         fireButton.addListener(new InputListener() {
 
             @Override
@@ -163,6 +166,7 @@ public class Game extends ApplicationAdapter implements InputProcessor {
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
                 physicalScene.generateShot(GybomlClient.getPlayerType(), shotType);
+                graphicalScene.generateGraphicalShot(physicalScene.getLastShot());
                 soundEffects.shot.play(1.f);
 
                 // send shot to server
@@ -175,7 +179,11 @@ public class Game extends ApplicationAdapter implements InputProcessor {
                 shootRequest.ballVelocityX = velocity.x;
                 shootRequest.ballVelocityY = velocity.y;
 
-                GybomlClient.sendTCP(new GameRequests.Shoot());
+                GybomlClient.sendTCP(shootRequest);
+
+                synchronized (fireButton) {
+                    fireButton.setTouchable(Touchable.disabled);
+                }
             }
         });
         table.add(fireButton).width(buttonWidth * Gdx.graphics.getWidth()).height(buttonHeight * Gdx.graphics.getHeight()).bottom().
@@ -259,7 +267,7 @@ public class Game extends ApplicationAdapter implements InputProcessor {
         stageForUI.act(Gdx.graphics.getDeltaTime());
         stageForUI.draw();
 
-        debugRenderer.render(physicalScene.getWorld(), camera.combined);
+        //debugRenderer.render(physicalScene.getWorld(), camera.combined);
     }
 
     /**

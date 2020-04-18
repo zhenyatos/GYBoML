@@ -14,7 +14,7 @@ public class SessionResponses {
      * Sent after client's CreateLobby response.
      */
     public static class SessionCreated {
-        public int sessionId;
+        public Integer sessionId;
     }
     
     /*

@@ -27,7 +27,7 @@ public class SessionRequests {
      * Connect lobby by id request.
      */
     public static class ConnectSession {
-        public int sessionId;
+        public Integer sessionId;
     }
     
     /*

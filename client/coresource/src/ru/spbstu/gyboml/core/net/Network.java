@@ -33,6 +33,8 @@ public class Network {
         kryo.register(ArrayList.class);
         kryo.register(Player.class);
         kryo.register(PlayerType.class);
+        kryo.register(Integer.class);
+        kryo.register(Float.class);
 
         kryo.register(SessionRequests.RegisterName.class);
         kryo.register(SessionRequests.ConnectSession.class);

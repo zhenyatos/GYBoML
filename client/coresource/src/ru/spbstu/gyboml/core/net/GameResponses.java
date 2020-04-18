@@ -7,11 +7,11 @@ public class GameResponses {
      * Called when server accepted shoot request
      * */
     public static class Shooted {
-        public float ballPositionX;
-        public float ballPositionY;
+        public Float ballPositionX;
+        public Float ballPositionY;
 
-        public float ballVelocityX;
-        public float ballVelocityY;
+        public Float ballVelocityX;
+        public Float ballVelocityY;
     }
 
     /**

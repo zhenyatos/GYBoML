@@ -38,6 +38,15 @@ public class Player {
     }
 
     /**
+     * Player to string conversation
+     * @return string in format: player_name#player_id#player_session_id
+     */
+    @Override
+    public String toString() {
+        return name + "#" + id + "#" + sessionId;
+    }
+
+    /**
      * Pass turn to other player.
      * @param other - link to other player
      * @return true if turn passed, false otherwise

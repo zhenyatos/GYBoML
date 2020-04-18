@@ -59,7 +59,7 @@ public class ButtonAdapter extends RecyclerView.Adapter<ButtonAdapter.ButtonView
     public void onBindViewHolder(ButtonViewHolder holder, int position) {
         SessionInfo session = sessions.get(position);
         holder.sessionButton.setEnabled(touchEnabled);
-        holder.sessionButton.setText(session.name +" : " + (2 - session.spaces) + " / 2");
+        holder.sessionButton.setText(session.name +" : " + (2 - session.spaces) + " / 2 " + (session.isStarted ? "(in game)" : ""));
         holder.sessionButton.setId(session.sessionId);
     }
 

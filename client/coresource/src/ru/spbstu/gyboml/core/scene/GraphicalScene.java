@@ -101,7 +101,7 @@ public class GraphicalScene {
         drawables.add(graphicalForeground);
     }
 
-    void generateGraphicalShot(PhysicalShot physicalShot) {
+    public void generateGraphicalShot(PhysicalShot physicalShot) {
         String spriteName = "shot_" + physicalShot.shotType.getName();
         GraphicalShot graphicalShot = new GraphicalShot(objects.createSprite(spriteName), SceneConstants.SHOTS_SCALE);
         graphicalShot.setOrigin(0, 0);
