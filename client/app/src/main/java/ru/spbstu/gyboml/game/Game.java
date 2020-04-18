@@ -1,4 +1,4 @@
-package main.java.ru.spbstu.gyboml.clientcore;
+package main.java.ru.spbstu.gyboml.game;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
@@ -26,6 +26,7 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 import main.java.ru.spbstu.gyboml.GybomlClient;
 import ru.spbstu.gyboml.core.PlayerType;
+import ru.spbstu.gyboml.core.net.GameRequests;
 import ru.spbstu.gyboml.core.scene.GraphicalScene;
 import ru.spbstu.gyboml.core.scene.HPBar;
 import ru.spbstu.gyboml.core.scene.PhysicalScene;
@@ -39,7 +40,7 @@ import ru.spbstu.gyboml.core.shot.ShotType;
  * implements methods that are invoked in the LibGDX game loop.
  * @since   2020-03-11
  */
-public class GybomlGame extends ApplicationAdapter implements InputProcessor {
+public class Game extends ApplicationAdapter implements InputProcessor {
     private static final float buttonWidth  = 200 / 1920.0f;
     private static final float buttonHeight = 100 / 1080.0f;
 
@@ -152,14 +153,8 @@ public class GybomlGame extends ApplicationAdapter implements InputProcessor {
         ImageButton fireButton = new ImageButton(fireUp, fireDown);
         fireButton.addListener(new InputListener() {
             @Override
-            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                return true;
-            }
-
-            @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                physicalScene.generateShot(GybomlClient.getPlayerType(), shotType);
-                soundEffects.shot.play(1.f);
+                GybomlClient.sendTCP(new GameRequests.Shoot());
             }
         });
         table.add(fireButton).width(buttonWidth * Gdx.graphics.getWidth()).height(buttonHeight * Gdx.graphics.getHeight()).bottom().

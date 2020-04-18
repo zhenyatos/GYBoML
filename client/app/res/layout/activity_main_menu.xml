@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#FFFF"
-    tools:context="main.java.ru.spbstu.gyboml.clientmenu.MainMenu">
+    tools:context="main.java.ru.spbstu.gyboml.menu.MainMenu">
 
 
     <Button

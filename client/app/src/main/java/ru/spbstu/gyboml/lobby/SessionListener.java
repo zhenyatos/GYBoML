@@ -1,4 +1,4 @@
-package main.java.ru.spbstu.gyboml.clientlobby;
+package main.java.ru.spbstu.gyboml.lobby;
 
 import android.view.View;
 

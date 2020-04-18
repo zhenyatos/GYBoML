@@ -4,13 +4,10 @@ import android.os.Bundle;
 
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
-import com.esotericsoftware.kryonet.Client;
-import com.google.gson.Gson;
 
-import main.java.ru.spbstu.gyboml.clientcore.GybomlGame;
+import main.java.ru.spbstu.gyboml.game.Game;
 
-import main.java.ru.spbstu.gyboml.clientlobby.Lobby;
-import ru.spbstu.gyboml.core.Player;
+import main.java.ru.spbstu.gyboml.lobby.Lobby;
 
 public class MainActivity extends AndroidApplication {
 
@@ -21,7 +18,7 @@ public class MainActivity extends AndroidApplication {
         String clientJson = getIntent().getStringExtra(Lobby.clientExtraName);
         String playerJson = getIntent().getStringExtra(Lobby.playerExtraName);
 
-        GybomlGame game = new GybomlGame();
+        Game game = new Game();
         AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
         setContentView(initializeForView(game, config));
     }

@@ -1,4 +1,4 @@
-package main.java.ru.spbstu.gyboml.clientlobby;
+package main.java.ru.spbstu.gyboml.lobby;
 
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -21,7 +21,7 @@ import android.widget.ToggleButton;
 
 import main.java.ru.spbstu.gyboml.GybomlClient;
 import main.java.ru.spbstu.gyboml.MainActivity;
-import main.java.ru.spbstu.gyboml.clientmenu.MainMenu;
+import main.java.ru.spbstu.gyboml.menu.MainMenu;
 import ru.spbstu.gyboml.R;
 import ru.spbstu.gyboml.core.net.SessionRequests;
 

@@ -1,9 +1,7 @@
-package main.java.ru.spbstu.gyboml.clientlobby;
+package main.java.ru.spbstu.gyboml.lobby;
 
-import static android.graphics.Color.GREEN;
 import static android.view.ViewGroup.LayoutParams;
 
-import android.graphics.PorterDuff;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;

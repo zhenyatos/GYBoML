@@ -1,4 +1,4 @@
-package main.java.ru.spbstu.gyboml.clientcore;
+package main.java.ru.spbstu.gyboml.game;
 
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
@@ -9,9 +9,9 @@ import ru.spbstu.gyboml.core.net.GameResponses;
 
 public class GameListener extends Listener {
 
-    private GybomlGame game;
+    private Game game;
 
-    GameListener(GybomlGame game) { this.game = game; }
+    GameListener(Game game) { this.game = game; }
 
     @Override
     public void received(Connection connection, Object object) {
@@ -20,7 +20,7 @@ public class GameListener extends Listener {
 
     private void shoted(Connection connection, GameResponses.Shooted object) {
         PlayerType whoShoted = object.yourShoot ? GybomlClient.getPlayerType() : GybomlClient.getPlayerType().reverted();
-        game.physicalScene.generateShot(GybomlClient.getPlayerType(), game.shotType);
+        game.physicalScene.generateShot(whoShoted, game.shotType);
         game.soundEffects.shot.play(1.f);
     }
 }
