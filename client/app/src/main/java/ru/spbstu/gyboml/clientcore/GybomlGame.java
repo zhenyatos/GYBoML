@@ -23,9 +23,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
-import com.esotericsoftware.kryonet.Client;
 
-import ru.spbstu.gyboml.core.Player;
+import main.java.ru.spbstu.gyboml.GybomlClient;
 import ru.spbstu.gyboml.core.PlayerType;
 import ru.spbstu.gyboml.core.scene.GraphicalScene;
 import ru.spbstu.gyboml.core.scene.HPBar;
@@ -40,7 +39,7 @@ import ru.spbstu.gyboml.core.shot.ShotType;
  * implements methods that are invoked in the LibGDX game loop.
  * @since   2020-03-11
  */
-public class GameClient extends ApplicationAdapter implements InputProcessor {
+public class GybomlGame extends ApplicationAdapter implements InputProcessor {
     private static final float buttonWidth  = 200 / 1920.0f;
     private static final float buttonHeight = 100 / 1080.0f;
 
@@ -48,7 +47,7 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
     private static final int armoryColumnCount = 4;
     private static final float armoryChooseButtonWidthFactor = 2 / 3.0f;
 
-    private PhysicalScene physicalScene;
+    PhysicalScene physicalScene;
     private GraphicalScene graphicalScene;
     SoundEffects soundEffects;
 
@@ -62,24 +61,15 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
 
     private Skin earthSkin;
 
-    //connection
-    Client client;
-    Player player;
-
     private Table table;
 
     private Table armoryCells;
     private boolean visibleArmory;
 
-    // temp
-    PlayerType playerTurn = PlayerType.FIRST_PLAYER;
-    ShotType shotType = ShotType.BASIC;
+    private GameListener gameListener;
 
-    //Initalize fields passed by MainActivity
-    public GameClient(Client client, Player player) {
-        this.client = client;
-        this.player = player;
-    }
+    // temp
+    ShotType shotType = ShotType.BASIC;
 
     /**
      * This is the method that is called on client's creation.
@@ -110,6 +100,10 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
         viewport = new ExtendViewport(camera.viewportWidth, camera.viewportHeight, camera);
         camera.position.set(camera.viewportWidth / 2, camera.viewportHeight / 2, 0);
         camera.update();
+
+        // add game listener
+        gameListener = new GameListener(this);
+        GybomlClient.getClient().addListener(gameListener);
     }
 
     /** This function sets up the UI. The name speaks for itself, really.
@@ -164,7 +158,7 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
 
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                physicalScene.generateShot(playerTurn, shotType);
+                physicalScene.generateShot(GybomlClient.getPlayerType(), shotType);
                 soundEffects.shot.play(1.f);
             }
         });
@@ -261,6 +255,7 @@ public class GameClient extends ApplicationAdapter implements InputProcessor {
         batch.dispose();
         graphicalScene.dispose();
         stageForUI.dispose();
+        GybomlClient.getClient().removeListener(gameListener);
     }
 
     /** Called when a finger or the mouse was dragged.

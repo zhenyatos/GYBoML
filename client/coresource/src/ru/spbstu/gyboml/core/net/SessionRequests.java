@@ -5,7 +5,7 @@ import ru.spbstu.gyboml.core.Player;
 /* All requests utility class
  * Most often, requests send from client to server
  */
-public class Requests {
+public class SessionRequests {
 
     /*
      * Register player name request.

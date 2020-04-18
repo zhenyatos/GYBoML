@@ -7,8 +7,8 @@ import com.esotericsoftware.kryonet.Listener;
 
 import main.java.ru.spbstu.gyboml.GybomlClient;
 import ru.spbstu.gyboml.core.Player;
-import ru.spbstu.gyboml.core.net.Requests;
-import ru.spbstu.gyboml.core.net.Responses;
+import ru.spbstu.gyboml.core.net.SessionRequests;
+import ru.spbstu.gyboml.core.net.SessionResponses;
 import ru.spbstu.gyboml.core.net.SessionInfo;
 
 /**
@@ -27,12 +27,12 @@ public class SessionListener extends Listener {
         //TODO: output message in with green border 'Connected' to the screen corner
 
         // register name
-        Requests.RegisterName request = new Requests.RegisterName();
+        SessionRequests.RegisterName request = new SessionRequests.RegisterName();
         request.playerName = lobby.chosenPlayerName;
         connection.sendTCP(request);
 
         // request session list
-        connection.sendTCP(new Requests.GetSessions());
+        connection.sendTCP(new SessionRequests.GetSessions());
     }
 
     // called when connection finished
@@ -44,20 +44,22 @@ public class SessionListener extends Listener {
     // called when received object via TCP
     @Override
     public void received(Connection connection, Object object) {
-        if (object instanceof Responses.ServerError) { serverError(connection, (Responses.ServerError)object); }
-        else if (object instanceof Responses.SessionCreated) { sessionCreated(connection, (Responses.SessionCreated)object); }
-        else if (object instanceof Responses.TakeSessions) { takeSessions(connection, (Responses.TakeSessions)object); }
-        else if (object instanceof Responses.SessionConnected) { sessionConnected(connection, (Responses.SessionConnected)object); }
-        else if (object instanceof Responses.ReadyApproved) { readyApproved(connection, (Responses.ReadyApproved)object); }
-        else if (object instanceof Responses.SessionExited) { sessionExited(connection, (Responses.SessionExited)object); }
-        else if (object instanceof Responses.SessionStarted) { sessionStarted(connection, (Responses.SessionStarted)object); }
+        if (object instanceof SessionResponses.ServerError) { serverError(connection, (SessionResponses.ServerError)object); }
+        else if (object instanceof SessionResponses.SessionCreated) { sessionCreated(connection, (SessionResponses.SessionCreated)object); }
+        else if (object instanceof SessionResponses.TakeSessions) { takeSessions(connection, (SessionResponses.TakeSessions)object); }
+        else if (object instanceof SessionResponses.SessionConnected) { sessionConnected(connection, (SessionResponses.SessionConnected)object); }
+        else if (object instanceof SessionResponses.ReadyApproved) { readyApproved(connection, (SessionResponses.ReadyApproved)object); }
+        else if (object instanceof SessionResponses.SessionExited) { sessionExited(connection, (SessionResponses.SessionExited)object); }
+        else if (object instanceof SessionResponses.SessionStarted) { sessionStarted(connection, (SessionResponses.SessionStarted)object); }
     }
 
-    private void sessionStarted(Connection connection, Responses.SessionStarted object) {
+    private void sessionStarted(Connection connection, SessionResponses.SessionStarted object) {
+        GybomlClient.setPlayer(object.player);
+        GybomlClient.setPlayerType(object.playerType);
         lobby.gameStartUp();
     }
 
-    private void sessionExited(Connection connection, Responses.SessionExited object) {
+    private void sessionExited(Connection connection, SessionResponses.SessionExited object) {
         lobby.runOnUiThread(() -> {
             lobby.playerStatus = Lobby.PlayerStatus.FREE;
             lobby.sessionsAdapter.enableTouch();
@@ -65,23 +67,23 @@ public class SessionListener extends Listener {
             lobby.notInSessionView();
         });
 
-        connection.sendTCP(new Requests.GetSessions());
+        connection.sendTCP(new SessionRequests.GetSessions());
     }
 
-    private void serverError(Connection connection, Responses.ServerError error) {
+    private void serverError(Connection connection, SessionResponses.ServerError error) {
         //TODO: output message box with error messsage
         String message = error.message;
     }
 
-    private void sessionCreated(Connection connection, Responses.SessionCreated object) {
+    private void sessionCreated(Connection connection, SessionResponses.SessionCreated object) {
         int id = object.sessionId;
 
-        Requests.ConnectSession connectSession = new Requests.ConnectSession();
+        SessionRequests.ConnectSession connectSession = new SessionRequests.ConnectSession();
         connectSession.sessionId = id;
         connection.sendTCP(connectSession);
     }
 
-    private void sessionConnected(Connection connection, Responses.SessionConnected object) {
+    private void sessionConnected(Connection connection, SessionResponses.SessionConnected object) {
         Player player = object.player;
         GybomlClient.setPlayer(player);
 
@@ -92,7 +94,7 @@ public class SessionListener extends Listener {
         });
     }
 
-    private void takeSessions(Connection connection, Responses.TakeSessions object) {
+    private void takeSessions(Connection connection, SessionResponses.TakeSessions object) {
         lobby.runOnUiThread(() -> {
             lobby.sessionsAdapter.sessions = object.lobbies;
             lobby.sessionsAdapter.notifyDataSetChanged();
@@ -112,7 +114,7 @@ public class SessionListener extends Listener {
         });
     }
 
-    private void readyApproved(Connection connection, Responses.ReadyApproved object) {
+    private void readyApproved(Connection connection, SessionResponses.ReadyApproved object) {
         lobby.runOnUiThread(() -> {
             GybomlClient.getPlayer().ready = lobby.readyButton.isChecked();
             if (lobby.readyButton.isChecked())

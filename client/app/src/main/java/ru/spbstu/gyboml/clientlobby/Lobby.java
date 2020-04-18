@@ -23,7 +23,7 @@ import main.java.ru.spbstu.gyboml.GybomlClient;
 import main.java.ru.spbstu.gyboml.MainActivity;
 import main.java.ru.spbstu.gyboml.clientmenu.MainMenu;
 import ru.spbstu.gyboml.R;
-import ru.spbstu.gyboml.core.net.Requests;
+import ru.spbstu.gyboml.core.net.SessionRequests;
 
 
 public class Lobby extends AppCompatActivity {
@@ -109,11 +109,11 @@ public class Lobby extends AppCompatActivity {
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                Requests.CreateSession createSession = new Requests.CreateSession();
+                SessionRequests.CreateSession createSession = new SessionRequests.CreateSession();
                 createSession.sessionName = input.getText().toString().trim();
 
                 GybomlClient.sendTCP(createSession);
-                GybomlClient.sendTCP(new Requests.GetSessions());
+                GybomlClient.sendTCP(new SessionRequests.GetSessions());
             }
         });
 
@@ -156,7 +156,7 @@ public class Lobby extends AppCompatActivity {
         return new View.OnClickListener() {
             public void onClick(View v) {
                 sessionsAdapter.chosenSessionID = v.getId();
-                Requests.ConnectSession request = new Requests.ConnectSession();
+                SessionRequests.ConnectSession request = new SessionRequests.ConnectSession();
                 request.sessionId = sessionsAdapter.chosenSessionID;
                 GybomlClient.sendTCP(request);
             }
@@ -168,7 +168,7 @@ public class Lobby extends AppCompatActivity {
         return new View.OnClickListener() {
             public void onClick(View v) {
                 //tell server to remove player from session
-                Requests.ExitSession request = new Requests.ExitSession();
+                SessionRequests.ExitSession request = new SessionRequests.ExitSession();
                 request.player = GybomlClient.getPlayer();
                 GybomlClient.sendTCP(request);
             }
@@ -181,7 +181,7 @@ public class Lobby extends AppCompatActivity {
         return new ToggleButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                Requests.Ready request = new Requests.Ready();
+                SessionRequests.Ready request = new SessionRequests.Ready();
                 request.player = GybomlClient.getPlayer();
                 GybomlClient.sendTCP(request);
             }
