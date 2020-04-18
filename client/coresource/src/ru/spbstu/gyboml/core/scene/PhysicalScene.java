@@ -1,6 +1,5 @@
 package ru.spbstu.gyboml.core.scene;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 
@@ -39,7 +38,7 @@ public class PhysicalScene {
     private final StopWatch stopWatch = new StopWatch();
     private float previousTime;
 
-    private List<Movable> movables;
+    private final List<Movable> movables;
     private PhysicalBackground physicalBackground;
     private PhysicalCastle physicalCastleP1;
     private PhysicalCastle physicalCastleP2;
@@ -142,19 +141,16 @@ public class PhysicalScene {
         physicalBlocksP2.add(new PhysicalBlock(material, new Location(castleP2X + (SceneConstants.castleWidth + 60) * SceneConstants.SCALE, blockP2Y + 1.2f * SceneConstants.blockWoodHeight * SceneConstants.BLOCKS_SCALE, 0, SceneConstants.BLOCKS_SCALE), world));
     }
 
-    public void generateShot(PlayerType playerTurn, ShotType shotType) {
+    public void generateShot(PlayerType playerTurn, ShotType shotType, float angle) {
         int sign;
-        float angle;
         Vector2 jointPosition;
 
         if (playerTurn == PlayerType.FIRST_PLAYER) {
             sign = 1;
-            angle = physicalTowerP1.getMovablePartAngle();
             jointPosition = physicalTowerP1.getJointPosition();
         }
         else {
             sign = -1;
-            angle = physicalTowerP2.getMovablePartAngle();
             jointPosition = physicalTowerP2.getJointPosition();
         }
 
@@ -177,7 +173,11 @@ public class PhysicalScene {
 
         physicalShot.playerType = playerTurn;
         physicalShot.setVelocity(new Vector2(sign * 25.f * cos, sign * 25.f * sin));
-        movables.add(physicalShot);
+
+        synchronized (movables) {
+            movables.add(physicalShot);
+        }
+
         physicalShots.add(physicalShot);
         if (graphicalScene != null)
             graphicalScene.generateGraphicalShot(physicalShot);
@@ -199,8 +199,11 @@ public class PhysicalScene {
             accumulator -= STEP_TIME;
 
             world.step(STEP_TIME, VELOCITY_ITERATIONS, POSITION_ITERATIONS);
-            for (Movable movable : movables)
-                movable.updateSprite();
+
+            synchronized (movables) {
+                for (Movable movable : movables)
+                    movable.updateSprite();
+            }
 
             // temp debug stuff (demonstrating tower cannon rotation)
             if ((physicalTowerP1.getJoint().getJointAngle() >= physicalTowerP1.getJoint().getUpperLimit() && physicalTowerP1.getJoint().getMotorSpeed() > 0)||
@@ -221,7 +224,9 @@ public class PhysicalScene {
             PhysicalBlock block = physicalBlocksP1Iterator.next();
             if (block.getHP() <= 0) {
                 world.destroyBody(block.getBody());
-                movables.remove(block);
+                synchronized (movables) {
+                    movables.remove(block);
+                }
                 if (graphicalScene != null)
                     graphicalScene.removeObject(block);
                 physicalBlocksP1Iterator.remove();
@@ -233,7 +238,9 @@ public class PhysicalScene {
             PhysicalBlock block = physicalBlocksP2Iterator.next();
             if (block.getHP() <= 0) {
                 world.destroyBody(block.getBody());
-                movables.remove(block);
+                synchronized (movables) {
+                    movables.remove(block);
+                }
                 if (graphicalScene != null)
                     graphicalScene.removeObject(block);
                 physicalBlocksP2Iterator.remove();
@@ -273,5 +280,14 @@ public class PhysicalScene {
 
         for (PhysicalBlock block : physicalBlocksP2)
             block.getDestructionEmitter().addListener(blockSounds);
+    }
+
+    public float getTowerAngle(PlayerType playerType) {
+        if (playerType == PlayerType.FIRST_PLAYER) {
+            return physicalTowerP1.getMovablePartAngle();
+        }
+        else {
+            return physicalTowerP2.getMovablePartAngle();
+        }
     }
 }

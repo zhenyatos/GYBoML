@@ -22,4 +22,9 @@ public class MainActivity extends AndroidApplication {
         AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
         setContentView(initializeForView(game, config));
     }
+
+    @Override
+    public void onBackPressed() {
+        // doing nothing
+    }
 }

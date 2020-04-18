@@ -20,7 +20,9 @@ public class GameListener extends Listener {
 
     private void shoted(Connection connection, GameResponses.Shooted object) {
         PlayerType whoShoted = object.yourShoot ? GybomlClient.getPlayerType() : GybomlClient.getPlayerType().reverted();
-        game.physicalScene.generateShot(whoShoted, game.shotType);
+        float angle = object.angle;
+
+        game.physicalScene.generateShot(whoShoted, game.shotType, angle);
         game.soundEffects.shot.play(1.f);
     }
 }

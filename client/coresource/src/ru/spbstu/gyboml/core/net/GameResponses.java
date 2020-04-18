@@ -10,6 +10,9 @@ public class GameResponses {
 
         // is it your shoot (if true) or opponent's shoot (if false)
         public boolean yourShoot;
+
+        // angle of cannon
+        public float angle;
     }
 
     /**

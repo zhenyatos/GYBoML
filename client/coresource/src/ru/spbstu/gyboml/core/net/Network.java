@@ -42,6 +42,8 @@ public class Network {
         kryo.register(Ready.class);
         kryo.register(ExitSession.class);
         kryo.register(ExitSession.class);
+        kryo.register(GameRequests.PassTurn.class);
+        kryo.register(GameRequests.Shoot.class);
 
         kryo.register(SessionResponses.ReadyApproved.class);
         kryo.register(SessionResponses.SessionExited.class);
@@ -50,5 +52,7 @@ public class Network {
         kryo.register(SessionResponses.ServerError.class);
         kryo.register(SessionResponses.TakeSessions.class);
         kryo.register(SessionResponses.SessionStarted.class);
+        kryo.register(GameResponses.Shooted.class);
+        kryo.register(GameResponses.PassTurned.class);
     }
 }

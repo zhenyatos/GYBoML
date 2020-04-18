@@ -152,8 +152,16 @@ public class Game extends ApplicationAdapter implements InputProcessor {
         TextureRegionDrawable fireDown    = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("skin/buttons/fire_down.png"))));
         ImageButton fireButton = new ImageButton(fireUp, fireDown);
         fireButton.addListener(new InputListener() {
+
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                return true;
+            }
+
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                GameRequests.Shoot shootRequest = new GameRequests.Shoot();
+                shootRequest.angle = physicalScene.getTowerAngle(GybomlClient.getPlayerType());
                 GybomlClient.sendTCP(new GameRequests.Shoot());
             }
         });
