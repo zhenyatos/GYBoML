@@ -175,7 +175,7 @@ public class Game extends ApplicationAdapter implements InputProcessor {
                 shootRequest.ballVelocityX = velocity.x;
                 shootRequest.ballVelocityY = velocity.y;
 
-                GybomlClient.sendTCP(new GameRequests.Shoot());
+                GybomlClient.sendTCP(shootRequest);
             }
         });
         table.add(fireButton).width(buttonWidth * Gdx.graphics.getWidth()).height(buttonHeight * Gdx.graphics.getHeight()).bottom().
