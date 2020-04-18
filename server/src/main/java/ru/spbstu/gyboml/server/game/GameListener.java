@@ -33,8 +33,6 @@ public class GameListener extends Listener {
                         .get(connection.getSessionId())
                         .getGame();
 
-        float angle = object.angle;
-
         boolean fromFirstPlayer;
         if (connection.getPlayerId() == game.getFirstPlayer().id) {
             fromFirstPlayer = true;
@@ -49,13 +47,21 @@ public class GameListener extends Listener {
         }
 
         // send shoot responses
-        GameResponses.Shooted firstShootedRequest = new GameResponses.Shooted();
-        firstShootedRequest.yourShoot = fromFirstPlayer;
-        firstShootedRequest.angle = angle;
-        GameResponses.Shooted secondShootedRequest = new GameResponses.Shooted();
-        secondShootedRequest.yourShoot = !fromFirstPlayer;
-        secondShootedRequest.angle = angle;
-        sendResponses(game, firstShootedRequest, secondShootedRequest);
+        GameResponses.Shooted shootResponse = new GameResponses.Shooted();
+        shootResponse.ballPositionX = object.ballPositionX;
+        shootResponse.ballPositionY = object.ballPositionY;
+        shootResponse.ballVelocityX = object.ballVelocityX;
+        shootResponse.ballVelocityY = object.ballVelocityY;
+        GybomlConnection to = fromFirstPlayer ?
+            main.sessionMap
+            .get(game.getSecondPlayer().sessionId)
+            .getSecondPlayer()
+            .getConnection() :
+            main.sessionMap
+            .get(game.getFirstPlayer().sessionId)
+            .getFirstPlayer()
+            .getConnection();
+        to.sendTCP(shootResponse);
 
         // send pass turn responses
         GameResponses.PassTurned firstPassedResponse = new GameResponses.PassTurned();
