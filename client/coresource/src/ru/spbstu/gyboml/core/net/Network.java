@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ru.spbstu.gyboml.core.Player;
+import ru.spbstu.gyboml.core.PlayerType;
 import ru.spbstu.gyboml.core.net.SessionRequests.ExitSession;
 import ru.spbstu.gyboml.core.net.SessionRequests.GetSessions;
 import ru.spbstu.gyboml.core.net.SessionRequests.Ready;
@@ -31,6 +32,7 @@ public class Network {
         kryo.register(List.class);
         kryo.register(ArrayList.class);
         kryo.register(Player.class);
+        kryo.register(PlayerType.class);
 
         kryo.register(SessionRequests.RegisterName.class);
         kryo.register(SessionRequests.ConnectSession.class);
