@@ -101,7 +101,7 @@ public class GraphicalScene {
         drawables.add(graphicalForeground);
     }
 
-    void generateGraphicalShot(PhysicalShot physicalShot) {
+    public void generateGraphicalShot(PhysicalShot physicalShot) {
         String spriteName = "shot_" + physicalShot.shotType.getName();
         GraphicalShot graphicalShot = new GraphicalShot(objects.createSprite(spriteName), SceneConstants.SHOTS_SCALE);
         graphicalShot.setOrigin(0, 0);
@@ -110,13 +110,12 @@ public class GraphicalScene {
         physicalShot.setUpdatableSprite(graphicalShot);
         objectsMap.put(physicalShot, graphicalShot);
 
-        /*float explosionX = (physicalShot.playerType == PlayerType.FIRST_PLAYER) ?
+        float explosionX = (physicalShot.playerType == PlayerType.FIRST_PLAYER) ?
                 physicalShot.getPosition().x -  SceneConstants.SHOTS_SCALE * objects.findRegion(spriteName).originalWidth / 2f :
                 physicalShot.getPosition().x + (SceneConstants.SHOTS_SCALE * objects.findRegion(spriteName).originalWidth - SceneConstants.EXPLOSION_SCALE * AnimatedExplosion.FRAME_WIDTH) / 2f;
         float explosionY = physicalShot.getPosition().y - Math.abs(SceneConstants.EXPLOSION_SCALE * AnimatedExplosion.FRAME_HEIGHT - SceneConstants.SHOTS_SCALE * objects.findRegion(spriteName).originalHeight) / 2f;
 
         animations.add(new AnimatedExplosion(explosionX, explosionY, SceneConstants.EXPLOSION_SCALE));
-         */
     }
 
     void generateGraphicalBlock(PhysicalBlock physicalBlock) {

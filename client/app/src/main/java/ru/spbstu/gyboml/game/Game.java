@@ -52,7 +52,7 @@ public class Game extends ApplicationAdapter implements InputProcessor {
     private static final float armoryChooseButtonWidthFactor = 2 / 3.0f;
 
     PhysicalScene physicalScene;
-    private GraphicalScene graphicalScene;
+    GraphicalScene graphicalScene;
     SoundEffects soundEffects;
 
     // drawing and stuff
@@ -166,6 +166,7 @@ public class Game extends ApplicationAdapter implements InputProcessor {
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
                 physicalScene.generateShot(GybomlClient.getPlayerType(), shotType);
+                graphicalScene.generateGraphicalShot(physicalScene.getLastShot());
                 soundEffects.shot.play(1.f);
 
                 // send shot to server
