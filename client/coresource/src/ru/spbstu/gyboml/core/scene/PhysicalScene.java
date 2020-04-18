@@ -182,8 +182,8 @@ public class PhysicalScene {
         }
 
         physicalShots.add(physicalShot);
-        if (graphicalScene != null)
-            graphicalScene.generateGraphicalShot(physicalShot);
+//        if (graphicalScene != null)
+//            graphicalScene.generateGraphicalShot(physicalShot);
     }
 
     public World getWorld() { return world; }

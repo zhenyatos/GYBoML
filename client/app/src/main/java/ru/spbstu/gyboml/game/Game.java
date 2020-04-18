@@ -52,7 +52,7 @@ public class Game extends ApplicationAdapter implements InputProcessor {
     private static final float armoryChooseButtonWidthFactor = 2 / 3.0f;
 
     PhysicalScene physicalScene;
-    private GraphicalScene graphicalScene;
+    GraphicalScene graphicalScene;
     SoundEffects soundEffects;
 
     // drawing and stuff
