@@ -115,7 +115,8 @@ public class GraphicalScene {
                 physicalShot.getPosition().x + (SceneConstants.SHOTS_SCALE * objects.findRegion(spriteName).originalWidth - SceneConstants.EXPLOSION_SCALE * AnimatedExplosion.FRAME_WIDTH) / 2f;
         float explosionY = physicalShot.getPosition().y - Math.abs(SceneConstants.EXPLOSION_SCALE * AnimatedExplosion.FRAME_HEIGHT - SceneConstants.SHOTS_SCALE * objects.findRegion(spriteName).originalHeight) / 2f;
 
-        animations.add(new AnimatedExplosion(explosionX, explosionY, SceneConstants.EXPLOSION_SCALE));*\
+        animations.add(new AnimatedExplosion(explosionX, explosionY, SceneConstants.EXPLOSION_SCALE));
+         */
     }
 
     void generateGraphicalBlock(PhysicalBlock physicalBlock) {
