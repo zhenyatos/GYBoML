@@ -160,6 +160,8 @@ public class Game extends ApplicationAdapter implements InputProcessor {
 
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                GameRequests.Shoot shootRequest = new GameRequests.Shoot();
+                shootRequest.angle = physicalScene.getTowerAngle(GybomlClient.getPlayerType());
                 GybomlClient.sendTCP(new GameRequests.Shoot());
             }
         });
