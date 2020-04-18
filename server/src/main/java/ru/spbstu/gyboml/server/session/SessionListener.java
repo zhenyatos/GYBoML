@@ -8,6 +8,7 @@ import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 
 import ru.spbstu.gyboml.core.Player;
+import ru.spbstu.gyboml.core.PlayerType;
 import ru.spbstu.gyboml.core.net.SessionRequests;
 import ru.spbstu.gyboml.core.net.SessionResponses;
 import ru.spbstu.gyboml.server.GybomlConnection;
@@ -181,9 +182,16 @@ public class SessionListener extends Listener {
         if (firstPlayer != null && secondPlayer != null &&
             firstPlayer.getPlayer().ready && secondPlayer.getPlayer().ready) {
 
-            SessionResponses.SessionStarted sessionStarted = new SessionResponses.SessionStarted();
-            firstPlayer.getConnection().sendTCP(sessionStarted);
-            secondPlayer.getConnection().sendTCP(sessionStarted);
+            SessionResponses.SessionStarted firstSessionStarted = new SessionResponses.SessionStarted();
+            firstSessionStarted.player = firstPlayer.getPlayer();
+            firstSessionStarted.playerType = PlayerType.FIRST_PLAYER;
+
+            SessionResponses.SessionStarted secondSessionStarted = new SessionResponses.SessionStarted();
+            secondSessionStarted.player = secondPlayer.getPlayer();
+            secondSessionStarted.playerType = PlayerType.SECOND_PLAYER;
+
+            firstPlayer.getConnection().sendTCP(firstSessionStarted);
+            secondPlayer.getConnection().sendTCP(secondSessionStarted);
             session.game = new Game(firstPlayer.getPlayer(), secondPlayer.getPlayer());
         }
     }
