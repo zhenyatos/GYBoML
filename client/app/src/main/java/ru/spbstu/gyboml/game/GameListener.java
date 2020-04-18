@@ -1,10 +1,12 @@
 package main.java.ru.spbstu.gyboml.game;
 
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 
 import main.java.ru.spbstu.gyboml.GybomlClient;
+import main.java.ru.spbstu.gyboml.MainActivity;
 import ru.spbstu.gyboml.core.net.GameResponses;
 
 public class GameListener extends Listener {
@@ -24,6 +26,10 @@ public class GameListener extends Listener {
             game.physicalScene.getLastShot().getBody().setTransform(object.ballPositionX, object.ballPositionY, 0);
             game.physicalScene.getLastShot().setVelocity(new Vector2(object.ballVelocityX, object.ballVelocityY));
             game.soundEffects.shot.play(1.f);
+
+            synchronized (game.fireButton) {
+                game.fireButton.setTouchable(Touchable.enabled);
+            }
         }
     }
 }

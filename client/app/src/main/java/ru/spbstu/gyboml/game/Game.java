@@ -17,6 +17,7 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -73,6 +74,8 @@ public class Game extends ApplicationAdapter implements InputProcessor {
 
     // temp
     ShotType shotType = ShotType.BASIC;
+
+    ImageButton fireButton;
 
     /**
      * This is the method that is called on client's creation.
@@ -152,7 +155,7 @@ public class Game extends ApplicationAdapter implements InputProcessor {
         // Fire button
         TextureRegionDrawable fireUp      = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("skin/buttons/fire_up.png"))));
         TextureRegionDrawable fireDown    = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("skin/buttons/fire_down.png"))));
-        ImageButton fireButton = new ImageButton(fireUp, fireDown);
+        fireButton = new ImageButton(fireUp, fireDown);
         fireButton.addListener(new InputListener() {
 
             @Override
@@ -176,6 +179,10 @@ public class Game extends ApplicationAdapter implements InputProcessor {
                 shootRequest.ballVelocityY = velocity.y;
 
                 GybomlClient.sendTCP(shootRequest);
+
+                synchronized (fireButton) {
+                    fireButton.setTouchable(Touchable.disabled);
+                }
             }
         });
         table.add(fireButton).width(buttonWidth * Gdx.graphics.getWidth()).height(buttonHeight * Gdx.graphics.getHeight()).bottom().
