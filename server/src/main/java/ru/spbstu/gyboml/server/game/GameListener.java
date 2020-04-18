@@ -7,8 +7,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import ru.spbstu.gyboml.core.net.GameRequests;
 import ru.spbstu.gyboml.core.net.GameResponses;
-import ru.spbstu.gyboml.server.GybomlConnection;
-import ru.spbstu.gyboml.server.Main;
+import ru.spbstu.gyboml.server.GybomlConnection; import ru.spbstu.gyboml.server.Main;
 
 @RequiredArgsConstructor
 public class GameListener extends Listener {
@@ -25,37 +24,47 @@ public class GameListener extends Listener {
         GybomlConnection connection = (GybomlConnection)c;
 
         if (object instanceof GameRequests.Shoot) {
-            Game game = main.sessionMap
-                            .get(connection.getSessionId())
-                            .getGame();
-
-            boolean fromFirstPlayer;
-            if (connection.getPlayerId() == game.getFirstPlayer().id) {
-                fromFirstPlayer = true;
-            } else if (connection.getPlayerId() == game.getSecondPlayer().id) {
-                fromFirstPlayer = false;
-            } else return;
-
-            // if it is not player's turn
-            if (fromFirstPlayer && game.getCurrentStage() != Game.Stage.FISRT_PLAYER_ATTACK ||
-                !fromFirstPlayer && game.getCurrentStage() != Game.Stage.SECOND_PLAYER_ATTACK) {
-                return;
-            }
-
-            // send shoot responses
-            GameResponses.Shooted firstShootedRequest = new GameResponses.Shooted();
-            firstShootedRequest.yourShoot = fromFirstPlayer;
-            GameResponses.Shooted secondShootedRequest = new GameResponses.Shooted();
-            secondShootedRequest.yourShoot = !fromFirstPlayer;
-            sendResponses(game, firstShootedRequest, secondShootedRequest);
-
-            // send pass turn responses
-            GameResponses.PassTurned firstPassedResponse = new GameResponses.PassTurned();
-            firstPassedResponse.yourTurn = !fromFirstPlayer;
-            GameResponses.PassTurned secondPassedResponse = new GameResponses.PassTurned();
-            secondPassedResponse.yourTurn = fromFirstPlayer;
-            sendResponses(game, firstPassedResponse, secondPassedResponse);
+            shoot(connection, (GameRequests.Shoot)object);
         }
+    }
+
+    private void shoot(GybomlConnection connection, GameRequests.Shoot object) {
+        Game game = main.sessionMap
+                        .get(connection.getSessionId())
+                        .getGame();
+
+        float angle = object.angle;
+
+        boolean fromFirstPlayer;
+        if (connection.getPlayerId() == game.getFirstPlayer().id) {
+            fromFirstPlayer = true;
+        } else if (connection.getPlayerId() == game.getSecondPlayer().id) {
+            fromFirstPlayer = false;
+        } else return;
+
+        // if it is not player's turn
+        if (fromFirstPlayer && game.getCurrentStage() != Game.Stage.FISRT_PLAYER_ATTACK ||
+            !fromFirstPlayer && game.getCurrentStage() != Game.Stage.SECOND_PLAYER_ATTACK) {
+            return;
+        }
+
+        // send shoot responses
+        GameResponses.Shooted firstShootedRequest = new GameResponses.Shooted();
+        firstShootedRequest.yourShoot = fromFirstPlayer;
+        firstShootedRequest.angle = angle;
+        GameResponses.Shooted secondShootedRequest = new GameResponses.Shooted();
+        secondShootedRequest.yourShoot = !fromFirstPlayer;
+        secondShootedRequest.angle = angle;
+        sendResponses(game, firstShootedRequest, secondShootedRequest);
+
+        // send pass turn responses
+        GameResponses.PassTurned firstPassedResponse = new GameResponses.PassTurned();
+        firstPassedResponse.yourTurn = !fromFirstPlayer;
+        GameResponses.PassTurned secondPassedResponse = new GameResponses.PassTurned();
+        secondPassedResponse.yourTurn = fromFirstPlayer;
+        sendResponses(game, firstPassedResponse, secondPassedResponse);
+
+        game.setCurrentStage(game.getCurrentStage().reverted());
     }
 
     private void sendResponses(Game game, Object firstResponse, Object secondResponse) {
@@ -71,4 +80,6 @@ public class GameListener extends Listener {
             .getConnection()
             .sendTCP(secondResponse);
     }
+
+
 }

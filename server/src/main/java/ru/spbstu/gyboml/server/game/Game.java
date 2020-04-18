@@ -19,9 +19,18 @@ public class Game {
     public static enum Stage {
         FISRT_PLAYER_ATTACK,
         SECOND_PLAYER_ATTACK,
-        BUILDING
+        BUILDING;
+
+        public Stage reverted() {
+            if (this == Stage.FISRT_PLAYER_ATTACK) {
+                return Stage.SECOND_PLAYER_ATTACK;
+            } else if (this == Stage.SECOND_PLAYER_ATTACK) {
+                return Stage.FISRT_PLAYER_ATTACK;
+            } else return Stage.BUILDING;
+        }
     }
 
     // current game stager
     private Stage currentStage = Stage.FISRT_PLAYER_ATTACK;
+
 }
