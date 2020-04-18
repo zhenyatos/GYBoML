@@ -20,4 +20,7 @@ public class SessionInfo {
     // players
     public Player firstPlayer;
     public Player secondPlayer;
+
+    // is it started
+    public boolean isStarted;
 }
