@@ -2,11 +2,12 @@ package ru.spbstu.gyboml.core.net;
 
 import java.util.List;
 import ru.spbstu.gyboml.core.Player;
+import ru.spbstu.gyboml.core.PlayerType;
 
 /* All responses utility class
  * Most often, responses send from server to client
  */
-public class Responses {
+public class SessionResponses {
 
     /*
      * Lobby created response.
@@ -63,6 +64,7 @@ public class Responses {
         // initial player object
         // previous player state is meaningless now and
         // needed only for session operations
-        Player player;
+        public Player player;
+        public PlayerType playerType;
     }
 }

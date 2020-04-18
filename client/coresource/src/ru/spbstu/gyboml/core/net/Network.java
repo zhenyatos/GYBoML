@@ -5,12 +5,11 @@ import com.esotericsoftware.kryonet.EndPoint;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import ru.spbstu.gyboml.core.Player;
-import ru.spbstu.gyboml.core.net.Requests.ExitSession;
-import ru.spbstu.gyboml.core.net.Requests.GetSessions;
-import ru.spbstu.gyboml.core.net.Requests.Ready;
+import ru.spbstu.gyboml.core.net.SessionRequests.ExitSession;
+import ru.spbstu.gyboml.core.net.SessionRequests.GetSessions;
+import ru.spbstu.gyboml.core.net.SessionRequests.Ready;
 
 
 /*
@@ -33,21 +32,21 @@ public class Network {
         kryo.register(ArrayList.class);
         kryo.register(Player.class);
 
-        kryo.register(Requests.RegisterName.class);
-        kryo.register(Requests.ConnectSession.class);
-        kryo.register(Requests.CreateSession.class);
+        kryo.register(SessionRequests.RegisterName.class);
+        kryo.register(SessionRequests.ConnectSession.class);
+        kryo.register(SessionRequests.CreateSession.class);
         kryo.register(SessionInfo.class);
         kryo.register(GetSessions.class);
         kryo.register(Ready.class);
         kryo.register(ExitSession.class);
         kryo.register(ExitSession.class);
 
-        kryo.register(Responses.ReadyApproved.class);
-        kryo.register(Responses.SessionExited.class);
-        kryo.register(Responses.SessionCreated.class);
-        kryo.register(Responses.SessionConnected.class);
-        kryo.register(Responses.ServerError.class);
-        kryo.register(Responses.TakeSessions.class);
-        kryo.register(Responses.SessionStarted.class);
+        kryo.register(SessionResponses.ReadyApproved.class);
+        kryo.register(SessionResponses.SessionExited.class);
+        kryo.register(SessionResponses.SessionCreated.class);
+        kryo.register(SessionResponses.SessionConnected.class);
+        kryo.register(SessionResponses.ServerError.class);
+        kryo.register(SessionResponses.TakeSessions.class);
+        kryo.register(SessionResponses.SessionStarted.class);
     }
 }
