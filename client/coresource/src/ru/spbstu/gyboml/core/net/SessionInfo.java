@@ -9,10 +9,10 @@ import ru.spbstu.gyboml.core.Player;
 public class SessionInfo {
 
     // id of related server session
-    public int sessionId;
+    public Integer sessionId;
 
     // number of free spaces in lobby
-    public int spaces;
+    public Integer spaces;
 
     // lobby name
     public String name;

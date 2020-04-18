@@ -7,11 +7,11 @@ public class GameRequests {
      * Called when user pushed 'shoot' button
      * */
     public static class Shoot {
-        public float ballPositionX;
-        public float ballPositionY;
+        public Float ballPositionX;
+        public Float ballPositionY;
 
-        public float ballVelocityX;
-        public float ballVelocityY;
+        public Float ballVelocityX;
+        public Float ballVelocityY;
     }
 
     /**
