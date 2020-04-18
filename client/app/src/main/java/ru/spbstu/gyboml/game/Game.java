@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -27,6 +28,7 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import main.java.ru.spbstu.gyboml.GybomlClient;
 import ru.spbstu.gyboml.core.PlayerType;
 import ru.spbstu.gyboml.core.net.GameRequests;
+import ru.spbstu.gyboml.core.physical.PhysicalShot;
 import ru.spbstu.gyboml.core.scene.GraphicalScene;
 import ru.spbstu.gyboml.core.scene.HPBar;
 import ru.spbstu.gyboml.core.scene.PhysicalScene;
@@ -160,8 +162,19 @@ public class Game extends ApplicationAdapter implements InputProcessor {
 
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                physicalScene.generateShot(GybomlClient.getPlayerType(), shotType);
+                soundEffects.shot.play(1.f);
+
+                // send shot to server
                 GameRequests.Shoot shootRequest = new GameRequests.Shoot();
-                shootRequest.angle = physicalScene.getTowerAngle(GybomlClient.getPlayerType());
+                PhysicalShot shot = physicalScene.getLastShot();
+                Vector2 position = shot.getPosition();
+                Vector2 velocity = shot.getVelocity();
+                shootRequest.ballPositionX = position.x;
+                shootRequest.ballPositionY = position.y;
+                shootRequest.ballVelocityX = velocity.x;
+                shootRequest.ballVelocityY = velocity.y;
+
                 GybomlClient.sendTCP(new GameRequests.Shoot());
             }
         });

@@ -7,8 +7,11 @@ public class GameRequests {
      * Called when user pushed 'shoot' button
      * */
     public static class Shoot {
-        // angle of cannon at the moment when button 'shoot' pushed
-        public float angle;
+        public float ballPositionX;
+        public float ballPositionY;
+
+        public float ballVelocityX;
+        public float ballVelocityY;
     }
 
     /**
