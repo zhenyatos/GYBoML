@@ -10,6 +10,8 @@ import ru.spbstu.gyboml.server.GybomlConnection;
 import ru.spbstu.gyboml.server.Main;
 import ru.spbstu.gyboml.server.game.Game;
 
+import static com.esotericsoftware.minlog.Log.*;
+
 @Getter
 @Setter
 public class Session {
@@ -29,6 +31,8 @@ public class Session {
     private Session(int id, String name){
         this.id = id;
         this.name = name;
+
+        info("Session #" + id + " was created");
     }
 
     // fabric method
@@ -49,6 +53,7 @@ public class Session {
             player.id = Main.nextAvailablePlayerId();
             player.sessionId = id;
 
+            info("Player " + player + " was created");
             return new NetPlayer(player, connection);
         };
         if (firstPlayer == null) {
@@ -79,10 +84,12 @@ public class Session {
      */
     public boolean remove(long playerId) {
         if (firstPlayer != null && firstPlayer.getPlayer().id == playerId) {
+            info("Player " + firstPlayer.getPlayer() + " is leaving");
             firstPlayer = secondPlayer;
             secondPlayer = null;
             return true;
         } else if (secondPlayer != null && secondPlayer.getPlayer().id == playerId) {
+            info("Player " + secondPlayer.getPlayer() + " is leaving");
             secondPlayer = null;
             return true;
         } else return false;
@@ -91,9 +98,11 @@ public class Session {
     public boolean ready(long playerId, boolean isReady) {
         if (firstPlayer != null && firstPlayer.getPlayer().id == playerId) {
             firstPlayer.getPlayer().setReady(isReady);
+            info("Player " + firstPlayer.getPlayer() + " ready is: " + isReady);
             return true;
         } else if (secondPlayer != null && secondPlayer.getPlayer().id == playerId) {
             secondPlayer.getPlayer().setReady(isReady);
+            info("Player " + secondPlayer.getPlayer() + " ready is: " + isReady);
             return true;
         } else return false;
     }
@@ -110,6 +119,7 @@ public class Session {
         sessionInfo.spaces = spaces();
         sessionInfo.firstPlayer = firstPlayer != null ? firstPlayer.getPlayer() : null;
         sessionInfo.secondPlayer = secondPlayer != null ? secondPlayer.getPlayer() : null;
+        sessionInfo.isStarted = isStarted();
 
         return sessionInfo;
     }

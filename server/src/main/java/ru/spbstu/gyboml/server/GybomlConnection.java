@@ -16,4 +16,9 @@ public class GybomlConnection extends Connection {
 
     // sessions's id (may be null if not connected to)
     private Integer sessionId;
+
+    @Override
+    public String toString() {
+        return super.toString() + " " + name + "#" + playerId + "#" + sessionId;
+    }
 }
