@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="main.java.ru.spbstu.gyboml.menu.MainMenu"
+    tools:context="ru.spbstu.gyboml.menu.MainMenu"
     tools:showIn="@layout/activity_main_menu">
 
 </androidx.constraintlayout.widget.ConstraintLayout>

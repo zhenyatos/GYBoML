@@ -1,4 +1,4 @@
-package main.java.ru.spbstu.gyboml;
+package ru.spbstu.gyboml;
 
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Listener;

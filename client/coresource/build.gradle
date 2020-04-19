@@ -21,17 +21,6 @@ sourceSets {
             srcDir 'res'
         }
     }
-
-    test {
-        java {
-            srcDir 'test'
-        }
-
-    }
-}
-
-test {
-    useJUnitPlatform()
 }
 
 dependencies {

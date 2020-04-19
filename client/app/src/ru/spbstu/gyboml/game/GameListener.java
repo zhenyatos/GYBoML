@@ -1,12 +1,12 @@
-package main.java.ru.spbstu.gyboml.game;
+package ru.spbstu.gyboml.game;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 
-import main.java.ru.spbstu.gyboml.GybomlClient;
-import main.java.ru.spbstu.gyboml.MainActivity;
+import ru.spbstu.gyboml.GybomlClient;
+import ru.spbstu.gyboml.MainActivity;
 import ru.spbstu.gyboml.core.net.GameResponses;
 
 public class GameListener extends Listener {

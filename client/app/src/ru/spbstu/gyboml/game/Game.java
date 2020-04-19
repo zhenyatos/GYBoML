@@ -1,4 +1,4 @@
-package main.java.ru.spbstu.gyboml.game;
+package ru.spbstu.gyboml.game;
 
 
 import com.badlogic.gdx.ApplicationAdapter;
@@ -29,7 +29,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
-import main.java.ru.spbstu.gyboml.GybomlClient;
+import ru.spbstu.gyboml.GybomlClient;
 import java.util.ArrayList;
 import java.util.List;
 

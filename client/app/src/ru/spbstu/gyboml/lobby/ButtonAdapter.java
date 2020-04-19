@@ -1,4 +1,4 @@
-package main.java.ru.spbstu.gyboml.lobby;
+package ru.spbstu.gyboml.lobby;
 
 import static android.view.ViewGroup.LayoutParams;
 
