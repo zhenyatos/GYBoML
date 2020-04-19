@@ -1,11 +1,11 @@
-package main.java.ru.spbstu.gyboml.lobby;
+package ru.spbstu.gyboml.lobby;
 
 import android.view.View;
 
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 
-import main.java.ru.spbstu.gyboml.GybomlClient;
+import ru.spbstu.gyboml.GybomlClient;
 import ru.spbstu.gyboml.core.Player;
 import ru.spbstu.gyboml.core.net.SessionRequests;
 import ru.spbstu.gyboml.core.net.SessionResponses;

@@ -14,7 +14,7 @@
         android:supportsRtl="true"
         android:theme="@style/GdxTheme">
         <activity
-            android:name="main.java.ru.spbstu.gyboml.menu.MainMenu"
+            android:name="ru.spbstu.gyboml.menu.MainMenu"
             android:label="title_activity_main_menu"
             android:theme="@style/GdxTheme.NoActionBar">
             <intent-filter>
@@ -24,12 +24,12 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="main.java.ru.spbstu.gyboml.lobby.Lobby"
+            android:name="ru.spbstu.gyboml.lobby.Lobby"
             android:label="gyboml"
             android:theme="@style/GdxTheme.NoActionBar">
         </activity>
         <activity
-            android:name="main.java.ru.spbstu.gyboml.MainActivity"
+            android:name="ru.spbstu.gyboml.MainActivity"
             android:configChanges="keyboard|keyboardHidden|navigation|orientation|screenSize|screenLayout"
             android:label="gyboml"
             android:screenOrientation="landscape">

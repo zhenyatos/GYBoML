@@ -1,4 +1,4 @@
-package main.java.ru.spbstu.gyboml.utils;
+package ru.spbstu.gyboml.utils;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
