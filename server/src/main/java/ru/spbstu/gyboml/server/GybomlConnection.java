@@ -2,13 +2,23 @@ package ru.spbstu.gyboml.server;
 
 import com.esotericsoftware.kryonet.Connection;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class GybomlConnection extends Connection {
     // player's name
     private String name;
 
-    // getters
-    public String name() { return this.name; }
+    // player's id (may be null)
+    private Long playerId;
 
-    // setters
-    public void setName(String name) { this.name = name; }
+    // sessions's id (may be null if not connected to)
+    private Integer sessionId;
+
+    @Override
+    public String toString() {
+        return super.toString() + " " + name + "#" + playerId + "#" + sessionId;
+    }
 }
