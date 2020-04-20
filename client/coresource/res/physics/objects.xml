@@ -102,7 +102,7 @@
 		<fixture>
 			<density>500</density>
 			<friction>0.2</friction>
-			<restitution>0</restitution>
+			<restitution>0.3</restitution>
 			<filter_category_bits>1</filter_category_bits>
 			<filter_mask_bits>65535</filter_mask_bits>
 			<filter_group_index>0</filter_group_index>

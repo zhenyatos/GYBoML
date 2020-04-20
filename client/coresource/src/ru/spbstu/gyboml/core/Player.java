@@ -6,19 +6,44 @@ package ru.spbstu.gyboml.core;
 public class Player {
 
     // is now my turn
-    private boolean isTurn;
+    public boolean isTurn;
 
     // current number of points
-    private int points;
+    public int points;
+
+    // player unique id
+    public long id;
+
+    // session unique id
+    public int sessionId;
+
+    // player name
+    public String name;
+
+    // is player ready in session
+    public boolean ready;
+
+    // default ctor
+    public Player(){}
 
     /**
      * Class constructor.
      * @param initialPoints - initial number of points
      * @param isTurn - initial turn
      * */
-    public Player(int initialPoints, boolean isTurn) {
+    public Player(String name, int initialPoints, boolean isTurn) {
         points = initialPoints;
         this.isTurn = isTurn;
+        this.name = name;
+    }
+
+    /**
+     * Player to string conversation
+     * @return string in format: player_name#player_id#player_session_id
+     */
+    @Override
+    public String toString() {
+        return name + "#" + id + "#" + sessionId;
     }
 
     /**
@@ -35,10 +60,18 @@ public class Player {
         return false;
     }
 
-    /**
-     * @return true if it is my turn, false otherwise
-     * */
-    public boolean isMyTurn() {
-        return isTurn;
+    // getters
+    public boolean isMyTurn() { return isTurn; }
+    public String name() { return this.name; }
+    public long id() { return this.id; }
+    public int sessionid() { return this.sessionId; }
+    public boolean ready() {
+        return this.ready;
     }
+
+    // setters
+    public void setName(String name) { this.name = name; }
+    public void setReady(boolean ready) { this.ready = ready; }
+    public void setId(long id) { this.id = id; }
+    public void setSessionId(int id) { this.sessionId = id; }
 }

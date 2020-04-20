@@ -19,5 +19,10 @@ public enum PlayerType {
         this.id = id;
     }
 
+    public PlayerType reverted() {
+        if (this == FIRST_PLAYER) { return SECOND_PLAYER; }
+        else { return FIRST_PLAYER; }
+    }
+
     private int id;
 }
