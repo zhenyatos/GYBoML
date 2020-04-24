@@ -22,6 +22,7 @@ import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -152,11 +153,22 @@ public class Game extends ApplicationAdapter implements InputProcessor, Winnable
         TextureRegionDrawable endTurnDown = new TextureRegionDrawable(
                 new TextureRegion(
                         new Texture(Gdx.files.internal("skin/buttons/endturn_down.png"))));
-        ImageButton endTurnButton = new ImageButton(endTurnUp, endTurnDown);
+        ImageButton exitButton = new ImageButton(endTurnUp, endTurnDown);
 
-        endTurnButton.addListener(new InputListener() {
+        exitButton.addListener(new InputListener() {
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                Dialog dialog = new Dialog("Are you sure you want to exit?", UISkin)
+                {
+                    @Override
+                    protected void result(Object object) {
+                        if ((boolean)object)
+                            Gdx.app.exit();
+                    }
+                };
+                dialog.button("Yes", true);
+                dialog.button("No", false);
+                dialog.show(stageForUI);
             }
 
             @Override
@@ -166,15 +178,9 @@ public class Game extends ApplicationAdapter implements InputProcessor, Winnable
         });
 
         table.bottom().left();
-        //table.row();
-        //table.add(new Actor());
         table.row();
-        table.add(endTurnButton).width(buttonWidth * Gdx.graphics.getWidth()).height(buttonHeight * Gdx.graphics.getHeight()).bottom();
-        //.spaceRight(Gdx.graphics.getWidth() - 2 * buttonWidth);
+        table.add(exitButton).width(buttonWidth * Gdx.graphics.getWidth()).height(buttonHeight * Gdx.graphics.getHeight()).bottom();
 
-        buttons.add(endTurnButton);
-
-        // here add button
         setUpArmoryStorage();
 
         // Fire button
@@ -229,6 +235,7 @@ public class Game extends ApplicationAdapter implements InputProcessor, Winnable
         stageForUI.addActor(bar2.getHealthBar());
 
         physicalScene.connectWithSoundEffects(soundEffects);
+
         //Game over labels
         Label victoryLabel = new Label("Victory!", UISkin, "title");
         victoryLabel.setPosition(Gdx.graphics.getWidth() / 2f - victoryLabel.getWidth() / 2f,
