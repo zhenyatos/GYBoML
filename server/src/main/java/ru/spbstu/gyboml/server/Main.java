@@ -46,7 +46,7 @@ public class Main
         server.addListener(new GameListener(this));
 
         try {
-            server.bind(Network.tcpPort/*TODO: , Network.udpPort*/);
+            server.bind(Network.tcpPort, Network.udpPort);
         } catch (IOException ex) {
             info("Could not open socket", ex);
             System.exit(2);
@@ -55,10 +55,6 @@ public class Main
 
     private void start() {
         server.start();
-
-        while (true) {
-            scene.stepWorld();
-        }
     }
 
     public static void main(final String[] args) throws IOException {
@@ -66,9 +62,8 @@ public class Main
         Log.setLogger(new GybomlLogger());
 
         try {
-            info("GYBoML server started");
             main.start();
-            info("GYBoML server finished");
+            info("GYBoML server started");
         } catch (Error | Exception error) {
             error("Error occured in main thread", error);
             main.server.close();
@@ -76,5 +71,6 @@ public class Main
         }
     }
 
+    public Session getSession( int id ) { return sessionMap.get(id); }
     public static long nextAvailablePlayerId() { return nextAvailablePlayerId++; }
 }

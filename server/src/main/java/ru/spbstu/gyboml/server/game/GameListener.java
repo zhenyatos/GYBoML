@@ -8,14 +8,47 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import ru.spbstu.gyboml.core.net.GameRequests;
 import ru.spbstu.gyboml.core.net.GameResponses;
-import ru.spbstu.gyboml.server.GybomlConnection; import ru.spbstu.gyboml.server.Main;
+import ru.spbstu.gyboml.server.GybomlConnection;
+import ru.spbstu.gyboml.server.Main;
+import ru.spbstu.gyboml.server.session.NetPlayer;
+import ru.spbstu.gyboml.server.session.Session;
 
 import static com.esotericsoftware.minlog.Log.*;
+import static java.lang.String.format;
 
 @RequiredArgsConstructor
 public class GameListener extends Listener {
 
     @NonNull private Main main;
+
+    @Override
+    public void disconnected(Connection c) {
+        GybomlConnection connection = (GybomlConnection)c;
+
+        // if player even not in session
+        if (connection.getSessionId() == null) return;
+
+        Session session = main.getSession(connection.getSessionId());
+
+        // handle only if session in game
+        // otherwise this case handled in SessionListener
+        if (session.isStarted()) {
+            info(format("Player %s leaved from running game", connection));
+
+            // send exit message to other game member
+            NetPlayer otherPlayer = session.getOtherPlayer(connection.getPlayerId());
+            if (otherPlayer == null) {
+                error("Player leaved, but his opponent's id is not in same session");
+                return;
+            }
+            disconnectPlayerFromSession(otherPlayer.getConnection());
+
+            // remove this session
+            main.sessionMap.remove(session.getId());
+
+            info(format("Session %s deleted", session.getId()));
+        }
+    }
 
     @Override
     public void connected(Connection connection) {
@@ -106,5 +139,10 @@ public class GameListener extends Listener {
             .sendTCP(secondResponse);
     }
 
-
+    private void disconnectPlayerFromSession(GybomlConnection connection) {
+        connection.sendTCP(new GameResponses.GameExited());
+        connection.setName(null);
+        connection.setPlayerId(null);
+        connection.setSessionId(null);
+    }
 }
