@@ -31,7 +31,13 @@ public class SessionListener extends Listener {
 
         // remove player from session if he was in session
         if (connection.getSessionId() != null) {
-            removeIdFromSession(main.sessionMap.get(connection.getSessionId()), connection.getPlayerId());
+            Session session = main.getSession(connection.getSessionId());
+
+            // if session is not started
+            // otherwise it will be handled by GameListener
+            if (session != null && !session.isStarted())
+                removeIdFromSession(main.getSession(connection.getSessionId()),
+                    connection.getPlayerId());
         }
 
         notifyAllPlayers();
