@@ -24,4 +24,11 @@ public class GameResponses {
         // and now it it opponent's turn
         public boolean yourTurn;
     }
+
+    /**
+     * Game exited message
+     * Send when game finished or one of the players
+     */
+    public static class GameExited {
+    }
 }

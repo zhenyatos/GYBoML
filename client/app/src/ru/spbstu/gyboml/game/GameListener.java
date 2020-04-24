@@ -1,13 +1,18 @@
 package ru.spbstu.gyboml.game;
 
+import android.content.Intent;
+
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
+import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 
 import ru.spbstu.gyboml.GybomlClient;
 import ru.spbstu.gyboml.MainActivity;
+import ru.spbstu.gyboml.core.Player;
 import ru.spbstu.gyboml.core.net.GameResponses;
+import ru.spbstu.gyboml.lobby.Lobby;
 
 public class GameListener extends Listener {
 
@@ -18,6 +23,12 @@ public class GameListener extends Listener {
     @Override
     public void received(Connection connection, Object object) {
         if (object instanceof GameResponses.Shooted) { shoted(connection, (GameResponses.Shooted)object); }
+        if (object instanceof GameResponses.GameExited) { gameExited(connection, (GameResponses.GameExited)object); }
+    }
+
+    private void gameExited(Connection connection, GameResponses.GameExited object) {
+       Intent intent = new Intent(game.mainActivity.getApplicationContext(), Lobby.class);
+       game.mainActivity.startActivity(intent);
     }
 
     private void shoted(Connection connection, GameResponses.Shooted object) {

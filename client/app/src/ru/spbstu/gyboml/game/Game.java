@@ -1,6 +1,8 @@
 package ru.spbstu.gyboml.game;
 
 
+import android.content.Intent;
+
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
@@ -33,6 +35,7 @@ import ru.spbstu.gyboml.GybomlClient;
 import java.util.ArrayList;
 import java.util.List;
 
+import ru.spbstu.gyboml.MainActivity;
 import ru.spbstu.gyboml.core.scene.GameOver;
 import ru.spbstu.gyboml.core.PlayerType;
 import ru.spbstu.gyboml.core.net.GameRequests;
@@ -52,6 +55,9 @@ import ru.spbstu.gyboml.core.Winnable;
  * @since   2020-03-11
  */
 public class Game extends ApplicationAdapter implements InputProcessor, Winnable {
+
+    MainActivity mainActivity;
+
     private static final float buttonWidth  = 200 / 1920.0f;
     private static final float buttonHeight = 100 / 1080.0f;
 
@@ -89,6 +95,8 @@ public class Game extends ApplicationAdapter implements InputProcessor, Winnable
     ShotType shotType = ShotType.BASIC;
 
     ImageButton fireButton;
+
+    public Game( MainActivity mainActivity ) {this.mainActivity = mainActivity;}
 
     /**
      * This is the method that is called on client's creation.
@@ -364,7 +372,6 @@ public class Game extends ApplicationAdapter implements InputProcessor, Winnable
         for (Button button : buttons)
             button.setTouchable(Touchable.disabled);
     }
-
 
     /** Called when key is pressed, fires with P1 cannon
      * @param keycode key code (one of the Input.Keys)
