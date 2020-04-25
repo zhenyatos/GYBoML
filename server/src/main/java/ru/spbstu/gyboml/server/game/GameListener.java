@@ -41,12 +41,10 @@ public class GameListener extends Listener {
                 error("Player leaved, but his opponent's id is not in same session");
                 return;
             }
-            disconnectPlayerFromSession(otherPlayer.getConnection());
+            otherPlayer.getConnection().sendTCP(new GameResponses.GameExited());
 
-            // remove this session
-            main.sessionMap.remove(session.getId());
-
-            info(format("Session %s deleted", session.getId()));
+            // set session started to false
+            session.setGame(null);
         }
     }
 
@@ -69,12 +67,26 @@ public class GameListener extends Listener {
 
             if (object instanceof GameRequests.Shoot) {
                 shoot(connection, (GameRequests.Shoot)object);
+            } else if (object instanceof GameRequests.GameExit) {
+                gameExit(connection);
             }
         } catch (Error | Exception ex) {
             error("Error occured in GameListener", ex);
             main.server.close();
             System.exit(2);
         }
+    }
+
+    private void gameExit(GybomlConnection connection) {
+        Session session = main.getSession(connection.getSessionId());
+
+        // if session not exist or not started yet
+        if (session == null || !session.isStarted()) return;
+
+        session.getFirstPlayer().getConnection().sendTCP(new GameResponses.GameExited());
+        session.getSecondPlayer().getConnection().sendTCP(new GameResponses.GameExited());
+
+        session.setGame(null);
     }
 
     private void shoot(GybomlConnection connection, GameRequests.Shoot object) {
@@ -139,10 +151,4 @@ public class GameListener extends Listener {
             .sendTCP(secondResponse);
     }
 
-    private void disconnectPlayerFromSession(GybomlConnection connection) {
-        connection.sendTCP(new GameResponses.GameExited());
-        connection.setName(null);
-        connection.setPlayerId(null);
-        connection.setSessionId(null);
-    }
 }
