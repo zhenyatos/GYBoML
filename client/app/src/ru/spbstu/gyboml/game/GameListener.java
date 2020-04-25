@@ -2,6 +2,7 @@ package ru.spbstu.gyboml.game;
 
 import android.content.Intent;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.esotericsoftware.kryonet.Client;
@@ -27,8 +28,7 @@ public class GameListener extends Listener {
     }
 
     private void gameExited(Connection connection, GameResponses.GameExited object) {
-       Intent intent = new Intent(game.mainActivity.getApplicationContext(), Lobby.class);
-       game.mainActivity.startActivity(intent);
+        Gdx.app.exit();
     }
 
     private void shoted(Connection connection, GameResponses.Shooted object) {
