@@ -41,10 +41,19 @@ public class GameListener extends Listener {
                 error("Player leaved, but his opponent's id is not in same session");
                 return;
             }
+<<<<<<< HEAD
             otherPlayer.getConnection().sendTCP(new GameResponses.GameExited());
 
             // set session started to false
             session.setGame(null);
+=======
+            disconnectPlayerFromSession(otherPlayer.getConnection());
+
+            // remove this session
+            main.sessionMap.remove(session.getId());
+
+            info(format("Session %s deleted", session.getId()));
+>>>>>>> 31740df23e1df11839b8822a37fcb8e80c21c197
         }
     }
 
@@ -151,4 +160,13 @@ public class GameListener extends Listener {
             .sendTCP(secondResponse);
     }
 
+<<<<<<< HEAD
+=======
+    private void disconnectPlayerFromSession(GybomlConnection connection) {
+        connection.sendTCP(new GameResponses.GameExited());
+        connection.setName(null);
+        connection.setPlayerId(null);
+        connection.setSessionId(null);
+    }
+>>>>>>> 31740df23e1df11839b8822a37fcb8e80c21c197
 }

@@ -42,7 +42,7 @@ public class GybomlClient {
         new Thread("ClientThread") {
             @Override
             public void run() {
-                try { client.connect(5000, Network.serverAddress, Network.tcpPort /*, Network.udpPort*/); }
+                try { client.connect(5000, Network.serverAddress, Network.tcpPort, Network.udpPort); }
                 catch (IOException error) { error.printStackTrace(); client.close(); }
             }
         }.start();

@@ -18,7 +18,7 @@ public class MainActivity extends AndroidApplication {
         String clientJson = getIntent().getStringExtra(Lobby.clientExtraName);
         String playerJson = getIntent().getStringExtra(Lobby.playerExtraName);
 
-        Game game = new Game();
+        Game game = new Game(this);
         AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
         setContentView(initializeForView(game, config));
     }

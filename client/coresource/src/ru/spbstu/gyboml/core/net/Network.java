@@ -55,6 +55,7 @@ public class Network {
         kryo.register(SessionResponses.TakeSessions.class);
         kryo.register(SessionResponses.SessionStarted.class);
         kryo.register(GameResponses.Shooted.class);
+        kryo.register(GameResponses.GameExited.class);
         kryo.register(GameResponses.PassTurned.class);
     }
 }
