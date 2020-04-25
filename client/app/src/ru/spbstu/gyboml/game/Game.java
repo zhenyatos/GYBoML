@@ -147,13 +147,13 @@ public class Game extends ApplicationAdapter implements InputProcessor, Winnable
         Skin UISkin = new Skin(Gdx.files.internal("skin/flat-earth-ui.json"));
 
         // End turn button
-        TextureRegionDrawable endTurnUp   = new TextureRegionDrawable(
+        TextureRegionDrawable leaveUp   = new TextureRegionDrawable(
                 new TextureRegion(
-                        new Texture(Gdx.files.internal("skin/buttons/endturn_up.png"))));
-        TextureRegionDrawable endTurnDown = new TextureRegionDrawable(
+                        new Texture(Gdx.files.internal("skin/buttons/leave_up.png"))));
+        TextureRegionDrawable leaveDown = new TextureRegionDrawable(
                 new TextureRegion(
-                        new Texture(Gdx.files.internal("skin/buttons/endturn_down.png"))));
-        ImageButton exitButton = new ImageButton(endTurnUp, endTurnDown);
+                        new Texture(Gdx.files.internal("skin/buttons/leave_down.png"))));
+        ImageButton exitButton = new ImageButton(leaveUp, leaveDown);
 
         exitButton.addListener(new InputListener() {
             @Override
