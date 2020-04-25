@@ -162,8 +162,9 @@ public class Game extends ApplicationAdapter implements InputProcessor, Winnable
                 {
                     @Override
                     protected void result(Object object) {
-                        if ((boolean)object)
-                            Gdx.app.exit();
+                        if ((boolean)object) {
+                            GybomlClient.sendTCP(new GameRequests.GameExit());
+                        }
                     }
                 };
                 dialog.button("Yes", true);

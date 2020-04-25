@@ -44,7 +44,7 @@ public class Network {
         kryo.register(Ready.class);
         kryo.register(ExitSession.class);
         kryo.register(ExitSession.class);
-        kryo.register(GameRequests.PassTurn.class);
+        kryo.register(GameRequests.GameExit.class);
         kryo.register(GameRequests.Shoot.class);
 
         kryo.register(SessionResponses.ReadyApproved.class);
