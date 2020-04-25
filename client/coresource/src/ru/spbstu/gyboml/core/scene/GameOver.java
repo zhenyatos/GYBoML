@@ -4,7 +4,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 
 
 import ru.spbstu.gyboml.core.Winnable;
-import ru.spbstu.gyboml.core.destructible.DestructionListener;
 
 public class GameOver {
     private final Winnable parent;
@@ -21,27 +20,17 @@ public class GameOver {
         defeatLabel.setVisible(false);
     }
 
-    public DestructionListener victoryListener() {
-        return new DestructionListener() {
-            @Override
-            public void destructionOccured(float newHP) {
-                if (!firedBefore && !(newHP > 0)) {
-                    parent.disableButtons();
-                    victoryLabel.setVisible(true);
-                }
-            }
-        };
+    public void victoryCheck(float newHP) {
+        if (!firedBefore && !(newHP > 0)) {
+            parent.disableButtons();
+            victoryLabel.setVisible(true);
+        }
     }
 
-    public DestructionListener defeatListener() {
-        return new DestructionListener() {
-            @Override
-            public void destructionOccured(float newHP) {
-                if (!firedBefore && !(newHP > 0)) {
-                    parent.disableButtons();
-                    defeatLabel.setVisible(true);
-                }
-            }
-        };
+    public void defeatCheck(float newHP) {
+        if (!firedBefore && !(newHP > 0)) {
+            parent.disableButtons();
+            defeatLabel.setVisible(true);
+        }
     }
 }

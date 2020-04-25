@@ -1,5 +1,6 @@
 package ru.spbstu.gyboml.core.scene;
 
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 
@@ -10,8 +11,8 @@ import java.util.List;
 import java.util.ListIterator;
 
 import ru.spbstu.gyboml.core.PlayerType;
-import ru.spbstu.gyboml.core.destructible.DestructionListener;
 import ru.spbstu.gyboml.core.destructible.Material;
+import ru.spbstu.gyboml.core.event.EventSystem;
 import ru.spbstu.gyboml.core.physical.CollisionHandler;
 import ru.spbstu.gyboml.core.physical.Location;
 import ru.spbstu.gyboml.core.physical.Movable;
@@ -29,9 +30,6 @@ import ru.spbstu.gyboml.core.shot.ShotType;
  */
 public class PhysicalScene {
     private final GraphicalScene graphicalScene;
-
-    // Sound
-    private DestructionListener blockSounds;
 
     private final World world;
 
@@ -265,34 +263,33 @@ public class PhysicalScene {
 
     public void connectWithHPBar(PlayerType type, HPBar bar) {
         if (type == PlayerType.FIRST_PLAYER)
-            physicalCastleP1.getDestructionEmitter().addListener(bar);
+            EventSystem.get().connect(physicalCastleP1, "handleDamage", bar, "update");
         else
-            physicalCastleP2.getDestructionEmitter().addListener(bar);
+            EventSystem.get().connect(physicalCastleP2, "handleDamage", bar, "update");
     }
 
     public void connectWithSoundEffects(SoundEffects soundEffects) {
-        blockSounds = new DestructionListener() {
-            @Override
-            public void destructionOccured(float newHP) {
-                soundEffects.wood.play(1.f);
-            }
-        };
 
         for (PhysicalBlock block : physicalBlocksP1)
-            block.getDestructionEmitter().addListener(blockSounds);
+            EventSystem.get().connect(block, "handleDamage", soundEffects, "playWood");
 
         for (PhysicalBlock block : physicalBlocksP2)
-            block.getDestructionEmitter().addListener(blockSounds);
+            EventSystem.get().connect(block, "handleDamage", soundEffects, "playWood");
+
     }
 
     public void connectWithGameOver(PlayerType type, GameOver gameOver) {
         if (type == PlayerType.FIRST_PLAYER) {
-            physicalCastleP1.getDestructionEmitter().addListener(gameOver.defeatListener());
-            physicalCastleP2.getDestructionEmitter().addListener(gameOver.victoryListener());
+            EventSystem.get().
+                    connect(physicalCastleP2, "handleDamage", gameOver, "victoryCheck");
+            EventSystem.get().
+                    connect(physicalCastleP1, "handleDamage", gameOver, "defeatCheck");
         }
-        else{
-            physicalCastleP1.getDestructionEmitter().addListener(gameOver.victoryListener());
-            physicalCastleP2.getDestructionEmitter().addListener(gameOver.defeatListener());
+        else {
+            EventSystem.get().
+                    connect(physicalCastleP1, "handleDamage", gameOver, "victoryCheck");
+            EventSystem.get().
+                    connect(physicalCastleP2, "handleDamage", gameOver, "defeatCheck");
         }
 
     }

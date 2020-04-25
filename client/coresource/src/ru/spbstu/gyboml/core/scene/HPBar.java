@@ -7,9 +7,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 
-import ru.spbstu.gyboml.core.destructible.DestructionListener;
-
-public class HPBar implements DestructionListener {
+public class HPBar {
     private ProgressBar healthBar;
     private float basicHP;
     public static final float width = 290;
@@ -52,8 +50,7 @@ public class HPBar implements DestructionListener {
         healthBar.setBounds(0,0, width, height);
     }
 
-    @Override
-    public void destructionOccured(float newHP) {
+    public void update(float newHP) {
         healthBar.setValue(newHP / basicHP);
     }
 
