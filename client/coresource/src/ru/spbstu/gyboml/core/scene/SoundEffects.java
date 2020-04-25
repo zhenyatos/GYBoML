@@ -5,7 +5,8 @@ import com.badlogic.gdx.audio.Sound;
 
 public class SoundEffects {
     public final Sound shot;
-    public final Sound wood;
+    private Sound wood;
+
     private static SoundEffects instance = null;
 
     private SoundEffects() {
@@ -18,5 +19,9 @@ public class SoundEffects {
             instance = new SoundEffects();
         }
         return instance;
+    }
+
+    public void playWood() {
+        wood.play(1.f);
     }
 }

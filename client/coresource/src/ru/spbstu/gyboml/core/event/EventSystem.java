@@ -1,4 +1,4 @@
-package ru.spbstu.gyboml.utils;
+package ru.spbstu.gyboml.core.event;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
@@ -87,7 +87,7 @@ public class EventSystem {
         }
     }
 
-    public EventSystem getInstanceEventSystem() {
+    public static EventSystem get() {
         return instanceEventSystem;
     }
 
