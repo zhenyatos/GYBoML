@@ -125,4 +125,12 @@ public class Session {
     }
 
     public boolean isStarted() { return game != null; }
+
+    public NetPlayer getOtherPlayer( long playerId ) {
+        if (firstPlayer.getPlayer().id() == playerId) {
+            return secondPlayer;
+        } else if (secondPlayer.getPlayer().id() == playerId) {
+            return secondPlayer;
+        } else return null;
+    }
 }

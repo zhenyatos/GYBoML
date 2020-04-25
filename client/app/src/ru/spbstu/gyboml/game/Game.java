@@ -1,6 +1,8 @@
 package ru.spbstu.gyboml.game;
 
 
+import android.content.Intent;
+
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
@@ -20,6 +22,7 @@ import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -33,6 +36,7 @@ import ru.spbstu.gyboml.GybomlClient;
 import java.util.ArrayList;
 import java.util.List;
 
+import ru.spbstu.gyboml.MainActivity;
 import ru.spbstu.gyboml.core.scene.GameOver;
 import ru.spbstu.gyboml.core.PlayerType;
 import ru.spbstu.gyboml.core.net.GameRequests;
@@ -52,6 +56,9 @@ import ru.spbstu.gyboml.core.Winnable;
  * @since   2020-03-11
  */
 public class Game extends ApplicationAdapter implements InputProcessor, Winnable {
+
+    MainActivity mainActivity;
+
     private static final float buttonWidth  = 200 / 1920.0f;
     private static final float buttonHeight = 100 / 1080.0f;
 
@@ -89,6 +96,8 @@ public class Game extends ApplicationAdapter implements InputProcessor, Winnable
     ShotType shotType = ShotType.BASIC;
 
     ImageButton fireButton;
+
+    public Game( MainActivity mainActivity ) {this.mainActivity = mainActivity;}
 
     /**
      * This is the method that is called on client's creation.
@@ -138,17 +147,29 @@ public class Game extends ApplicationAdapter implements InputProcessor, Winnable
         Skin UISkin = new Skin(Gdx.files.internal("skin/flat-earth-ui.json"));
 
         // End turn button
-        TextureRegionDrawable endTurnUp   = new TextureRegionDrawable(
+        TextureRegionDrawable leaveUp   = new TextureRegionDrawable(
                 new TextureRegion(
-                        new Texture(Gdx.files.internal("skin/buttons/endturn_up.png"))));
-        TextureRegionDrawable endTurnDown = new TextureRegionDrawable(
+                        new Texture(Gdx.files.internal("skin/buttons/leave_up.png"))));
+        TextureRegionDrawable leaveDown = new TextureRegionDrawable(
                 new TextureRegion(
-                        new Texture(Gdx.files.internal("skin/buttons/endturn_down.png"))));
-        ImageButton endTurnButton = new ImageButton(endTurnUp, endTurnDown);
+                        new Texture(Gdx.files.internal("skin/buttons/leave_down.png"))));
+        ImageButton exitButton = new ImageButton(leaveUp, leaveDown);
 
-        endTurnButton.addListener(new InputListener() {
+        exitButton.addListener(new InputListener() {
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                Dialog dialog = new Dialog("Are you sure you want to exit?", UISkin)
+                {
+                    @Override
+                    protected void result(Object object) {
+                        if ((boolean)object) {
+                            GybomlClient.sendTCP(new GameRequests.GameExit());
+                        }
+                    }
+                };
+                dialog.button("Yes", true);
+                dialog.button("No", false);
+                dialog.show(stageForUI);
             }
 
             @Override
@@ -158,15 +179,9 @@ public class Game extends ApplicationAdapter implements InputProcessor, Winnable
         });
 
         table.bottom().left();
-        //table.row();
-        //table.add(new Actor());
         table.row();
-        table.add(endTurnButton).width(buttonWidth * Gdx.graphics.getWidth()).height(buttonHeight * Gdx.graphics.getHeight()).bottom();
-        //.spaceRight(Gdx.graphics.getWidth() - 2 * buttonWidth);
+        table.add(exitButton).width(buttonWidth * Gdx.graphics.getWidth()).height(buttonHeight * Gdx.graphics.getHeight()).bottom();
 
-        buttons.add(endTurnButton);
-
-        // here add button
         setUpArmoryStorage();
 
         // Fire button
@@ -221,6 +236,7 @@ public class Game extends ApplicationAdapter implements InputProcessor, Winnable
         stageForUI.addActor(bar2.getHealthBar());
 
         physicalScene.connectWithSoundEffects(soundEffects);
+
         //Game over labels
         Label victoryLabel = new Label("Victory!", UISkin, "title");
         victoryLabel.setPosition(Gdx.graphics.getWidth() / 2f - victoryLabel.getWidth() / 2f,
@@ -364,7 +380,6 @@ public class Game extends ApplicationAdapter implements InputProcessor, Winnable
         for (Button button : buttons)
             button.setTouchable(Touchable.disabled);
     }
-
 
     /** Called when key is pressed, fires with P1 cannon
      * @param keycode key code (one of the Input.Keys)

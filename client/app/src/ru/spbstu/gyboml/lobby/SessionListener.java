@@ -116,11 +116,16 @@ public class SessionListener extends Listener {
 
     private void readyApproved(Connection connection, SessionResponses.ReadyApproved object) {
         lobby.runOnUiThread(() -> {
-            GybomlClient.getPlayer().ready = lobby.readyButton.isChecked();
-            if (lobby.readyButton.isChecked())
-                lobby.exitButton.setVisibility(View.GONE);
-            else
+            boolean ready = GybomlClient.getPlayer().ready;
+            if (ready) {
+                GybomlClient.getPlayer().ready = false;
+                lobby.readyButton.setChecked(false);
                 lobby.exitButton.setVisibility(View.VISIBLE);
+            } else {
+                GybomlClient.getPlayer().ready = true;
+                lobby.readyButton.setChecked(true);
+                lobby.exitButton.setVisibility(View.GONE);
+            }
         });
     }
 }

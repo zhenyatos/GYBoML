@@ -31,7 +31,13 @@ public class SessionListener extends Listener {
 
         // remove player from session if he was in session
         if (connection.getSessionId() != null) {
-            removeIdFromSession(main.sessionMap.get(connection.getSessionId()), connection.getPlayerId());
+            Session session = main.getSession(connection.getSessionId());
+
+            // if session is not started
+            // otherwise it will be handled by GameListener
+            if (session != null && !session.isStarted())
+                removeIdFromSession(main.getSession(connection.getSessionId()),
+                    connection.getPlayerId());
         }
 
         notifyAllPlayers();
@@ -83,11 +89,15 @@ public class SessionListener extends Listener {
      * Called when player inputed his.getName when entered lobby menu
      */
     private void registerName(GybomlConnection connection, SessionRequests.RegisterName object) {
-        if (connection.getName() != null) {sendError(connection, "Name was already chosen"); return;}
+        if (connection.getName() != null) {
+            sendError(connection, "Name was already chosen"); return;
+        }
 
         String playerName = object.playerName.trim();
 
-        if (playerName.length() == 0) {sendError(connection, "Invalid player.getName"); return;}
+        if (playerName.length() == 0) {
+            sendError(connection, "Invalid player.getName"); return;
+        }
         connection.setName(playerName);
     }
 
@@ -195,6 +205,13 @@ public class SessionListener extends Listener {
             firstPlayer.getPlayer().ready && secondPlayer.getPlayer().ready) {
             info("Session " + session.getId() + " has two ready players, starting it");
 
+            // setting ready of player to false
+            session.ready(firstPlayer.getPlayer().id, false);
+            session.ready(secondPlayer.getPlayer().id, false);
+            firstPlayer.getConnection().sendTCP(new SessionResponses.ReadyApproved());
+            secondPlayer.getConnection().sendTCP(new SessionResponses.ReadyApproved());
+
+            // send start messages
             SessionResponses.SessionStarted firstSessionStarted = new SessionResponses.SessionStarted();
             firstSessionStarted.player = firstPlayer.getPlayer();
             firstSessionStarted.playerType = PlayerType.FIRST_PLAYER;

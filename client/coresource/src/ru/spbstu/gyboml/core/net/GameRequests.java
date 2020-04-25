@@ -15,9 +15,9 @@ public class GameRequests {
     }
 
     /**
-     * Pass turn request
-     * Called when user pushed 'pass turn' button
+     * Exit game request
+     * Called when one of player exited game via button
      * */
-    public static class PassTurn {
+    public static class GameExit {
     }
 }
