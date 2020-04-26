@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ru.spbstu.gyboml.MainActivity;
+import ru.spbstu.gyboml.core.event.EventSystem;
 import ru.spbstu.gyboml.core.scene.GameOver;
 import ru.spbstu.gyboml.core.PlayerType;
 import ru.spbstu.gyboml.core.net.GameRequests;
@@ -56,7 +57,6 @@ import ru.spbstu.gyboml.core.Winnable;
  * @since   2020-03-11
  */
 public class Game extends ApplicationAdapter implements InputProcessor, Winnable {
-
     MainActivity mainActivity;
 
     private static final float buttonWidth  = 200 / 1920.0f;
@@ -65,7 +65,6 @@ public class Game extends ApplicationAdapter implements InputProcessor, Winnable
     private static final int armoryRowCount = 4;
     private static final int armoryColumnCount = 4;
     private static final float armoryChooseButtonWidthFactor = 2 / 3.0f;
-
 
     PhysicalScene physicalScene;
     GraphicalScene graphicalScene;
@@ -82,20 +81,17 @@ public class Game extends ApplicationAdapter implements InputProcessor, Winnable
     private Table table;
     private final List<Button> buttons = new ArrayList<>();
     //private Label victoryLabel;
-    private World world;
 
     private Skin earthSkin;
-
-
     private Table armoryCells;
     private boolean visibleArmory;
 
     private GameListener gameListener;
+    private ImageButton fireButton;
+    private PlayerType playerTurn = PlayerType.FIRST_PLAYER;
 
     // temp
     ShotType shotType = ShotType.BASIC;
-
-    ImageButton fireButton;
 
     public Game( MainActivity mainActivity ) {this.mainActivity = mainActivity;}
 
@@ -120,6 +116,10 @@ public class Game extends ApplicationAdapter implements InputProcessor, Winnable
         graphicalScene = new GraphicalScene();
         physicalScene = new PhysicalScene(graphicalScene);
         soundEffects = SoundEffects.get();
+
+        this.connectWithGraphicalScene();
+        physicalScene.connectWithSoundEffects(soundEffects);
+        graphicalScene.connectWithSoundEffects(soundEffects);
 
         // UI is setup after main game objects was created
         setUpUI();
@@ -199,7 +199,6 @@ public class Game extends ApplicationAdapter implements InputProcessor, Winnable
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
                 physicalScene.generateShot(GybomlClient.getPlayerType(), shotType);
                 graphicalScene.generateGraphicalShot(physicalScene.getLastShot());
-                soundEffects.shot.play(1.f);
 
                 // send shot to server
                 GameRequests.Shoot shootRequest = new GameRequests.Shoot();
@@ -213,9 +212,7 @@ public class Game extends ApplicationAdapter implements InputProcessor, Winnable
 
                 GybomlClient.sendTCP(shootRequest);
 
-                synchronized (fireButton) {
-                    fireButton.setTouchable(Touchable.disabled);
-                }
+                switchTurn();
             }
         });
         table.add(fireButton).width(buttonWidth * Gdx.graphics.getWidth()).height(buttonHeight * Gdx.graphics.getHeight()).bottom().
@@ -234,8 +231,6 @@ public class Game extends ApplicationAdapter implements InputProcessor, Winnable
         bar2.getHealthBar().setPosition(Gdx.graphics.getWidth() - HPBar.width - 10,
                 Gdx.graphics.getHeight() - 30);
         stageForUI.addActor(bar2.getHealthBar());
-
-        physicalScene.connectWithSoundEffects(soundEffects);
 
         //Game over labels
         Label victoryLabel = new Label("Victory!", UISkin, "title");
@@ -298,6 +293,19 @@ public class Game extends ApplicationAdapter implements InputProcessor, Winnable
         //(buttonHeight + armoryRowCount * buttonHeight * heightFactor) * Gdx.graphics.getHeight());
     }
 
+    // TODO: set timer and wait for objects to sleep
+    synchronized void switchTurn() {
+        if (fireButton.isTouchable())
+            fireButton.setTouchable(Touchable.disabled);
+        else
+            fireButton.setTouchable(Touchable.enabled);
+        playerTurn = playerTurn.reverted();
+        EventSystem.get().emit(this, "switchTurn", playerTurn);
+    }
+
+    private void connectWithGraphicalScene() {
+        EventSystem.get().connect(this, "switchTurn", graphicalScene, "generateAnimatedPlayerTurn");
+    }
 
     /**
      * This is the main method that is called repeatedly in the game loop.

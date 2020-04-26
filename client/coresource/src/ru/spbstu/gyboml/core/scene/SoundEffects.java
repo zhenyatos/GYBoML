@@ -4,10 +4,11 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
 
 public class SoundEffects {
-    public final Sound shot;
+    private Sound shot;
     private Sound wood;
     private Sound p1Turn;
     private Sound p2Turn;
+    private float effectsVolume = 1.0f;
 
     private static SoundEffects instance = null;
 
@@ -25,9 +26,14 @@ public class SoundEffects {
         return instance;
     }
 
-    public void playWood() {
-        wood.play(1.f);
+    public void setEffectsVolume(float effectsVolume) {
+        this.effectsVolume = effectsVolume;
     }
-    public void playP1Turn() { p1Turn.play(); }
-    public void playP2Turn() { p2Turn.play(); }
+
+    public void playShot() { shot.play(effectsVolume);}
+    public void playWood() {
+        wood.play(effectsVolume);
+    }
+    public void playP1Turn() { p1Turn.play(effectsVolume); }
+    public void playP2Turn() { p2Turn.play(effectsVolume); }
 }

@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 
+import ru.spbstu.gyboml.core.event.EventSystem;
 import ru.spbstu.gyboml.core.graphics.Animated;
 import ru.spbstu.gyboml.core.graphics.AnimatedInstance;
 import ru.spbstu.gyboml.core.graphics.Drawable;
@@ -47,8 +48,8 @@ public class GraphicalScene {
     private TextureAtlas backgroundFront;
     private TextureAtlas objects;
     private Animation<TextureRegion> explosionAnimation;
-    private Animation<TextureRegion> coinP1Animation;
-    private Animation<TextureRegion> coinP2Animation;
+    private Animation<TextureRegion> coinP1TurnAnimation;
+    private Animation<TextureRegion> coinP2TurnAnimation;
 
     public GraphicalScene() {
         drawables = new ArrayList<>();
@@ -91,7 +92,7 @@ public class GraphicalScene {
             for (int j = 0; j < COIN_COLS; ++j)
                 frames[ind++] = tempTextureRegions[i][j];
         }
-        coinP1Animation = new Animation<>(0.02f, frames);
+        coinP1TurnAnimation = new Animation<>(0.02f, frames);
 
         // init coin player 2 animation
         sheet = new Texture(Gdx.files.internal("animations/coin_p2_turn.png"));
@@ -103,7 +104,7 @@ public class GraphicalScene {
             for (int j = 0; j < COIN_COLS; ++j)
                 frames[ind++] = tempTextureRegions[i][j];
         }
-        coinP2Animation = new Animation<>(0.02f, frames);
+        coinP2TurnAnimation = new Animation<>(0.02f, frames);
     }
 
     void generateGraphicalBackground(PhysicalBackground physicalBackground) {
@@ -124,7 +125,7 @@ public class GraphicalScene {
                 objects.createSprite("castle" + playerName + "back"),
                 objects.createSprite("castle" + playerName + "front"),
                 objects.createSprite("castle" + playerName + "tower"),
-                SceneConstants.SCALE, 100);
+                SceneConstants.CASTLES_SCALE, 100);
         graphicalCastle.setOrigin(0, 0);
         graphicalCastle.setPosition(physicalCastle.getPosition().x, physicalCastle.getPosition().y);
         drawables.add(graphicalCastle);
@@ -133,14 +134,14 @@ public class GraphicalScene {
     void generateGraphicalTower(PhysicalTower physicalTower) {
         String playerName = (physicalTower.getPlayerType() == PlayerType.FIRST_PLAYER) ? "_p1" : "_p2";
 
-        GraphicalCannon graphicalCannon = new GraphicalCannon(objects.createSprite("cannon" + playerName),SceneConstants.SCALE);
+        GraphicalCannon graphicalCannon = new GraphicalCannon(objects.createSprite("cannon" + playerName), SceneConstants.TOWERS_SCALE);
         graphicalCannon.setOrigin(0, 0);
         graphicalCannon.setPosition(physicalTower.getMovablePartPosition().x, physicalTower.getMovablePartPosition().y);
         graphicalCannon.setRotation(physicalTower.getMovablePartAngle());
         drawables.add(graphicalCannon);
         physicalTower.setUpdatableSprite(graphicalCannon);
 
-        GraphicalTower graphicalTower = new GraphicalTower(objects.createSprite("tower" + playerName), SceneConstants.SCALE);
+        GraphicalTower graphicalTower = new GraphicalTower(objects.createSprite("tower" + playerName), SceneConstants.TOWERS_SCALE);
         graphicalTower.setOrigin(0, 0);
         graphicalTower.setPosition(physicalTower.getPosition().x, physicalTower.getPosition().y);
         drawables.add(graphicalTower);
@@ -155,21 +156,46 @@ public class GraphicalScene {
     }
 
     public void generateGraphicalShot(PhysicalShot physicalShot) {
-        String spriteName = "shot_" + physicalShot.shotType.getName();
-        GraphicalShot graphicalShot = new GraphicalShot(objects.createSprite(spriteName), SceneConstants.SHOTS_SCALE);
+        GraphicalShot graphicalShot = new GraphicalShot(objects.createSprite("shot_" + physicalShot.shotType.getName()), SceneConstants.SHOTS_SCALE);
         graphicalShot.setOrigin(0, 0);
         graphicalShot.setPosition(physicalShot.getPosition().x, physicalShot.getPosition().y);
         drawables.add(graphicalShot);
         physicalShot.setUpdatableSprite(graphicalShot);
         objectsMap.put(physicalShot, graphicalShot);
 
+        generateAnimatedExplosion(physicalShot);
+    }
+
+     private void generateAnimatedExplosion(PhysicalShot physicalShot) {
+        String spriteName = "shot_" + physicalShot.shotType.getName();
         float explosionX = (physicalShot.playerType == PlayerType.FIRST_PLAYER) ?
                 physicalShot.getPosition().x -  SceneConstants.SHOTS_SCALE * objects.findRegion(spriteName).originalWidth / 2f :
-                physicalShot.getPosition().x + (SceneConstants.SHOTS_SCALE * objects.findRegion(spriteName).originalWidth - SceneConstants.EXPLOSION_SCALE * explosionAnimation.getKeyFrames()[0].getRegionWidth()) / 2f;
+                physicalShot.getPosition().x + (SceneConstants.SHOTS_SCALE * objects.findRegion(spriteName).originalWidth -
+                        SceneConstants.EXPLOSION_SCALE * explosionAnimation.getKeyFrames()[0].getRegionWidth()) / 2f;
         float explosionY =
-                physicalShot.getPosition().y - Math.abs(SceneConstants.EXPLOSION_SCALE * explosionAnimation.getKeyFrames()[0].getRegionWidth() - SceneConstants.SHOTS_SCALE * objects.findRegion(spriteName).originalHeight) / 2f;
+                physicalShot.getPosition().y - Math.abs(SceneConstants.EXPLOSION_SCALE * explosionAnimation.getKeyFrames()[0].getRegionWidth() -
+                        SceneConstants.SHOTS_SCALE * objects.findRegion(spriteName).originalHeight) / 2f;
 
         animations.add(new AnimatedInstance(explosionAnimation, new Location(explosionX, explosionY, 0, SceneConstants.EXPLOSION_SCALE)));
+    }
+
+    public void generateAnimatedPlayerTurn(PlayerType playerTurn) {
+        if (playerTurn == PlayerType.FIRST_PLAYER)
+            generateAnimatedCoinP1Turn();
+        else if (playerTurn == PlayerType.SECOND_PLAYER)
+            generateAnimatedCoinP2Turn();
+    }
+
+    private void generateAnimatedCoinP1Turn() {
+        animations.add(new AnimatedInstance(coinP1TurnAnimation, new Location(
+                SceneConstants.coinX, SceneConstants.coinY, 0, SceneConstants.COIN_SCALE)));
+        EventSystem.get().emit(this, "generateAnimatedCoinP1Turn");
+    }
+
+    private void generateAnimatedCoinP2Turn() {
+        animations.add(new AnimatedInstance(coinP2TurnAnimation, new Location(
+                SceneConstants.coinX, SceneConstants.coinY, 0, SceneConstants.COIN_SCALE)));
+        EventSystem.get().emit(this, "generateAnimatedCoinP2Turn");
     }
 
     void generateGraphicalBlock(PhysicalBlock physicalBlock) {
@@ -231,5 +257,10 @@ public class GraphicalScene {
         backgroundBack.dispose();
         backgroundFront.dispose();
         objects.dispose();
+    }
+
+    public void connectWithSoundEffects(SoundEffects soundEffects) {
+        EventSystem.get().connect(this, "generateAnimatedCoinP1Turn", soundEffects, "playP1Turn");
+        EventSystem.get().connect(this, "generateAnimatedCoinP2Turn", soundEffects, "playP2Turn");
     }
 }

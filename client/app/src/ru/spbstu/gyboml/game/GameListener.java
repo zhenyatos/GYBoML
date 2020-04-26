@@ -37,10 +37,8 @@ public class GameListener extends Listener {
             game.physicalScene.getLastShot().getBody().setTransform(object.ballPositionX, object.ballPositionY, 0);
             game.physicalScene.getLastShot().setVelocity(new Vector2(object.ballVelocityX, object.ballVelocityY));
             game.graphicalScene.generateGraphicalShot(game.physicalScene.getLastShot());
-            game.soundEffects.shot.play(1.f);
-            synchronized (game.fireButton) {
-                game.fireButton.setTouchable(Touchable.enabled);
-            }
+            // TODO: see Game's switchTurn() method
+            game.switchTurn();
         }
     }
 }
