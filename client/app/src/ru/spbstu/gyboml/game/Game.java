@@ -197,7 +197,7 @@ public class Game extends ApplicationAdapter implements InputProcessor, Winnable
 
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                physicalScene.generateShot(GybomlClient.getPlayerType(), shotType);
+                physicalScene.generateShot(GybomlClient.getPlayer().type, shotType);
                 graphicalScene.generateGraphicalShot(physicalScene.getLastShot());
 
                 // send shot to server

@@ -23,7 +23,7 @@ public class Network {
     public static final int udpPort = 3335;
 
     // server address
-    public static final String serverAddress = "34.91.65.96";
+    public static final String serverAddress = "34.91.65.96";//"192.168.1.177";
 
     // register request/response type for kryo serialization
     public static void register(EndPoint endPoint) {
@@ -53,7 +53,9 @@ public class Network {
         kryo.register(SessionResponses.SessionConnected.class);
         kryo.register(SessionResponses.ServerError.class);
         kryo.register(SessionResponses.TakeSessions.class);
+        kryo.register(SessionResponses.NameRegistred.class);
         kryo.register(SessionResponses.SessionStarted.class);
+        kryo.register(SessionResponses.UpdatePlayer.class);
         kryo.register(GameResponses.Shooted.class);
         kryo.register(GameResponses.GameExited.class);
         kryo.register(GameResponses.PassTurned.class);

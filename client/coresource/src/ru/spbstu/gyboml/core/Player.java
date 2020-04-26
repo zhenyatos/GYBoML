@@ -11,8 +11,8 @@ public class Player {
     // current number of points
     public int points;
 
-    // player unique id
-    public long id;
+    // player type
+    public PlayerType type;
 
     // session unique id
     public int sessionId;
@@ -28,22 +28,12 @@ public class Player {
 
     /**
      * Class constructor.
-     * @param initialPoints - initial number of points
-     * @param isTurn - initial turn
-     * */
-    public Player(String name, int initialPoints, boolean isTurn) {
-        points = initialPoints;
-        this.isTurn = isTurn;
-        this.name = name;
-    }
-
-    /**
-     * Player to string conversation
-     * @return string in format: player_name#player_id#player_session_id
+     * @param name - name of player
+     * @param type - type of player (first or second)
      */
-    @Override
-    public String toString() {
-        return name + "#" + id + "#" + sessionId;
+    public Player(String name, PlayerType type) {
+        this.name = name;
+        this.type = type;
     }
 
     /**
@@ -63,15 +53,15 @@ public class Player {
     // getters
     public boolean isMyTurn() { return isTurn; }
     public String name() { return this.name; }
-    public long id() { return this.id; }
     public int sessionid() { return this.sessionId; }
     public boolean ready() {
         return this.ready;
     }
+    public PlayerType type() { return this.type; }
 
     // setters
     public void setName(String name) { this.name = name; }
     public void setReady(boolean ready) { this.ready = ready; }
-    public void setId(long id) { this.id = id; }
     public void setSessionId(int id) { this.sessionId = id; }
+    public void setType(PlayerType type) { this.type = type; }
 }

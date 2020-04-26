@@ -1,5 +1,7 @@
 package ru.spbstu.gyboml.core.net;
 
+import ru.spbstu.gyboml.core.Player;
+
 public class GameResponses {
 
     /**
@@ -23,6 +25,9 @@ public class GameResponses {
         // is it still your turn (if you cant pass turn now), or turn successfully passed
         // and now it it opponent's turn
         public boolean yourTurn;
+
+        public PassTurned(){}
+        public PassTurned(boolean yourTurn){ this.yourTurn = yourTurn; }
     }
 
     /**
@@ -31,4 +36,5 @@ public class GameResponses {
      */
     public static class GameExited {
     }
+
 }

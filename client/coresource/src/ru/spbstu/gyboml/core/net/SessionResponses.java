@@ -15,6 +15,8 @@ public class SessionResponses {
      */
     public static class SessionCreated {
         public Integer sessionId;
+        public SessionCreated(){}
+        public SessionCreated(Integer sessionId){ this.sessionId = sessionId  ; }
     }
     
     /*
@@ -26,12 +28,23 @@ public class SessionResponses {
         public String message() { return this.message; }
         public void setMessage(String message) { this.message = message; }
     }
+
+    /**
+     * Name was registered successfully
+     */
+    public static class NameRegistred {
+    }
     
     /*
      * Take lobbies from server response.
      */
     public static class TakeSessions {
         public List<SessionInfo> lobbies;
+
+        public TakeSessions(){}
+        public TakeSessions(List<SessionInfo> lobbies) {
+            this.lobbies = lobbies;
+        }
     }
 
     /*
@@ -40,6 +53,9 @@ public class SessionResponses {
      */
     public static class SessionConnected {
         public Player player;
+
+        public SessionConnected(){}
+        public SessionConnected(Player player){ this.player = player; }
     }
 
     /*
@@ -47,6 +63,10 @@ public class SessionResponses {
      * Send afrer player's Ready request
      */
     public static class ReadyApproved {
+        public boolean isReady;
+
+        public ReadyApproved(){}
+        public ReadyApproved(boolean isReady){ this.isReady = isReady; }
     }
 
     /*
@@ -65,6 +85,19 @@ public class SessionResponses {
         // previous player state is meaningless now and
         // needed only for session operations
         public Player player;
-        public PlayerType playerType;
+
+        public SessionStarted(){}
+        public SessionStarted(Player player){ this.player = player; }
+    }
+
+    /**
+     * Utility message
+     * Send whenever it needed
+     */
+    public static class UpdatePlayer {
+        public Player player;
+
+        public UpdatePlayer(){}
+        public UpdatePlayer(Player player){ this.player = player; }
     }
 }

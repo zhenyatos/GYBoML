@@ -17,7 +17,6 @@ public class GybomlClient {
     // network common for all activities objects
     private static Client client = null;
     private static Player player = null;
-    private static PlayerType playerType = null;
     /**
      * Connect to server static method
      * If connection was already established, it will be reseted
@@ -71,12 +70,6 @@ public class GybomlClient {
     public static void setPlayer(Player player) {
         GybomlClient.player = player;
     }
-
-    public static void setPlayerType(PlayerType type) {
-        GybomlClient.playerType = type;
-    }
-
     public static Player getPlayer() {return player;}
-    public static PlayerType getPlayerType() {return playerType;}
     public static Client getClient() {return client;}
 }
