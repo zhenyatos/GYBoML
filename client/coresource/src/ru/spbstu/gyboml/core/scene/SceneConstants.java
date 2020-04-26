@@ -30,5 +30,6 @@ public class SceneConstants {
     public static final float BLOCKS_SCALE = SCALE * 0.35f;
     public static final float SHOTS_SCALE  = SCALE * 0.22f;
     public static final float EXPLOSION_SCALE = SCALE * 0.85f;
+    public static final float COIN_SCALE = SCALE * 1.8f;
 
 }

@@ -5,13 +5,11 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.World;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.io.InputStream;
 
-import ru.spbstu.gyboml.core.damage.Damage;
 import ru.spbstu.gyboml.core.destructible.Destructible;
 import ru.spbstu.gyboml.core.destructible.Material;
+import ru.spbstu.gyboml.core.graphics.Updatable;
 import ru.spbstu.gyboml.core.util.PhysicsShapeCache;
 
 public class PhysicalBlock extends Destructible implements Physical, Movable, Interactable {

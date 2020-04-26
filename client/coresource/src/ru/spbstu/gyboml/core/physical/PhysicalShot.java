@@ -6,6 +6,7 @@ import com.badlogic.gdx.physics.box2d.Body;
 import ru.spbstu.gyboml.core.PlayerType;
 import ru.spbstu.gyboml.core.damage.Damage;
 import ru.spbstu.gyboml.core.destructible.Destructible;
+import ru.spbstu.gyboml.core.graphics.Updatable;
 import ru.spbstu.gyboml.core.shot.ShotType;
 
 abstract public class PhysicalShot implements Physical, Movable, Interactable {

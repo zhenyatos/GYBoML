@@ -14,7 +14,7 @@ import java.util.ListIterator;
 import java.util.Map;
 
 import ru.spbstu.gyboml.core.graphics.Animated;
-import ru.spbstu.gyboml.core.graphics.AnimatedExplosion;
+import ru.spbstu.gyboml.core.graphics.AnimatedInstance;
 import ru.spbstu.gyboml.core.graphics.Drawable;
 import ru.spbstu.gyboml.core.graphics.GraphicalBackground;
 import ru.spbstu.gyboml.core.graphics.GraphicalShot;
@@ -24,6 +24,7 @@ import ru.spbstu.gyboml.core.graphics.GraphicalCastle;
 import ru.spbstu.gyboml.core.graphics.GraphicalForeground;
 import ru.spbstu.gyboml.core.graphics.GraphicalTower;
 import ru.spbstu.gyboml.core.PlayerType;
+import ru.spbstu.gyboml.core.physical.Location;
 import ru.spbstu.gyboml.core.physical.Physical;
 import ru.spbstu.gyboml.core.physical.PhysicalBackground;
 import ru.spbstu.gyboml.core.physical.PhysicalBlock;
@@ -46,6 +47,8 @@ public class GraphicalScene {
     private TextureAtlas backgroundFront;
     private TextureAtlas objects;
     private Animation<TextureRegion> explosionAnimation;
+    private Animation<TextureRegion> coinP1Animation;
+    private Animation<TextureRegion> coinP2Animation;
 
     public GraphicalScene() {
         drawables = new ArrayList<>();
@@ -57,25 +60,50 @@ public class GraphicalScene {
         backgroundFront = new TextureAtlas("sprites/background_2.txt");
         objects         = new TextureAtlas("sprites/objects.txt");
 
-        initExplosionAnimation();
+        initAnimations();
     }
 
-    void initExplosionAnimation() {
+    void initAnimations() {
         final int EXPLOSION_COLS = 8;
         final int EXPLOSION_ROWS = 8;
-        Texture explosionSheet = new Texture(Gdx.files.internal("sprites/explosion.png"));
+        final int COIN_COLS = 10;
+        final int COIN_ROWS = 10;
+
+        // init explosion animation
+        Texture sheet = new Texture(Gdx.files.internal("animations/explosion.png"));
         TextureRegion[][] tempTextureRegions = TextureRegion.split(
-                explosionSheet,
-                explosionSheet.getWidth() / EXPLOSION_COLS,
-                explosionSheet.getHeight() / EXPLOSION_ROWS);
-        TextureRegion[] explosionFrames = new TextureRegion[EXPLOSION_COLS * EXPLOSION_ROWS];
+                sheet,sheet.getWidth() / EXPLOSION_COLS,sheet.getHeight() / EXPLOSION_ROWS);
+        TextureRegion[] frames = new TextureRegion[EXPLOSION_COLS * EXPLOSION_ROWS];
         int ind = 0;
         for (int i = 0; i < EXPLOSION_ROWS; ++i) {
             for (int j = 0; j < EXPLOSION_COLS; ++j)
-                explosionFrames[ind++] = tempTextureRegions[i][j];
+                frames[ind++] = tempTextureRegions[i][j];
         }
+        explosionAnimation = new Animation<>(0.02f, frames);
 
-        explosionAnimation = new Animation<TextureRegion>(0.02f, explosionFrames);
+        // init coin player1 turn animation
+        sheet = new Texture(Gdx.files.internal("animations/coin_p1_turn.png"));
+        tempTextureRegions = TextureRegion.split(
+                sheet,sheet.getWidth() / COIN_COLS,sheet.getHeight() / COIN_ROWS);
+        frames = new TextureRegion[COIN_COLS * COIN_ROWS];
+        ind = 0;
+        for (int i = 0; i < COIN_ROWS; ++i) {
+            for (int j = 0; j < COIN_COLS; ++j)
+                frames[ind++] = tempTextureRegions[i][j];
+        }
+        coinP1Animation = new Animation<>(0.02f, frames);
+
+        // init coin player 2 animation
+        sheet = new Texture(Gdx.files.internal("animations/coin_p2_turn.png"));
+        tempTextureRegions = TextureRegion.split(
+                sheet,sheet.getWidth() /  COIN_COLS,sheet.getHeight() / COIN_ROWS);
+        frames = new TextureRegion[COIN_COLS * COIN_ROWS];
+        ind = 0;
+        for (int i = 0; i < COIN_ROWS; ++i) {
+            for (int j = 0; j < COIN_COLS; ++j)
+                frames[ind++] = tempTextureRegions[i][j];
+        }
+        coinP2Animation = new Animation<>(0.02f, frames);
     }
 
     void generateGraphicalBackground(PhysicalBackground physicalBackground) {
@@ -141,7 +169,7 @@ public class GraphicalScene {
         float explosionY =
                 physicalShot.getPosition().y - Math.abs(SceneConstants.EXPLOSION_SCALE * explosionAnimation.getKeyFrames()[0].getRegionWidth() - SceneConstants.SHOTS_SCALE * objects.findRegion(spriteName).originalHeight) / 2f;
 
-        animations.add(new AnimatedExplosion(explosionAnimation, explosionX, explosionY, SceneConstants.EXPLOSION_SCALE));
+        animations.add(new AnimatedInstance(explosionAnimation, new Location(explosionX, explosionY, 0, SceneConstants.EXPLOSION_SCALE)));
     }
 
     void generateGraphicalBlock(PhysicalBlock physicalBlock) {
