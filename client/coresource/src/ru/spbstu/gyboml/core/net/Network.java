@@ -1,10 +1,12 @@
 package ru.spbstu.gyboml.core.net;
 
+import com.badlogic.gdx.math.Vector2;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.EndPoint;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
 
 import ru.spbstu.gyboml.core.Player;
 import ru.spbstu.gyboml.core.PlayerType;
@@ -23,7 +25,7 @@ public class Network {
     public static final int udpPort = 3335;
 
     // server address
-    public static final String serverAddress = "34.91.65.96";
+    public static final String serverAddress = "192.168.1.177";//"34.91.65.96";
 
     // register request/response type for kryo serialization
     public static void register(EndPoint endPoint) {
@@ -35,6 +37,7 @@ public class Network {
         kryo.register(PlayerType.class);
         kryo.register(Integer.class);
         kryo.register(Float.class);
+        kryo.register(Vector2.class);
 
         kryo.register(SessionRequests.RegisterName.class);
         kryo.register(SessionRequests.ConnectSession.class);
@@ -53,7 +56,9 @@ public class Network {
         kryo.register(SessionResponses.SessionConnected.class);
         kryo.register(SessionResponses.ServerError.class);
         kryo.register(SessionResponses.TakeSessions.class);
+        kryo.register(SessionResponses.NameRegistred.class);
         kryo.register(SessionResponses.SessionStarted.class);
+        kryo.register(SessionResponses.UpdatePlayer.class);
         kryo.register(GameResponses.Shooted.class);
         kryo.register(GameResponses.GameExited.class);
         kryo.register(GameResponses.PassTurned.class);

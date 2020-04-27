@@ -10,10 +10,7 @@ public enum PlayerType {
     FIRST_PLAYER(0),
 
     // second player id
-    SECOND_PLAYER(1),
-
-    // server side
-    GODFATHER(2);
+    SECOND_PLAYER(1);
 
     PlayerType( int id ) {
         this.id = id;

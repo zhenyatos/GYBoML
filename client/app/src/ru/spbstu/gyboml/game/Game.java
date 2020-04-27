@@ -35,6 +35,7 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import ru.spbstu.gyboml.GybomlClient;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
 
 import ru.spbstu.gyboml.MainActivity;
 import ru.spbstu.gyboml.core.event.EventSystem;
@@ -129,6 +130,8 @@ public class Game extends ApplicationAdapter implements InputProcessor, Winnable
         camera.position.set(camera.viewportWidth / 2, camera.viewportHeight / 2, 0);
         camera.update();
 
+        Timer t = new Timer();
+
         // add game listener
         gameListener = new GameListener(this);
         GybomlClient.getClient().addListener(gameListener);
@@ -197,7 +200,7 @@ public class Game extends ApplicationAdapter implements InputProcessor, Winnable
 
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                physicalScene.generateShot(GybomlClient.getPlayerType(), shotType);
+                physicalScene.generateShot(GybomlClient.getPlayer().type, shotType);
                 graphicalScene.generateGraphicalShot(physicalScene.getLastShot());
 
                 // send shot to server
@@ -205,10 +208,8 @@ public class Game extends ApplicationAdapter implements InputProcessor, Winnable
                 PhysicalShot shot = physicalScene.getLastShot();
                 Vector2 position = shot.getPosition();
                 Vector2 velocity = shot.getVelocity();
-                shootRequest.ballPositionX = position.x;
-                shootRequest.ballPositionY = position.y;
-                shootRequest.ballVelocityX = velocity.x;
-                shootRequest.ballVelocityY = velocity.y;
+                shootRequest.ballPosition = position;
+                shootRequest.ballVelocity = velocity;
 
                 GybomlClient.sendTCP(shootRequest);
 
