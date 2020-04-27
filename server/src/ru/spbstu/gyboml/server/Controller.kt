@@ -6,7 +6,7 @@ import com.esotericsoftware.minlog.Log.info
 import ru.spbstu.gyboml.core.PlayerType
 import ru.spbstu.gyboml.core.net.SessionResponses
 import ru.spbstu.gyboml.server.session.Session
-import ru.spbstu.gyboml.server.session.createSession
+import ru.spbstu.gyboml.server.session.Session.Companion.createSession
 
 class Controller(private val server: Server) {
     private var sessions = mutableMapOf<Int, Session>()

@@ -190,8 +190,6 @@ public class Lobby extends AppCompatActivity {
 
     //Starts up the game, duh
     void gameStartUp() {
-        notInSessionView();
-
         Intent intent = new Intent(getApplicationContext(), MainActivity.class);
         startActivity(intent);
     }

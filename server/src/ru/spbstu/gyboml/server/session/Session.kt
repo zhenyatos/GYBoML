@@ -9,14 +9,16 @@ import ru.spbstu.gyboml.core.net.SessionResponses
 import ru.spbstu.gyboml.server.GybomlConnection
 import ru.spbstu.gyboml.server.game.Game
 
-private var nextAvailableSessionId = 0
-fun createSession(name: String): Session = Session(nextAvailableSessionId++, name)
-
 class Session internal constructor(val id: Int, val name: String) {
 
     var firstPlayer : NetPlayer? = null
     var secondPlayer : NetPlayer? = null
     var game : Game? = null
+
+    companion object {
+        private var nextAvailableSessionId = 0
+        fun createSession(name: String): Session = Session(nextAvailableSessionId++, name)
+    }
 
     fun add(connection: GybomlConnection, player: Player) {
         if (firstPlayer == null) {
@@ -37,7 +39,7 @@ class Session internal constructor(val id: Int, val name: String) {
                 firstPlayer?.player?.type = FIRST_PLAYER
 
                 if (firstPlayer != null)
-                    firstPlayer!!.connection.sendTCP(SessionResponses.UpdatePlayer(firstPlayer!!.player))
+                    firstPlayer!!.connection.sendTCP(SessionResponses.UpdatePlayer(firstPlayer!!.player!!))
             }
             SECOND_PLAYER -> secondPlayer = null
         }
@@ -56,15 +58,6 @@ class Session internal constructor(val id: Int, val name: String) {
         SECOND_PLAYER -> secondPlayer
     }
 
-    fun toSessionInfo(): SessionInfo {
-        val info = SessionInfo()
-        info.name = name
-        info.sessionId = id
-        info.spaces = spaces()
-        info.firstPlayer = firstPlayer?.player
-        info.secondPlayer = secondPlayer?.player
-        info.isStarted = game != null
-
-        return info
-    }
+    fun toSessionInfo(): SessionInfo =
+        SessionInfo(id, spaces(), name, firstPlayer?.player, secondPlayer?.player, isStarted())
 }

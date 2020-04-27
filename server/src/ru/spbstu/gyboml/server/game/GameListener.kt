@@ -38,11 +38,7 @@ class GameListener(private val controller: Controller) : Listener() {
                     from == SECOND_PLAYER && session.game!!.stage != SECOND_PLAYER_ATTACK)
                     return
 
-                val response = GameResponses.Shooted()
-                response.ballPositionX = request.ballPositionX
-                response.ballPositionY = request.ballPositionY
-                response.ballVelocityX = request.ballVelocityX
-                response.ballVelocityY = request.ballVelocityY
+                val response = GameResponses.Shooted(request.ballPosition, request.ballVelocity)
 
                 // send shoot response to other player
                 with (session) {

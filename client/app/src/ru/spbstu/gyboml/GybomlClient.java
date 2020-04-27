@@ -5,6 +5,7 @@ import com.esotericsoftware.kryonet.Listener;
 
 import java.io.IOException;
 
+import lombok.NonNull;
 import ru.spbstu.gyboml.core.Player;
 import ru.spbstu.gyboml.core.PlayerType;
 import ru.spbstu.gyboml.core.net.Network;
@@ -67,7 +68,7 @@ public class GybomlClient {
         }.start();
     }
 
-    public static void setPlayer(Player player) {
+    public static void setPlayer(@NonNull Player player) {
         GybomlClient.player = player;
     }
     public static Player getPlayer() {return player;}

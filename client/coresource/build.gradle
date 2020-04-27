@@ -39,7 +39,11 @@ dependencies {
     api "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-desktop"
     api "com.badlogicgames.gdx:gdx:$gdxVersion"
     api "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
-    compile 'org.jetbrains:annotations:16.0.2'
+    implementation 'org.jetbrains:annotations:19.0.0'
     api "com.esotericsoftware:kryonet:2.22.0-RC1"
     implementation "org.apache.commons:commons-lang3:3.6"
+
+    implementation 'org.projectlombok:lombok:1.18.12'
+    annotationProcessor 'org.projectlombok:lombok:1.18.12'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.12'
 }
