@@ -1,4 +1,4 @@
-package ru.spbstu.gyboml.core.event;
+package event;
 
 import javax.management.ObjectName;
 import java.lang.reflect.InvocationTargetException;
