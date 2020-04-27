@@ -30,7 +30,7 @@
 			<friction>0.2</friction>
 			<restitution>0</restitution>
 			<filter_category_bits>1</filter_category_bits>
-			<filter_mask_bits>65535</filter_mask_bits>
+			<filter_mask_bits>0</filter_mask_bits>
 			<filter_group_index>0</filter_group_index>
 			<circle x="55.500" y="44.500" r="41.077"/>
 		</fixture>
@@ -39,7 +39,7 @@
 			<friction>0.2</friction>
 			<restitution>0</restitution>
 			<filter_category_bits>1</filter_category_bits>
-			<filter_mask_bits>65535</filter_mask_bits>
+			<filter_mask_bits>0</filter_mask_bits>
 			<filter_group_index>0</filter_group_index>
 			<circle x="73.000" y="45.000" r="44.045"/>
 		</fixture>
@@ -48,7 +48,7 @@
 			<friction>0.2</friction>
 			<restitution>0</restitution>
 			<filter_category_bits>1</filter_category_bits>
-			<filter_mask_bits>65535</filter_mask_bits>
+			<filter_mask_bits>0</filter_mask_bits>
 			<filter_group_index>0</filter_group_index>
 			<polygon>83.0000, 88.0000, 3.0000, 53.0000, 3.0000, 36.0000, 160.0000, 24.0000, 200.0000, 23.0000, 162.0000, 64.0000</polygon>
 			<polygon>82.0000, 1.0000, 160.0000, 24.0000, 3.0000, 36.0000</polygon>
@@ -67,7 +67,7 @@
 			<friction>0.2</friction>
 			<restitution>0</restitution>
 			<filter_category_bits>1</filter_category_bits>
-			<filter_mask_bits>65535</filter_mask_bits>
+			<filter_mask_bits>0</filter_mask_bits>
 			<filter_group_index>0</filter_group_index>
 			<polygon>136.0000, 88.0000, 57.0000, 64.0000, 19.0000, 23.0000, 59.0000, 24.0000, 216.0000, 36.0000, 216.0000, 53.0000</polygon>
 			<polygon>137.0000, 1.0000, 216.0000, 36.0000, 59.0000, 24.0000</polygon>
@@ -79,7 +79,7 @@
 			<friction>0.2</friction>
 			<restitution>0</restitution>
 			<filter_category_bits>1</filter_category_bits>
-			<filter_mask_bits>65535</filter_mask_bits>
+			<filter_mask_bits>0</filter_mask_bits>
 			<filter_group_index>0</filter_group_index>
 			<circle x="163.000" y="45.000" r="41.077"/>
 		</fixture>
@@ -88,7 +88,7 @@
 			<friction>0.2</friction>
 			<restitution>0</restitution>
 			<filter_category_bits>1</filter_category_bits>
-			<filter_mask_bits>65535</filter_mask_bits>
+			<filter_mask_bits>0</filter_mask_bits>
 			<filter_group_index>0</filter_group_index>
 			<circle x="145.000" y="44.500" r="44.045"/>
 		</fixture>

@@ -1,4 +1,4 @@
-package ru.spbstu.gyboml.core.physical;
+package ru.spbstu.gyboml.core.graphics;
 
 import com.badlogic.gdx.math.Vector2;
 
