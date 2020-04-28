@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import ru.spbstu.gyboml.MainActivityOffline;
 import ru.spbstu.gyboml.lobby.Lobby;
 import ru.spbstu.gyboml.R;
 
@@ -35,7 +36,9 @@ public class MainMenu extends AppCompatActivity {
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                createDialogueWindow();
+                //createDialogueWindow();
+                Intent intent = new Intent(getApplicationContext(), MainActivityOffline.class);
+                startActivity(intent);
             }
         });
         exitButton.setOnClickListener(new View.OnClickListener() {

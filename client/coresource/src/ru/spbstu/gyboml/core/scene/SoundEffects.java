@@ -3,6 +3,8 @@ package ru.spbstu.gyboml.core.scene;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
 
+import ru.spbstu.gyboml.core.PlayerType;
+
 public class SoundEffects {
     private Sound shot;
     private Sound wood;
@@ -10,20 +12,11 @@ public class SoundEffects {
     private Sound p2Turn;
     private float effectsVolume = 1.0f;
 
-    private static SoundEffects instance = null;
-
-    private SoundEffects() {
+    public SoundEffects() {
         shot = Gdx.audio.newSound(Gdx.files.internal("sound/shot.mp3"));
         wood = Gdx.audio.newSound(Gdx.files.internal("sound/wood.mp3"));
         p1Turn = Gdx.audio.newSound(Gdx.files.internal("sound/coin_p1_turn.wav"));
         p2Turn = Gdx.audio.newSound(Gdx.files.internal("sound/coin_p2_turn.wav"));
-    }
-
-    public static synchronized SoundEffects get() {
-        if (instance == null) {
-            instance = new SoundEffects();
-        }
-        return instance;
     }
 
     public void setEffectsVolume(float effectsVolume) {
@@ -34,6 +27,10 @@ public class SoundEffects {
     public void playWood() {
         wood.play(effectsVolume);
     }
-    public void playP1Turn() { p1Turn.play(effectsVolume); }
-    public void playP2Turn() { p2Turn.play(effectsVolume); }
+    public void playPlayerTurn(PlayerType playerType) {
+        if (playerType == PlayerType.FIRST_PLAYER)
+            p1Turn.play(effectsVolume);
+        else
+            p2Turn.play(effectsVolume);
+    }
 }
