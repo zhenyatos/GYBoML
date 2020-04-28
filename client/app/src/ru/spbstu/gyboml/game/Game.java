@@ -1,8 +1,5 @@
 package ru.spbstu.gyboml.game;
 
-
-import android.content.Intent;
-
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
@@ -11,12 +8,9 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
-import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -32,24 +26,23 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
-import ru.spbstu.gyboml.GybomlClient;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 
-import ru.spbstu.gyboml.MainActivity;
-import ru.spbstu.gyboml.core.event.EventSystem;
-import ru.spbstu.gyboml.core.scene.GameOver;
+import ru.spbstu.gyboml.GybomlClient;
 import ru.spbstu.gyboml.core.PlayerType;
+import ru.spbstu.gyboml.core.Winnable;
+import ru.spbstu.gyboml.core.event.EventSystem;
 import ru.spbstu.gyboml.core.net.GameRequests;
 import ru.spbstu.gyboml.core.physical.PhysicalShot;
+import ru.spbstu.gyboml.core.scene.GameOver;
 import ru.spbstu.gyboml.core.scene.GraphicalScene;
 import ru.spbstu.gyboml.core.scene.HPBar;
 import ru.spbstu.gyboml.core.scene.PhysicalScene;
 import ru.spbstu.gyboml.core.scene.SceneConstants;
 import ru.spbstu.gyboml.core.scene.SoundEffects;
 import ru.spbstu.gyboml.core.shot.ShotType;
-import ru.spbstu.gyboml.core.Winnable;
 
 /**
  * The GameClient class handles rendering, camera movement,
@@ -58,7 +51,7 @@ import ru.spbstu.gyboml.core.Winnable;
  * @since   2020-03-11
  */
 public class Game extends ApplicationAdapter implements InputProcessor, Winnable {
-    MainActivity mainActivity;
+    GameActivity gameActivity;
 
     private static final float buttonWidth  = 200 / 1920.0f;
     private static final float buttonHeight = 100 / 1080.0f;
@@ -94,7 +87,7 @@ public class Game extends ApplicationAdapter implements InputProcessor, Winnable
     // temp
     ShotType shotType = ShotType.BASIC;
 
-    public Game( MainActivity mainActivity ) {this.mainActivity = mainActivity;}
+    public Game(GameActivity gameActivity) {this.gameActivity = gameActivity;}
 
     /**
      * This is the method that is called on client's creation.
@@ -134,7 +127,7 @@ public class Game extends ApplicationAdapter implements InputProcessor, Winnable
 
         // add game listener
         gameListener = new GameListener(this);
-        GybomlClient.getClient().addListener(gameListener);
+        GybomlClient.INSTANCE.getClient().addListener(gameListener);
     }
 
     /** This function sets up the UI. The name speaks for itself, really.
@@ -166,7 +159,7 @@ public class Game extends ApplicationAdapter implements InputProcessor, Winnable
                     @Override
                     protected void result(Object object) {
                         if ((boolean)object) {
-                            GybomlClient.sendTCP(new GameRequests.GameExit());
+                            GybomlClient.INSTANCE.sendTCP(new GameRequests.GameExit());
                         }
                     }
                 };
@@ -200,18 +193,14 @@ public class Game extends ApplicationAdapter implements InputProcessor, Winnable
 
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                physicalScene.generateShot(GybomlClient.getPlayer().type, shotType);
+                physicalScene.generateShot(GybomlClient.INSTANCE.getPlayer().getType(), shotType);
                 graphicalScene.generateGraphicalShot(physicalScene.getLastShot());
 
                 // send shot to server
-                GameRequests.Shoot shootRequest = new GameRequests.Shoot();
                 PhysicalShot shot = physicalScene.getLastShot();
                 Vector2 position = shot.getPosition();
                 Vector2 velocity = shot.getVelocity();
-                shootRequest.ballPosition = position;
-                shootRequest.ballVelocity = velocity;
-
-                GybomlClient.sendTCP(shootRequest);
+                GybomlClient.INSTANCE.sendTCP(new GameRequests.Shoot(shot.getPosition(), shot.getVelocity()));
 
                 switchTurn();
             }
@@ -339,7 +328,7 @@ public class Game extends ApplicationAdapter implements InputProcessor, Winnable
         batch.dispose();
         graphicalScene.dispose();
         stageForUI.dispose();
-        GybomlClient.getClient().removeListener(gameListener);
+        GybomlClient.INSTANCE.getClient().removeListener(gameListener);
     }
 
     /** Called when a finger or the mouse was dragged.

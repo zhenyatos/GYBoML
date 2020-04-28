@@ -1,4 +1,7 @@
 apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
+
 android {
     compileSdkVersion 29
     buildToolsVersion "29.0.3"
@@ -7,6 +10,11 @@ android {
         sourceCompatibility 1.8
         targetCompatibility 1.8
     }
+
+    viewBinding {
+        enabled = true
+    }
+
     sourceSets {
         main {
             manifest.srcFile 'src/AndroidManifest.xml'
@@ -96,8 +104,9 @@ task run(type: Exec) {
     }
 
     def adb = path + "/platform-tools/adb"
-    commandLine "$adb", 'shell', 'am', 'start', '-n', 'ru.spbstu.gyboml/ru.spbstu.gyboml.MainActivity'
+    commandLine "$adb", 'shell', 'am', 'start', '-n', 'ru.spbstu.gyboml/ru.spbstu.gyboml.game.MainActivity'
 }
+
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
@@ -110,7 +119,16 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.8.6'
     implementation "org.apache.commons:commons-lang3:3.6"
 
-    implementation 'org.projectlombok:lombok:1.18.12'
-    annotationProcessor 'org.projectlombok:lombok:1.18.12'
-    testAnnotationProcessor 'org.projectlombok:lombok:1.18.12'
+    implementation "androidx.core:core-ktx:+"
+    implementation 'com.victor:lib:1.0.4'
+    kapt "com.android.databinding:compiler:3.2.0-alpha10"
+    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.0.0'
+    implementation 'com.google.android.material:material:1.2.0-alpha06'
+}
+
+kapt {
+    generateStubs = true
+}
+repositories {
+    mavenCentral()
 }

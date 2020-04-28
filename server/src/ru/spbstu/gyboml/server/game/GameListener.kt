@@ -14,58 +14,61 @@ class GameListener(private val controller: Controller) : Listener() {
     override fun disconnected(connection: Connection?) {
         connection as GybomlConnection
 
-        if (!connection.inSession || connection.player == null) return // even not in session
-        val session = controller.getSession(connection.player!!.sessionId) ?: return
-        if (!session.isStarted()) return // this case will be handled by SessionListener
+        connection.player?.let { player ->
+            player.sessionId?.let { sessionId ->
+                val session = controller.getSession(sessionId) ?: return
+                if (!session.isStarted()) return
 
-        session.getPlayer(connection.player!!.type.reverted())
-                ?.connection
-                ?.sendTCP(GameResponses.GameExited())
-        session.game = null
+                session.getPlayer(player.type.reverted())
+                    ?.connection
+                    ?.sendTCP(GameResponses.GameExited())
+                session.game = null
+            }
+        }
     }
 
     override fun received(connection: Connection?, request: Any?) {
         connection as GybomlConnection
 
         when (request) {
-            is GameRequests.Shoot -> { // !! Possible NPE
-                if (connection.player == null || !connection.inSession) return
-                val session = controller.getSession(connection.player!!.sessionId) ?: return
-                if (session.game == null) return
+            is GameRequests.Shoot -> shot(connection, request)
+            is GameRequests.GameExit -> gameExit(connection)
+        }
+    }
 
-                val from = connection.player!!.type
-                if (from == FIRST_PLAYER && session.game!!.stage != FIRST_PLAYER_ATTACK ||
-                    from == SECOND_PLAYER && session.game!!.stage != SECOND_PLAYER_ATTACK)
-                    return
-
-                val response = GameResponses.Shooted(request.ballPosition, request.ballVelocity)
-
-                // send shoot response to other player
-                with (session) {
-                    getPlayer(from.reverted())
-                        ?.connection
-                        ?.sendTCP(response)
-
-                    // send pass turn response to both players
-                    val fromFirst = from == FIRST_PLAYER
-                    firstPlayer?.connection?.sendTCP(GameResponses.PassTurned(!fromFirst))
-                    secondPlayer?.connection?.sendTCP(GameResponses.PassTurned(fromFirst))
-
-                    // revert game stage
-                    game!!.stage = game!!.stage.reverted()
-                }
-            }
-
-            is GameRequests.GameExit -> {
-                if (connection.player == null || !connection.inSession) return
-                val session = controller.getSession(connection.player!!.sessionId) ?: return
+    private fun shot(connection: GybomlConnection, request: GameRequests.Shoot) {
+        connection.player?.let { player ->
+            player.sessionId?.let { sessionId ->
+                val session = controller.getSession(sessionId) ?: return
                 if (!session.isStarted()) return
 
-                arrayOf(session.firstPlayer, session.secondPlayer).forEach {
-                    it?.connection?.sendTCP(GameResponses.GameExited())
-                }
+                if (player.type == FIRST_PLAYER && session.game!!.stage != FIRST_PLAYER_ATTACK ||
+                    player.type == SECOND_PLAYER && session.game!!.stage != SECOND_PLAYER_ATTACK)
+                    return
 
-                session.game = null
+                session.getPlayer(player.type.reverted())
+                    ?.connection
+                    ?.sendTCP(GameResponses.Shooted(request.ballPosition, request.ballVelocity))
+
+                // send pass turn response to both players
+                val fromFirst = player.type == FIRST_PLAYER
+                session.firstPlayer?.connection?.sendTCP(GameResponses.PassTurned(!fromFirst))
+                session.secondPlayer?.connection?.sendTCP(GameResponses.PassTurned(fromFirst))
+
+                // revert game stage
+                session.game?.let { it.stage = it.stage.reverted() }
+            }
+        }
+    }
+    private fun gameExit(connection: GybomlConnection) {
+        connection.player?.let { player ->
+            player.sessionId?.let {  sessionId ->
+                val session = controller.getSession(sessionId) ?: return
+                if (!session.isStarted()) return
+
+                arrayOf(session.firstPlayer, session.secondPlayer).forEach { player ->
+                    player?.connection?.sendTCP(GameResponses.GameExited())
+                }
             }
         }
     }

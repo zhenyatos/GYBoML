@@ -45,7 +45,7 @@
 
     <Button
         android:id="@+id/exitButton"
-        style="@style/Widget.MaterialComponents.Button"
+        style="@android:style/Widget.Material.Button"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginTop="0dp"
@@ -53,41 +53,26 @@
         android:text="Exit"
         android:textColor="@android:color/black"
         android:textSize="24sp"
-        app:layout_constraintLeft_toLeftOf="@+id/buttonsLeftGuideline"
+        app:layout_constraintBottom_toBottomOf="@+id/exitBottomGuideline"
         app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintLeft_toLeftOf="@+id/buttonsLeftGuideline"
         app:layout_constraintRight_toRightOf="@+id/buttonsRightGuideline"
-        app:layout_constraintTop_toTopOf="@+id/exitTopGuideline"
-        app:layout_constraintBottom_toBottomOf="@+id/exitBottomGuideline"/>
+        app:layout_constraintTop_toTopOf="@+id/exitTopGuideline" />
 
     <Button
-        android:id="@+id/aboutButton"
+        android:id="@+id/multiplayerButton"
         style="@android:style/Widget.Material.Button"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginTop="0dp"
         android:gravity="center"
-        android:text="About"
+        android:text="Multiplayer"
         android:textSize="24sp"
-        app:layout_constraintLeft_toLeftOf="@+id/buttonsLeftGuideline"
+        app:layout_constraintBottom_toBottomOf="@+id/startBottomGuideline"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintRight_toRightOf="@+id/buttonsRightGuideline"
-        app:layout_constraintTop_toTopOf="@+id/aboutTopGuideline"
-        app:layout_constraintBottom_toBottomOf="@+id/aboutBottomGuideline"/>
-
-    <Button
-        android:id="@+id/startButton"
-        style="@android:style/Widget.Material.Button"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginTop="0dp"
-        android:gravity="center"
-        android:text="Start"
-        android:textSize="24sp"
         app:layout_constraintLeft_toLeftOf="@+id/buttonsLeftGuideline"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintRight_toRightOf="@+id/buttonsRightGuideline"
         app:layout_constraintTop_toTopOf="@+id/startTopGuideline"
-        app:layout_constraintBottom_toBottomOf="@+id/startBottomGuideline"/>
+        app:layout_constraintVertical_bias="0.0" />
 
     <TextView
         android:id="@+id/gameTitle"
@@ -99,10 +84,10 @@
         android:text="Get Your Bombs Off My Lawn!"
         android:textColor="@android:color/black"
         android:textSize="18sp"
-        app:layout_constraintRight_toRightOf="@+id/titleRightGuideline"
+        app:layout_constraintBottom_toBottomOf="@+id/titleLowerGuideline"
         app:layout_constraintLeft_toLeftOf="@+id/titleLeftGuideline"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="@+id/titleLowerGuideline"/>
+        app:layout_constraintRight_toRightOf="@+id/titleRightGuideline"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/titleLowerGuideline"
@@ -151,6 +136,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.755" />
+
+    <com.victor.loading.rotate.RotateLoading
+        android:id="@+id/rotateloading"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_gravity="center"
         app:layout_constraintGuide_percent="0.755" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
