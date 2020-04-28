@@ -50,6 +50,7 @@ public class GraphicalScene {
     private Animation<TextureRegion> explosionAnimation;
     private Animation<TextureRegion> coinP1TurnAnimation;
     private Animation<TextureRegion> coinP2TurnAnimation;
+    private Animation<TextureRegion> impactAnimation;
 
     public GraphicalScene() {
         drawables = new ArrayList<>();
@@ -69,6 +70,8 @@ public class GraphicalScene {
         final int EXPLOSION_ROWS = 8;
         final int COIN_COLS = 10;
         final int COIN_ROWS = 10;
+        final int IMPACT_COLS = 6;
+        final int IMPACT_ROWS = 3;
 
         // init explosion animation
         Texture sheet = new Texture(Gdx.files.internal("animations/explosion.png"));
@@ -105,6 +108,18 @@ public class GraphicalScene {
                 frames[ind++] = tempTextureRegions[i][j];
         }
         coinP2TurnAnimation = new Animation<>(0.02f, frames);
+
+        // init impact animation
+        sheet = new Texture(Gdx.files.internal("animations/impact.png"));
+        tempTextureRegions = TextureRegion.split(
+                sheet,sheet.getWidth() /  IMPACT_COLS,sheet.getHeight() / IMPACT_ROWS);
+        frames = new TextureRegion[IMPACT_COLS * IMPACT_ROWS];
+        ind = 0;
+        for (int i = 0; i < IMPACT_ROWS; ++i) {
+            for (int j = 0; j < IMPACT_COLS; ++j)
+                frames[ind++] = tempTextureRegions[i][j];
+        }
+        impactAnimation = new Animation<>(0.02f, frames);
     }
 
     void generateGraphicalBackground(PhysicalBackground physicalBackground) {
@@ -180,15 +195,15 @@ public class GraphicalScene {
 
      private void generateAnimatedExplosion(PhysicalShot physicalShot) {
         String spriteName = "shot_" + physicalShot.shotType.getName();
-        float explosionX = (physicalShot.playerType == PlayerType.FIRST_PLAYER) ?
+        // TODO: take into account body's origin
+        float x = (physicalShot.playerType == PlayerType.FIRST_PLAYER) ?
                 physicalShot.getPosition().x - SceneConstants.EXPLOSION_SCALE * explosionAnimation.getKeyFrames()[0].getRegionWidth() / 6f:
                 physicalShot.getPosition().x + SceneConstants.SHOTS_SCALE * objects.findRegion(spriteName).originalWidth -
                         SceneConstants.EXPLOSION_SCALE * explosionAnimation.getKeyFrames()[0].getRegionWidth() * (5f / 6f);
-        float explosionY =
-                physicalShot.getPosition().y - Math.abs(SceneConstants.EXPLOSION_SCALE * explosionAnimation.getKeyFrames()[0].getRegionWidth() -
-                        SceneConstants.SHOTS_SCALE * objects.findRegion(spriteName).originalHeight) / 2f;
+        float y = physicalShot.getPosition().y - (SceneConstants.EXPLOSION_SCALE * explosionAnimation.getKeyFrames()[0].getRegionHeight() -
+                SceneConstants.SHOTS_SCALE * objects.findRegion(spriteName).originalHeight) / 2f;
 
-        animations.add(new AnimatedInstance(explosionAnimation, new Location(explosionX, explosionY, 0, SceneConstants.EXPLOSION_SCALE)));
+        animations.add(new AnimatedInstance(explosionAnimation, new Location(x, y, 0, SceneConstants.EXPLOSION_SCALE)));
     }
 
     public void generateAnimatedPlayerTurn(PlayerType playerTurn) {
@@ -199,6 +214,16 @@ public class GraphicalScene {
             animations.add(new AnimatedInstance(coinP2TurnAnimation, new Location(
                     SceneConstants.coinX, SceneConstants.coinY, 0, SceneConstants.COIN_SCALE)));
         EventSystem.get().emit(this, "generateAnimatedPlayerTurn", playerTurn);
+    }
+
+    public void generateAnimatedImpact(PhysicalShot shot) {
+        String spriteName = "shot_" + shot.shotType.getName();
+        // TODO: take into account body's origin
+        float x = shot.getPosition().x - (SceneConstants.IMPACT_SCALE * impactAnimation.getKeyFrames()[0].getRegionWidth() -
+                SceneConstants.SHOTS_SCALE * objects.findRegion(spriteName).originalWidth) / 2f;
+        float y = shot.getPosition().y - (SceneConstants.IMPACT_SCALE * impactAnimation.getKeyFrames()[0].getRegionHeight() -
+                SceneConstants.SHOTS_SCALE * objects.findRegion(spriteName).originalHeight) / 2f;
+        animations.add(new AnimatedInstance(impactAnimation, new Location(x, y, 0, SceneConstants.IMPACT_SCALE)));
     }
 
     /**

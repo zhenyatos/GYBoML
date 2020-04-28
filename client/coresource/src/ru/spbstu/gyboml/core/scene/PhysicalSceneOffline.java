@@ -7,7 +7,6 @@ import com.badlogic.gdx.physics.box2d.World;
 
 import org.apache.commons.lang3.time.StopWatch;
 
-import java.awt.Event;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,12 +15,10 @@ import java.util.ListIterator;
 import ru.spbstu.gyboml.core.PlayerType;
 import ru.spbstu.gyboml.core.damage.Damage;
 import ru.spbstu.gyboml.core.destructible.Material;
-import ru.spbstu.gyboml.core.event.EventSystem;
 import ru.spbstu.gyboml.core.event.Events;
 import ru.spbstu.gyboml.core.physical.CollisionHandler;
 import ru.spbstu.gyboml.core.physical.Location;
 import ru.spbstu.gyboml.core.physical.Movable;
-import ru.spbstu.gyboml.core.physical.Physical;
 import ru.spbstu.gyboml.core.physical.PhysicalBackground;
 import ru.spbstu.gyboml.core.physical.PhysicalBasicShot;
 import ru.spbstu.gyboml.core.physical.PhysicalBlock;
@@ -66,7 +63,7 @@ public class PhysicalSceneOffline {
         this.soundEffects = soundEffects;
 
         world = new World(new Vector2(gravityAccelerationX, gravityAccelerationY), true);
-        world.setContactListener(new CollisionHandler());
+        world.setContactListener(new CollisionHandler(graphicalScene, soundEffects));
 
         movables = new ArrayList<>();
         physicalBlocksP1 = new ArrayList<>();
@@ -93,7 +90,7 @@ public class PhysicalSceneOffline {
         generatePhysicalCastle(new Location(castleP2X, castleP2Y, 0, SceneConstants.CASTLES_SCALE), PlayerType.SECOND_PLAYER);
         generatePhysicalTower(new Location(towerP1X, towerP1Y, 0, SceneConstants.TOWERS_SCALE), PlayerType.FIRST_PLAYER);
         generatePhysicalTower(new Location(towerP2X, towerP2Y, 0, SceneConstants.TOWERS_SCALE), PlayerType.SECOND_PLAYER);
-        //generateDefaultBlocks(castleP1X, castleP1Y, castleP2X, castleP2Y, Material.WOOD);
+        generateDefaultBlocks(castleP1X, castleP1Y, castleP2X, castleP2Y, Material.WOOD);
     }
 
     private void generatePhysicalBackground(Location location) {
@@ -101,19 +98,16 @@ public class PhysicalSceneOffline {
             physicalBackground = new PhysicalBackground(location, world);
         graphicalScene.generateGraphicalBackground(physicalBackground);
         graphicalScene.generateGraphicalForeground(physicalBackground);
-        //EventSystem.get().emit(this, "generatePhysicalBackground", physicalBackground);
     }
 
     private void generatePhysicalCastle(Location location, PlayerType playerType) {
         if (playerType == PlayerType.FIRST_PLAYER && physicalCastleP1 == null) {
             physicalCastleP1 = new PhysicalCastle(100, location, playerType, world);
             graphicalScene.generateGraphicalCastle(physicalCastleP1);
-            //EventSystem.get().emit(this, "generatePhysicalCastle", physicalCastleP1);
         }
         else if (playerType == PlayerType.SECOND_PLAYER && physicalCastleP2 == null) {
             physicalCastleP2 = new PhysicalCastle(100, location, playerType, world);
             graphicalScene.generateGraphicalCastle(physicalCastleP2);
-            //EventSystem.get().emit(this, "generatePhysicalCastle", physicalCastleP2);
         }
     }
 
@@ -122,13 +116,11 @@ public class PhysicalSceneOffline {
             physicalTowerP1 = new PhysicalTower(location, playerType, world);
             movables.add(physicalTowerP1);
             graphicalScene.generateGraphicalTower(physicalTowerP1);
-            //EventSystem.get().emit(this, "generatePhysicalTower", physicalTowerP1);
         }
         else if (playerType == PlayerType.SECOND_PLAYER && physicalTowerP2 == null) {
             physicalTowerP2 = new PhysicalTower(location, playerType, world);
             movables.add(physicalTowerP2);
             graphicalScene.generateGraphicalTower(physicalTowerP2);
-            //EventSystem.get().emit(this, "generatePhysicalTower", physicalTowerP1);
         }
     }
 
@@ -172,7 +164,6 @@ public class PhysicalSceneOffline {
         movables.addAll(physicalBlocksP2);
 
         graphicalScene.bindBlocksGraphics(physicalBlocksP1, physicalBlocksP2);
-        //EventSystem.get().emit(this, "generateDefaultBlocks", physicalBlocksP1, physicalBlocksP2);
     }
 
     public void generateShot(PlayerType playerTurn, ShotType shotType) {
@@ -261,8 +252,7 @@ public class PhysicalSceneOffline {
                 world.destroyBody(block.getBody());
                 movables.remove(block);
                 graphicalScene.removeObject(block);
-                soundEffects.playWoodBroken();
-                //EventSystem.get().emit(this, "removeDeadBodies", block);
+                soundEffects.playBroken(block.material);
                 physicalBlocksP1Iterator.remove();
             }
         }
@@ -274,8 +264,7 @@ public class PhysicalSceneOffline {
                 world.destroyBody(block.getBody());
                 movables.remove(block);
                 graphicalScene.removeObject(block);
-                soundEffects.playWoodBroken();
-                //EventSystem.get().emit(this, "removeDeadBodies", block);
+                soundEffects.playBroken(block.material);
                 physicalBlocksP2Iterator.remove();
             }
         }
@@ -283,14 +272,13 @@ public class PhysicalSceneOffline {
         ListIterator<PhysicalShot> physicalShotsIterator = physicalShots.listIterator();
         while (physicalShotsIterator.hasNext()) {
             PhysicalShot shot = physicalShotsIterator.next();
-            if (shot.getVelocity().isZero(0.1f) ||
+            if (shot.getVelocity().isZero(0.5f) ||
                     shot.getPosition().x < 0.0f ||
                     shot.getPosition().x > SceneConstants.worldWidth ||
                     shot.getPosition().y < 0.0f) {
                 world.destroyBody(shot.getBody());
                 movables.remove(shot);
                 graphicalScene.removeObject(shot);
-                //EventSystem.get().emit(this, "removeDeadBodies", shot);
                 physicalShotsIterator.remove();
             }
         }
@@ -311,15 +299,6 @@ public class PhysicalSceneOffline {
             physicalTowerP1.setCannonAwake(false);
             physicalTowerP2.setCannonAwake(true);
         }
-    }
-
-    public void connectWithGraphicalScene(GraphicalScene graphicalScene) {
-        //EventSystem.get().connect(this, "removeDeadBodies", graphicalScene, "removeObject");
-        //EventSystem.get().connect(this, "generatePhysicalBackground", graphicalScene, "generateGraphicalBackground");
-        //EventSystem.get().connect(this, "generatePhysicalCastle", graphicalScene, "generateGraphicalCastle");
-        //EventSystem.get().connect(this, "generatePhysicalTower", graphicalScene, "generateGraphicalTower");
-        //EventSystem.get().connect(this, "generateShot", graphicalScene, "generateGraphicalShot");
-        //EventSystem.get().connect(this, "generateDefaultBlocks", graphicalScene, "bindBlocksGraphics");
     }
 
     public void connectWithSoundEffects(SoundEffects soundEffects) {

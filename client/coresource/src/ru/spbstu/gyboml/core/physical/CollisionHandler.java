@@ -8,8 +8,19 @@ import com.badlogic.gdx.physics.box2d.Manifold;
 
 import ru.spbstu.gyboml.core.damage.Damage;
 import ru.spbstu.gyboml.core.destructible.Destructible;
+import ru.spbstu.gyboml.core.scene.GraphicalScene;
+import ru.spbstu.gyboml.core.scene.SoundEffects;
 
 public class CollisionHandler implements ContactListener {
+    private final GraphicalScene graphicalScene;
+    private final SoundEffects soundEffects;
+    private final float marginSpeed = 128.0f;   // x^2 + y^2
+
+    public CollisionHandler(GraphicalScene graphicalScene, SoundEffects soundEffects) {
+        this.graphicalScene = graphicalScene;
+        this.soundEffects = soundEffects;
+    }
+
     @Override
     public void beginContact(Contact contact) {
         Body bodyA = contact.getFixtureA().getBody();
@@ -26,15 +37,39 @@ public class CollisionHandler implements ContactListener {
 
         // Shot - Block
         if (typeA == Type.BLOCK && typeB == Type.SHOT) {
-            Destructible block = (Destructible) objA;
+            //Destructible block = (Destructible) objA;
+            PhysicalBlock block = (PhysicalBlock) objA;
             PhysicalShot shot = (PhysicalShot) objB;
             block.handleDamage(shot.generateDamage(block));
+            if (!shot.getVelocity().isZero(marginSpeed)) {
+                if (graphicalScene != null) {
+                    graphicalScene.generateAnimatedImpact(shot);
+                }
+                if (soundEffects != null) {
+                    if (block.getHP() > 0)
+                        soundEffects.playImpact(block.material);
+                    else
+                        soundEffects.playBroken(block.material);
+                }
+            }
             return;
         }
         if (typeA == Type.SHOT && typeB == Type.BLOCK) {
             PhysicalShot shot = (PhysicalShot) objA;
-            Destructible block = (Destructible) objB;
+            PhysicalBlock block = (PhysicalBlock) objB;
+            //Destructible block = (Destructible) objB;
             block.handleDamage(shot.generateDamage(block));
+            if (!shot.getVelocity().isZero(marginSpeed)) {
+                if (graphicalScene != null) {
+                    graphicalScene.generateAnimatedImpact(shot);
+                }
+                if (soundEffects != null) {
+                    if (block.getHP() > 0f)
+                        soundEffects.playImpact(block.material);
+                    else
+                        soundEffects.playBroken(block.material);
+                }
+            }
             return;
         }
 
@@ -50,7 +85,18 @@ public class CollisionHandler implements ContactListener {
                 castle.handleDamage(damage);
                 castle.handleDamage(damage);
             }
-            System.out.println(castle.getHP());
+            if (!shot.getVelocity().isZero(marginSpeed)) {
+                if (graphicalScene != null) {
+                    graphicalScene.generateAnimatedImpact(shot);
+                }
+                if (soundEffects != null) {
+                    if (castle.getHP() > 0f)
+                        soundEffects.playImpact(castle.material);
+                    else
+                        soundEffects.playBroken(castle.material);
+                }
+            }
+            //System.out.println(castle.getHP());
             return;
         }
         if (typeA == Type.CASTLE && typeB == Type.SHOT) {
@@ -63,6 +109,17 @@ public class CollisionHandler implements ContactListener {
                 // Double the damage
                 castle.handleDamage(damage);
                 castle.handleDamage(damage);
+            }
+            if (!shot.getVelocity().isZero(marginSpeed)) {
+                if (graphicalScene != null) {
+                    graphicalScene.generateAnimatedImpact(shot);
+                }
+                if (soundEffects != null) {
+                    if (castle.getHP() > 0f)
+                        soundEffects.playImpact(castle.material);
+                    else
+                        soundEffects.playBroken(castle.material);
+                }
             }
             return;
         }

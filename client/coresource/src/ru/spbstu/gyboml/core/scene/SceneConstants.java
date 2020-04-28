@@ -34,6 +34,7 @@ public class SceneConstants {
     public static final float SHOTS_SCALE  = SCALE * 0.22f;
     public static final float EXPLOSION_SCALE = SCALE * 1.25f;
     public static final float COIN_SCALE = SCALE * 1.75f;
+    public static final float IMPACT_SCALE = SCALE * 1.35f;
     public static final float coinX = backgroundX + (resolutionWidth  / 2.0f) * SCALE - 100.0f * COIN_SCALE;
     public static final float coinY = backgroundY + (resolutionHeight / 2.0f) * SCALE;
 }

@@ -50,6 +50,8 @@ public class GameOffline extends ApplicationAdapter implements InputProcessor, W
 
     private static final float buttonWidth  = 200 / 1920.0f;
     private static final float buttonHeight = 100 / 1080.0f;
+    //private static final float buttonWidth  = 0.2f * Gdx.graphics.getWidth();
+    //private static final float buttonHeight = 0.1f * Gdx.graphics.getWidth();   // yes, width
 
     private static final int armoryRowCount = 4;
     private static final int armoryColumnCount = 4;
@@ -205,10 +207,11 @@ public class GameOffline extends ApplicationAdapter implements InputProcessor, W
         Label won1stPlayer = new Label("First player won!", UISkin, "title");
         won1stPlayer.setPosition(Gdx.graphics.getWidth() / 2f - won1stPlayer.getWidth() / 2f,
                 Gdx.graphics.getHeight() / 2f - won1stPlayer.getHeight() / 2f);
-        stageForUI.addActor(won1stPlayer);
         Label won2ndPlayer = new Label("Second player won!", UISkin, "title");
         won2ndPlayer.setPosition(Gdx.graphics.getWidth() / 2f - won2ndPlayer.getWidth() / 2f,
                 Gdx.graphics.getHeight() / 2f - won2ndPlayer.getHeight() / 2f);
+        stageForUI.addActor(won1stPlayer);
+        stageForUI.addActor(won2ndPlayer);
         physicalScene.connectWithGameOver(new GameOver(this, won1stPlayer, won2ndPlayer));
     }
 

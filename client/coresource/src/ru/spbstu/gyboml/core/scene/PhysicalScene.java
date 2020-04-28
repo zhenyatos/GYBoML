@@ -59,7 +59,7 @@ public class PhysicalScene {
         this.graphicalScene = graphicalScene;
 
         world = new World(new Vector2(gravityAccelerationX, gravityAccelerationY), true);
-        world.setContactListener(new CollisionHandler());
+        //world.setContactListener(new CollisionHandler());
 
         movables = new ArrayList<>();
         physicalBlocksP1 = new ArrayList<>();
