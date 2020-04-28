@@ -7,16 +7,21 @@ import com.badlogic.gdx.physics.box2d.World;
 
 import org.apache.commons.lang3.time.StopWatch;
 
+import java.awt.Event;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
 
 import ru.spbstu.gyboml.core.PlayerType;
+import ru.spbstu.gyboml.core.damage.Damage;
 import ru.spbstu.gyboml.core.destructible.Material;
 import ru.spbstu.gyboml.core.event.EventSystem;
+import ru.spbstu.gyboml.core.event.Events;
 import ru.spbstu.gyboml.core.physical.CollisionHandler;
 import ru.spbstu.gyboml.core.physical.Location;
 import ru.spbstu.gyboml.core.physical.Movable;
+import ru.spbstu.gyboml.core.physical.Physical;
 import ru.spbstu.gyboml.core.physical.PhysicalBackground;
 import ru.spbstu.gyboml.core.physical.PhysicalBasicShot;
 import ru.spbstu.gyboml.core.physical.PhysicalBlock;
@@ -88,7 +93,7 @@ public class PhysicalSceneOffline {
         generatePhysicalCastle(new Location(castleP2X, castleP2Y, 0, SceneConstants.CASTLES_SCALE), PlayerType.SECOND_PLAYER);
         generatePhysicalTower(new Location(towerP1X, towerP1Y, 0, SceneConstants.TOWERS_SCALE), PlayerType.FIRST_PLAYER);
         generatePhysicalTower(new Location(towerP2X, towerP2Y, 0, SceneConstants.TOWERS_SCALE), PlayerType.SECOND_PLAYER);
-        generateDefaultBlocks(castleP1X, castleP1Y, castleP2X, castleP2Y, Material.WOOD);
+        //generateDefaultBlocks(castleP1X, castleP1Y, castleP2X, castleP2Y, Material.WOOD);
     }
 
     private void generatePhysicalBackground(Location location) {
@@ -318,37 +323,31 @@ public class PhysicalSceneOffline {
     }
 
     public void connectWithSoundEffects(SoundEffects soundEffects) {
-        //EventSystem.get().connect(this, "generateShot", soundEffects, "playShot");
-
         // TODO: remove, because we don't want to connect each time by creation a new one
         for (PhysicalBlock block : physicalBlocksP1)
-            EventSystem.get().connect(block, "handleDamage", soundEffects, "playWood");
+            ;//EventSystem.get().connect(block, "handleDamage", soundEffects, "playWood");
 
         for (PhysicalBlock block : physicalBlocksP2)
-            EventSystem.get().connect(block, "handleDamage", soundEffects, "playWood");
+            ;//EventSystem.get().connect(block, "handleDamage", soundEffects, "playWood");
 
     }
 
     public void connectWithHPBar(PlayerType type, HPBar bar) {
-        if (type == PlayerType.FIRST_PLAYER)
-            EventSystem.get().connect(physicalCastleP1, "handleDamage", bar, "update");
-        else
-            EventSystem.get().connect(physicalCastleP2, "handleDamage", bar, "update");
+            Method handleDamage = Events.get().find(PhysicalCastle.class, "handleDamage", Damage.class);
+            Method update = Events.get().find(HPBar.class, "update", float.class);
+            if (type == PlayerType.FIRST_PLAYER)
+                Events.get().connect(physicalCastleP1, handleDamage, bar, update);
+            else
+                Events.get().connect(physicalCastleP2, handleDamage, bar, update);
     }
 
-    public void connectWithGameOver(PlayerType type, GameOver gameOver) {
-        if (type == PlayerType.FIRST_PLAYER) {
-            EventSystem.get().
-                    connect(physicalCastleP2, "handleDamage", gameOver, "victoryCheck");
-            EventSystem.get().
-                    connect(physicalCastleP1, "handleDamage", gameOver, "defeatCheck");
+    public void connectWithGameOver(GameOver gameOver) {
+        Method handleDamage = Events.get().find(PhysicalCastle.class, "handleDamage", Damage.class);
+        Method victory1st = Events.get().find(GameOver.class, "victory1st", float.class);
+        Method victory2nd = Events.get().find(GameOver.class, "victory2nd", float.class);
+        Events.get().
+                connect(physicalCastleP2, handleDamage, gameOver, victory1st);
+        Events.get().
+                connect(physicalCastleP1, handleDamage, gameOver, victory2nd);
         }
-        else {
-            EventSystem.get().
-                    connect(physicalCastleP1, "handleDamage", gameOver, "victoryCheck");
-            EventSystem.get().
-                    connect(physicalCastleP2, "handleDamage", gameOver, "defeatCheck");
-        }
-
     }
-}

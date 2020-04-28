@@ -17,6 +17,7 @@ import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -29,6 +30,7 @@ import java.util.List;
 
 import ru.spbstu.gyboml.MainActivityOffline;
 import ru.spbstu.gyboml.core.PlayerType;
+import ru.spbstu.gyboml.core.scene.GameOver;
 import ru.spbstu.gyboml.core.scene.GraphicalScene;
 import ru.spbstu.gyboml.core.scene.HPBar;
 import ru.spbstu.gyboml.core.scene.PhysicalSceneOffline;
@@ -200,15 +202,14 @@ public class GameOffline extends ApplicationAdapter implements InputProcessor, W
         stageForUI.addActor(bar2.getHealthBar());
 
         //Game over labels
-//        Label victoryLabel = new Label("Victory!", UISkin, "title");
-//        victoryLabel.setPosition(Gdx.graphics.getWidth() / 2f - victoryLabel.getWidth() / 2f,
-//                Gdx.graphics.getHeight() / 2f - victoryLabel.getHeight() / 2f);
-//        stageForUI.addActor(victoryLabel);
-//        Label defeatLabel = new Label("Defeat!", UISkin, "title");
-//        defeatLabel.setPosition(Gdx.graphics.getWidth() / 2f - defeatLabel.getWidth() / 2f,
-//                Gdx.graphics.getHeight() / 2f - defeatLabel.getHeight() / 2f);
-//        physicalScene.connectWithGameOver(PlayerType.FIRST_PLAYER, new GameOver(this, victoryLabel, defeatLabel));
-//        physicalScene.connectWithGameOver(PlayerType.SECOND_PLAYER, new GameOver(this, victoryLabel, defeatLabel));
+        Label won1stPlayer = new Label("First player won!", UISkin, "title");
+        won1stPlayer.setPosition(Gdx.graphics.getWidth() / 2f - won1stPlayer.getWidth() / 2f,
+                Gdx.graphics.getHeight() / 2f - won1stPlayer.getHeight() / 2f);
+        stageForUI.addActor(won1stPlayer);
+        Label won2ndPlayer = new Label("Second player won!", UISkin, "title");
+        won2ndPlayer.setPosition(Gdx.graphics.getWidth() / 2f - won2ndPlayer.getWidth() / 2f,
+                Gdx.graphics.getHeight() / 2f - won2ndPlayer.getHeight() / 2f);
+        physicalScene.connectWithGameOver(new GameOver(this, won1stPlayer, won2ndPlayer));
     }
 
     private void setUpArmoryStorage() {

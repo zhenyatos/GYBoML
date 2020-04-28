@@ -1,8 +1,6 @@
 package ru.spbstu.gyboml.game;
 
 
-import android.content.Intent;
-
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
@@ -16,7 +14,6 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
-import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -37,7 +34,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ru.spbstu.gyboml.MainActivity;
-import ru.spbstu.gyboml.core.event.EventSystem;
 import ru.spbstu.gyboml.core.scene.GameOver;
 import ru.spbstu.gyboml.core.PlayerType;
 import ru.spbstu.gyboml.core.net.GameRequests;
@@ -300,11 +296,11 @@ public class Game extends ApplicationAdapter implements InputProcessor, Winnable
         else
             fireButton.setTouchable(Touchable.enabled);
         playerTurn = playerTurn.reverted();
-        EventSystem.get().emit(this, "switchTurn", playerTurn);
+        //EventSystem.get().emit(this, "switchTurn", playerTurn);
     }
 
     private void connectWithGraphicalScene() {
-        EventSystem.get().connect(this, "switchTurn", graphicalScene, "generateAnimatedPlayerTurn");
+        /*EventSystem.get().connect(this, "switchTurn", graphicalScene, "generateAnimatedPlayerTurn");*/
     }
 
     /**

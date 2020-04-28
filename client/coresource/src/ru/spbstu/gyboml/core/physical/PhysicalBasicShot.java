@@ -11,7 +11,7 @@ import ru.spbstu.gyboml.core.shot.ShotType;
 import ru.spbstu.gyboml.core.util.PhysicsShapeCache;
 
 public class PhysicalBasicShot extends PhysicalShot {
-    private static final float BASE_DAMAGE = 50;
+    private static final float BASE_DAMAGE = 100;
     private boolean damaged = false;
 
     public PhysicalBasicShot(Location location, World world) {
