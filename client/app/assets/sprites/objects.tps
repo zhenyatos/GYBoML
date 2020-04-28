@@ -56,7 +56,7 @@
         <key>jxrCompressionLevel</key>
         <uint>0</uint>
         <key>ditherType</key>
-        <enum type="SettingsBase::DitherType">PngQuantLow</enum>
+        <enum type="SettingsBase::DitherType">NearestNeighbour</enum>
         <key>backgroundColor</key>
         <uint>0</uint>
         <key>libGdx</key>
@@ -267,19 +267,19 @@
         </map>
         <key>fileList</key>
         <array>
-            <filename>../images/cannon_p1.png</filename>
-            <filename>../images/cannon_p2.png</filename>
-            <filename>../images/tower_p1.png</filename>
-            <filename>../images/tower_p2.png</filename>
             <filename>../images/block_wood.png</filename>
             <filename>../images/block_wood_damaged.png</filename>
-            <filename>../images/shot_basic.png</filename>
-            <filename>../images/castle_p1_front.png</filename>
-            <filename>../images/castle_p2_front.png</filename>
+            <filename>../images/cannon_p1.png</filename>
+            <filename>../images/cannon_p2.png</filename>
             <filename>../images/castle_p1_back.png</filename>
-            <filename>../images/castle_p2_back.png</filename>
             <filename>../images/castle_p1_tower.png</filename>
+            <filename>../images/castle_p2_back.png</filename>
+            <filename>../images/castle_p2_front.png</filename>
             <filename>../images/castle_p2_tower.png</filename>
+            <filename>../images/shot_basic.png</filename>
+            <filename>../images/tower_p1.png</filename>
+            <filename>../images/tower_p2.png</filename>
+            <filename>../images/castle_p1_front.png</filename>
         </array>
         <key>ignoreFileList</key>
         <array/>

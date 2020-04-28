@@ -256,6 +256,7 @@ public class PhysicalSceneOffline {
                 world.destroyBody(block.getBody());
                 movables.remove(block);
                 graphicalScene.removeObject(block);
+                soundEffects.playWoodBroken();
                 //EventSystem.get().emit(this, "removeDeadBodies", block);
                 physicalBlocksP1Iterator.remove();
             }

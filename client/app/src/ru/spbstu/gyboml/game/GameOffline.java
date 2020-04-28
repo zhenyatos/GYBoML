@@ -167,8 +167,8 @@ public class GameOffline extends ApplicationAdapter implements InputProcessor, W
         setUpArmoryStorage();
 
         // Fire button
-        TextureRegionDrawable fireUp      = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("skin/buttons/fire_up.png"))));
-        TextureRegionDrawable fireDown    = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("skin/buttons/fire_down.png"))));
+        TextureRegionDrawable fireUp   = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("skin/buttons/fire_up.png"))));
+        TextureRegionDrawable fireDown = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("skin/buttons/fire_down.png"))));
         fireButton = new ImageButton(fireUp, fireDown);
         fireButton.addListener(new InputListener() {
 
@@ -266,12 +266,7 @@ public class GameOffline extends ApplicationAdapter implements InputProcessor, W
         physicalScene.setTurn(playerTurn);
         graphicalScene.generateAnimatedPlayerTurn(playerTurn);
         soundEffects.playPlayerTurn(playerTurn);
-        //EventSystem.get().emit(this, "switchTurn", playerTurn);
     }
-
-//    private void connectWithGraphicalScene() {
-//        EventSystem.get().connect(this, "switchTurn", graphicalScene, "generateAnimatedPlayerTurn");
-//    }
 
     /**
      * This is the main method that is called repeatedly in the game loop.
