@@ -56,4 +56,8 @@ public class PhysicalCastle extends Destructible implements Physical, Interactab
     public Type getType() {
         return Type.CASTLE;
     }
+
+    public Body getFrontBody() { return front; }
+
+    public Body getTowerBody() { return tower; }
 }

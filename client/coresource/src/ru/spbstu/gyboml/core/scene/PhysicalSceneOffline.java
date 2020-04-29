@@ -244,6 +244,7 @@ public class PhysicalSceneOffline {
         }
     }
 
+    // TODO: replace iterations with event system calls
     private void removeDeadBodies() {
         ListIterator<PhysicalBlock> physicalBlocksP1Iterator = physicalBlocksP1.listIterator();
         while (physicalBlocksP1Iterator.hasNext()) {
@@ -252,7 +253,7 @@ public class PhysicalSceneOffline {
                 world.destroyBody(block.getBody());
                 movables.remove(block);
                 graphicalScene.removeObject(block);
-                soundEffects.playBroken(block.material);
+                //soundEffects.playBroken(block.material);
                 physicalBlocksP1Iterator.remove();
             }
         }
@@ -264,7 +265,7 @@ public class PhysicalSceneOffline {
                 world.destroyBody(block.getBody());
                 movables.remove(block);
                 graphicalScene.removeObject(block);
-                soundEffects.playBroken(block.material);
+                //soundEffects.playBroken(block.material);
                 physicalBlocksP2Iterator.remove();
             }
         }
@@ -285,9 +286,7 @@ public class PhysicalSceneOffline {
     }
 
     public boolean isStopped() {
-        if (physicalShots.size() == 0)
-            return true;
-        return false;
+        return physicalShots.size() == 0;
     }
 
     public void setTurn(PlayerType playerType) {

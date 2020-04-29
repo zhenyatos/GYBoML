@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
@@ -13,8 +14,8 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 
-import ru.spbstu.gyboml.core.event.EventSystem;
 import ru.spbstu.gyboml.core.graphics.Animated;
+import ru.spbstu.gyboml.core.graphics.AnimatedFading;
 import ru.spbstu.gyboml.core.graphics.AnimatedInstance;
 import ru.spbstu.gyboml.core.graphics.Drawable;
 import ru.spbstu.gyboml.core.graphics.GraphicalBackground;
@@ -39,7 +40,6 @@ import ru.spbstu.gyboml.core.physical.PhysicalTower;
  */
 public class GraphicalScene {
     private List<Drawable> drawables;
-    private List<Drawable> destroyed;
     private List<Animated> animations;
     private Map<Physical, Drawable> objectsMap;
 
@@ -47,6 +47,7 @@ public class GraphicalScene {
     private TextureAtlas backgroundBack;
     private TextureAtlas backgroundFront;
     private TextureAtlas objects;
+    private TextureAtlas texts;
     private Animation<TextureRegion> explosionAnimation;
     private Animation<TextureRegion> coinP1TurnAnimation;
     private Animation<TextureRegion> coinP2TurnAnimation;
@@ -55,71 +56,30 @@ public class GraphicalScene {
     public GraphicalScene() {
         drawables = new ArrayList<>();
         animations = new ArrayList<>();
-        destroyed = new ArrayList<>();
         objectsMap = new HashMap<>();
 
         backgroundBack  = new TextureAtlas("sprites/background_1.txt");
         backgroundFront = new TextureAtlas("sprites/background_2.txt");
         objects         = new TextureAtlas("sprites/objects.txt");
+        texts           = new TextureAtlas("sprites/texts.txt");
 
-        initAnimations();
+        explosionAnimation  = initAnimation("animations/explosion.png", 8, 8, 0.02f);
+        coinP1TurnAnimation = initAnimation("animations/coin_p1_turn.png", 10, 10, 0.02f);
+        coinP2TurnAnimation = initAnimation("animations/coin_p2_turn.png", 10, 10, 0.02f);
+        impactAnimation     = initAnimation("animations/impact.png", 6, 3, 0.02f);
     }
 
-    private void initAnimations() {
-        final int EXPLOSION_COLS = 8;
-        final int EXPLOSION_ROWS = 8;
-        final int COIN_COLS = 10;
-        final int COIN_ROWS = 10;
-        final int IMPACT_COLS = 6;
-        final int IMPACT_ROWS = 3;
-
-        // init explosion animation
-        Texture sheet = new Texture(Gdx.files.internal("animations/explosion.png"));
+    private Animation<TextureRegion> initAnimation(String path, int cols, int rows, float frameDuration) {
+        Texture sheet = new Texture(Gdx.files.internal(path));
         TextureRegion[][] tempTextureRegions = TextureRegion.split(
-                sheet,sheet.getWidth() / EXPLOSION_COLS,sheet.getHeight() / EXPLOSION_ROWS);
-        TextureRegion[] frames = new TextureRegion[EXPLOSION_COLS * EXPLOSION_ROWS];
+                sheet,sheet.getWidth() / cols,sheet.getHeight() / rows);
+        TextureRegion[] frames = new TextureRegion[cols * rows];
         int ind = 0;
-        for (int i = 0; i < EXPLOSION_ROWS; ++i) {
-            for (int j = 0; j < EXPLOSION_COLS; ++j)
+        for (int i = 0; i < rows; ++i) {
+            for (int j = 0; j < cols; ++j)
                 frames[ind++] = tempTextureRegions[i][j];
         }
-        explosionAnimation = new Animation<>(0.02f, frames);
-
-        // init coin player1 turn animation
-        sheet = new Texture(Gdx.files.internal("animations/coin_p1_turn.png"));
-        tempTextureRegions = TextureRegion.split(
-                sheet,sheet.getWidth() / COIN_COLS,sheet.getHeight() / COIN_ROWS);
-        frames = new TextureRegion[COIN_COLS * COIN_ROWS];
-        ind = 0;
-        for (int i = 0; i < COIN_ROWS; ++i) {
-            for (int j = 0; j < COIN_COLS; ++j)
-                frames[ind++] = tempTextureRegions[i][j];
-        }
-        coinP1TurnAnimation = new Animation<>(0.02f, frames);
-
-        // init coin player 2 animation
-        sheet = new Texture(Gdx.files.internal("animations/coin_p2_turn.png"));
-        tempTextureRegions = TextureRegion.split(
-                sheet,sheet.getWidth() /  COIN_COLS,sheet.getHeight() / COIN_ROWS);
-        frames = new TextureRegion[COIN_COLS * COIN_ROWS];
-        ind = 0;
-        for (int i = 0; i < COIN_ROWS; ++i) {
-            for (int j = 0; j < COIN_COLS; ++j)
-                frames[ind++] = tempTextureRegions[i][j];
-        }
-        coinP2TurnAnimation = new Animation<>(0.02f, frames);
-
-        // init impact animation
-        sheet = new Texture(Gdx.files.internal("animations/impact.png"));
-        tempTextureRegions = TextureRegion.split(
-                sheet,sheet.getWidth() /  IMPACT_COLS,sheet.getHeight() / IMPACT_ROWS);
-        frames = new TextureRegion[IMPACT_COLS * IMPACT_ROWS];
-        ind = 0;
-        for (int i = 0; i < IMPACT_ROWS; ++i) {
-            for (int j = 0; j < IMPACT_COLS; ++j)
-                frames[ind++] = tempTextureRegions[i][j];
-        }
-        impactAnimation = new Animation<>(0.02f, frames);
+        return new Animation<>(frameDuration, frames);
     }
 
     void generateGraphicalBackground(PhysicalBackground physicalBackground) {
@@ -207,13 +167,24 @@ public class GraphicalScene {
     }
 
     public void generateAnimatedPlayerTurn(PlayerType playerTurn) {
-        if (playerTurn == PlayerType.FIRST_PLAYER)
+        String name;
+        if (playerTurn == PlayerType.FIRST_PLAYER) {
             animations.add(new AnimatedInstance(coinP1TurnAnimation, new Location(
                     SceneConstants.coinX, SceneConstants.coinY, 0, SceneConstants.COIN_SCALE)));
-        else
+            name = "p1";
+        }
+        else {
             animations.add(new AnimatedInstance(coinP2TurnAnimation, new Location(
                     SceneConstants.coinX, SceneConstants.coinY, 0, SceneConstants.COIN_SCALE)));
-        EventSystem.get().emit(this, "generateAnimatedPlayerTurn", playerTurn);
+            name = "p2";
+        }
+        Sprite text = texts.createSprite(name + "_turn");
+        text.setPosition(
+                SceneConstants.coinX - SceneConstants.TURN_SCALE * (text.getWidth() - coinP1TurnAnimation.getKeyFrames()[0].getRegionWidth()) / 2f,
+                SceneConstants.coinY + SceneConstants.COIN_SCALE * coinP1TurnAnimation.getKeyFrames()[0].getRegionHeight());
+        text.setSize(text.getWidth() * SceneConstants.TURN_SCALE, text.getHeight() * SceneConstants.TURN_SCALE);
+        text.setAlpha(0.0f);
+        animations.add(new AnimatedFading(text, 0.02f));
     }
 
     public void generateAnimatedImpact(PhysicalShot shot) {
@@ -240,7 +211,7 @@ public class GraphicalScene {
     }
 
     void removeObject(Physical object) {
-        destroyed.add(objectsMap.get(object));
+        animations.add(new AnimatedFading(objectsMap.get(object).getSprite(), 0.03f));
         drawables.remove(objectsMap.get(object));
         objectsMap.remove(object);
     }
@@ -248,16 +219,6 @@ public class GraphicalScene {
     public void draw(Batch batch) {
         for (Drawable object : drawables) {
             object.draw(batch);
-        }
-
-        ListIterator<Drawable> destroyedIterator = destroyed.listIterator();
-        while (destroyedIterator.hasNext()) {
-            Drawable drawable = destroyedIterator.next();
-            drawable.draw(batch);
-            drawable.getSprite().setAlpha(drawable.getSprite().getColor().a - 0.03f);
-            if (drawable.getSprite().getColor().a <= 0.03f) {
-                destroyedIterator.remove();
-            }
         }
 
         ListIterator<Animated> animationsIterator = animations.listIterator();
