@@ -72,6 +72,7 @@ public class GameOffline extends ApplicationAdapter implements InputProcessor, W
     private Table table;
     private final List<Button> buttons = new ArrayList<>();
     private Button fireButton;
+    private ShotBar shotBar;
     //private Label victoryLabel;
 
     private Skin earthSkin;
@@ -152,9 +153,9 @@ public class GameOffline extends ApplicationAdapter implements InputProcessor, W
                         }
                     }
                 };
-                dialog.text("Are you sure you want to exit?").setScale(1.5f);
-                dialog.button("Yes", true).setWidth(1.5f);
-                dialog.button("No", false).setWidth(1.5f);
+                dialog.text("Are you sure you want to exit?").setScale(2f);
+                dialog.button("Yes", true).setWidth(2f);
+                dialog.button("No", false).setWidth(2f);
                 dialog.show(stageForUI);
             }
 
@@ -170,6 +171,12 @@ public class GameOffline extends ApplicationAdapter implements InputProcessor, W
 
         setUpArmoryStorage();
 
+        // shot bar
+        shotBar = new ShotBar();
+        shotBar.getShotPowerBar().setVisible(false);
+        shotBar.getShotPowerBar().setPosition(Gdx.graphics.getWidth() - 50, 100);
+        stageForUI.addActor(shotBar.getShotPowerBar());
+
         // Fire button
         TextureRegionDrawable fireUp   = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("skin/buttons/fire_up.png"))));
         TextureRegionDrawable fireDown = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("skin/buttons/fire_down.png"))));
@@ -183,8 +190,18 @@ public class GameOffline extends ApplicationAdapter implements InputProcessor, W
 
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                physicalScene.generateShot(playerTurn, shotType);
-                fireButton.setTouchable(Touchable.disabled);
+                if (shotBar.getShotPowerBar().isVisible()) {
+                    physicalScene.generateShot(playerTurn, shotType, shotBar.getShotPowerBar().getValue());
+                    physicalScene.setCannonStatus(playerTurn, true);
+                    fireButton.setTouchable(Touchable.disabled);
+                    shotBar.getShotPowerBar().setVisible(false);
+                }
+                else {
+                    physicalScene.setCannonStatus(playerTurn, false);
+                    soundEffects.playLoadShot();
+                    shotBar.resetValue();
+                    shotBar.getShotPowerBar().setVisible(true);
+                }
             }
         });
         table.add(fireButton).width(buttonWidth * Gdx.graphics.getWidth()).height(buttonHeight * Gdx.graphics.getHeight()).bottom().
@@ -281,6 +298,10 @@ public class GameOffline extends ApplicationAdapter implements InputProcessor, W
         Gdx.gl.glClearColor(1, 0, 0, 0);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         physicalScene.stepWorld();
+
+        if (shotBar.getShotPowerBar().isVisible()) {
+            shotBar.update();
+        }
 
         if (!fireButton.isTouchable() && physicalScene.isStopped()) {
             fireButton.setTouchable(Touchable.enabled);

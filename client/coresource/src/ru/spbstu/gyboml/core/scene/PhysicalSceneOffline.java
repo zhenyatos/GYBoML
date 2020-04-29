@@ -166,7 +166,7 @@ public class PhysicalSceneOffline {
         graphicalScene.bindBlocksGraphics(physicalBlocksP1, physicalBlocksP2);
     }
 
-    public void generateShot(PlayerType playerTurn, ShotType shotType) {
+    public void generateShot(PlayerType playerTurn, ShotType shotType, float powerCoeff) {
         int sign;
         float angle;
         Vector2 jointPosition;
@@ -200,8 +200,8 @@ public class PhysicalSceneOffline {
         }
 
         physicalShot.playerType = playerTurn;
-        physicalShot.setVelocity(new Vector2(sign * 25.f * cos, sign * 25.f * sin));
-
+        physicalShot.setVelocity(new Vector2(sign * 25.f * cos * powerCoeff, sign * 25.f * sin * powerCoeff));
+        physicalShot.getBody().setBullet(true);
         movables.add(physicalShot);
 
         physicalShots.add(physicalShot);
@@ -287,6 +287,13 @@ public class PhysicalSceneOffline {
 
     public boolean isStopped() {
         return physicalShots.size() == 0;
+    }
+
+    public void setCannonStatus(PlayerType playerType, boolean awake) {
+        if (playerType == PlayerType.FIRST_PLAYER)
+            physicalTowerP1.setCannonAwake(awake);
+        else if (playerType == PlayerType.SECOND_PLAYER)
+            physicalTowerP2.setCannonAwake(awake);
     }
 
     public void setTurn(PlayerType playerType) {
