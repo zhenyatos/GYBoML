@@ -7,12 +7,11 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.physics.box2d.joints.RevoluteJoint;
 import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
 
-import ru.spbstu.gyboml.core.graphics.Updatable;
-import ru.spbstu.gyboml.core.util.PhysicsShapeCache;
-
 import java.io.InputStream;
 
 import ru.spbstu.gyboml.core.PlayerType;
+import ru.spbstu.gyboml.core.graphics.Updatable;
+import ru.spbstu.gyboml.core.util.PhysicsShapeCache;
 
 public class PhysicalTower implements Physical, Movable {
     private Body tower;
@@ -23,6 +22,10 @@ public class PhysicalTower implements Physical, Movable {
     private float barrelLength;
 
     private Updatable sprite = null;
+
+    private int id;
+        public void setId(int id) { this.id = id; }
+        public int getId() { return id; }
 
     public PhysicalTower(Location location, PlayerType playerType, World world) {
         this.playerType = playerType;

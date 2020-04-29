@@ -9,4 +9,7 @@ import ru.spbstu.gyboml.core.graphics.Updatable;
 public interface Movable {
     void setUpdatableSprite(Updatable sprite);
     void updateSprite();
+
+    int getId();
+    void setId( int id );
 }

@@ -1,6 +1,5 @@
 package ru.spbstu.gyboml.core.scene;
 
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 
@@ -164,7 +163,7 @@ public class PhysicalScene {
         Location location = new Location(shotX, shotY, 0, SceneConstants.SHOTS_SCALE);
         PhysicalShot physicalShot;
 
-        // add new cases for new shots
+        // add new cases for new     shots
         switch (shotType) {
             case BASIC:
                 physicalShot = new PhysicalBasicShot(location, world);

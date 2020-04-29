@@ -17,6 +17,10 @@ public class PhysicalBlock extends Destructible implements Physical, Movable, In
     private Body body;
     private Updatable sprite;
 
+    private int id;
+        public void setId(int id) { this.id = id; }
+        public int getId() { return id; }
+
     public PhysicalBlock(Material material, Location location, World world) {
         super(BASE_HP, material);
         InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(PHYSICS_PATH_OBJECTS);

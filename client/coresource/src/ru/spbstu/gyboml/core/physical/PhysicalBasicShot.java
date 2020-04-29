@@ -14,6 +14,10 @@ public class PhysicalBasicShot extends PhysicalShot {
     private static final float BASE_DAMAGE = 50;
     private boolean damaged = false;
 
+    private int id;
+        public void setId(int id) { this.id = id; }
+        public int getId() { return id; }
+
     public PhysicalBasicShot(Location location, World world) {
         InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(PHYSICS_PATH_OBJECTS);
         PhysicsShapeCache physicsShapeCache = new PhysicsShapeCache(is);
