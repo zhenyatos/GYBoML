@@ -295,7 +295,7 @@ public class GameOffline extends ApplicationAdapter implements InputProcessor, W
         stageForUI.act(Gdx.graphics.getDeltaTime());
         stageForUI.draw();
 
-        debugRenderer.render(physicalScene.getWorld(), camera.combined);
+        //debugRenderer.render(physicalScene.getWorld(), camera.combined);
     }
 
     /**
