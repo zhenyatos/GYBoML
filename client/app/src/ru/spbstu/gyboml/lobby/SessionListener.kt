@@ -6,6 +6,7 @@ import android.view.View.*
 import android.widget.Toast
 import com.esotericsoftware.kryonet.Connection
 import com.esotericsoftware.kryonet.Listener
+import ru.spbstu.gyboml.GybomlUtils
 import ru.spbstu.gyboml.core.net.GybomlClient
 import ru.spbstu.gyboml.core.net.SessionRequests
 import ru.spbstu.gyboml.core.net.SessionResponses
@@ -15,11 +16,7 @@ import ru.spbstu.gyboml.menu.MainMenu
 
 class SessionListener(private val lobby: Lobby) : Listener() {
     override fun disconnected(connection: Connection?) {
-        lobby.runOnUiThread {
-            val toast = Toast.makeText(lobby, "Disconnected from server", Toast.LENGTH_SHORT)
-            toast.setGravity(Gravity.CENTER_HORIZONTAL, 0, 0)
-            toast.show()
-        }
+        GybomlUtils.showToast(lobby, "Disconnected from server")
 
         val intent = Intent(lobby.applicationContext, MainMenu::class.java)
         lobby.startActivity(intent)
@@ -77,12 +74,7 @@ class SessionListener(private val lobby: Lobby) : Listener() {
     }
     private fun sessionCreated(connection: Connection, response: SessionResponses.SessionCreated) {
         GybomlClient.sendTCP(SessionRequests.ConnectSession(response.sessionId))
-
-        lobby.runOnUiThread {
-            val toast = Toast.makeText(lobby, "Session created", Toast.LENGTH_SHORT)
-            toast.setGravity(Gravity.CENTER_HORIZONTAL, 0, 0)
-            toast.show()
-        }
+        GybomlUtils.showToast(lobby, "Session created")
     }
     private fun sessionConnected(connection: Connection, response: SessionResponses.SessionConnected) {
         lobby.runOnUiThread {

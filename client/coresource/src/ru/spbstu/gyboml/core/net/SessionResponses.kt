@@ -10,5 +10,5 @@ class SessionResponses {
     class ReadyApproved(val ready: Boolean = false)
     class SessionExited
 
-    class SessionStarted(val player: Player)
+    class SessionStarted(val player: Player = Player())
 }

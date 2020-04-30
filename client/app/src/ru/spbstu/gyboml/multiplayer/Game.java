@@ -99,6 +99,9 @@ public class Game extends ApplicationAdapter implements InputProcessor, Winnable
      */
     @Override
     public void create() {
+        gameListener = new GameListener(this);
+        GybomlClient.INSTANCE.getClient().addListener(gameListener);
+
         stageForUI = new Stage(new ScreenViewport());
         InputMultiplexer inputMultiplexer = new InputMultiplexer();
         inputMultiplexer.addProcessor(stageForUI);
@@ -126,9 +129,6 @@ public class Game extends ApplicationAdapter implements InputProcessor, Winnable
 
         Timer t = new Timer();
 
-        // add game listener
-        gameListener = new GameListener(this);
-        GybomlClient.INSTANCE.getClient().addListener(gameListener);
     }
 
     /** This function sets up the UI. The name speaks for itself, really.
@@ -298,7 +298,7 @@ public class Game extends ApplicationAdapter implements InputProcessor, Winnable
     synchronized public void render() {
         Gdx.gl.glClearColor(1, 0, 0, 0);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        physicalScene.stepWorld(player.getType());
+        physicalScene.stepWorld();
 
         batch.setProjectionMatrix(camera.combined);
         batch.begin();

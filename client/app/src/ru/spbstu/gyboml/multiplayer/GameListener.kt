@@ -3,6 +3,9 @@ package ru.spbstu.gyboml.multiplayer
 import com.badlogic.gdx.Gdx
 import com.esotericsoftware.kryonet.Connection
 import com.esotericsoftware.kryonet.Listener
+import ru.spbstu.gyboml.core.PlayerType
+import ru.spbstu.gyboml.core.PlayerType.FIRST_PLAYER
+import ru.spbstu.gyboml.core.destructible.Material
 import ru.spbstu.gyboml.core.net.GameMessage.*
 import ru.spbstu.gyboml.core.net.GameResponses.*
 
@@ -17,6 +20,9 @@ class GameListener(private val game: Game) : Listener() {
         is CreateShot -> game.physicalScene.createShot(message)
         is UpdateShot -> game.physicalScene.updateShot(message)
         is RemoveShot -> game.physicalScene.removeShot()
+
+        is GameStarted -> if (game.player.type == FIRST_PLAYER) game.physicalScene.setUpBlocks(Material.WOOD)
+                          else {}
 
         else -> {}
     }

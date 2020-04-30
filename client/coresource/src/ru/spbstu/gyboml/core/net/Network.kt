@@ -36,6 +36,7 @@ object Network {
             register(ExitSession::class.java)
             register(ExitSession::class.java)
             register(GameRequests.GameExit::class.java)
+            register(GameRequests.GameLoaded::class.java)
 
             register(SessionResponses.ReadyApproved::class.java)
             register(SessionResponses.SessionExited::class.java)
@@ -46,6 +47,7 @@ object Network {
             register(SessionResponses.SessionStarted::class.java)
             register(GameResponses.GameExited::class.java)
             register(GameResponses.PassTurned::class.java)
+            register(GameResponses.GameStarted::class.java)
 
             register(GameMessage.CreateShot::class.java)
             register(GameMessage.UpdateShot::class.java)

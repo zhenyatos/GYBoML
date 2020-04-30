@@ -2,6 +2,7 @@ package ru.spbstu.gyboml.server.session
 
 import com.esotericsoftware.kryonet.Connection
 import ru.spbstu.gyboml.core.net.SessionInfo
+import ru.spbstu.gyboml.server.Controller
 import ru.spbstu.gyboml.server.GybomlConnection
 import ru.spbstu.gyboml.server.game.Game
 
@@ -14,6 +15,16 @@ class Session internal constructor(val id: Int, val name: String) {
     companion object {
         private var nextAvailableSessionId = 0
         fun createSession(name: String): Session = Session(nextAvailableSessionId++, name)
+        fun extractSessionAndDo(controller: Controller, connection: GybomlConnection, reaction: (Session) -> Unit) {
+            connection.player?.let { player ->
+                player.sessionId?.let { sessionId ->
+                    val session = controller.getSession(sessionId) ?: return
+                    if (!session.isStarted()) return
+
+                    reaction(session)
+                }
+            }
+        }
     }
 
     fun add(connection: GybomlConnection) {

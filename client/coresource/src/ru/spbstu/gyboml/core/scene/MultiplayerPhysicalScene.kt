@@ -10,10 +10,12 @@ import ru.spbstu.gyboml.core.destructible.Material
 import ru.spbstu.gyboml.core.event.EventSystem
 import ru.spbstu.gyboml.core.net.GameMessage
 import ru.spbstu.gyboml.core.net.GameMessage.*
+import ru.spbstu.gyboml.core.net.GameRequests
+import ru.spbstu.gyboml.core.net.GameRequests.GameLoaded
 import ru.spbstu.gyboml.core.net.GybomlClient
+import ru.spbstu.gyboml.core.net.GybomlClient.sendTCP
 import ru.spbstu.gyboml.core.physical.*
 import ru.spbstu.gyboml.core.shot.ShotType
-import java.util.*
 import kotlin.math.cos
 import kotlin.math.min
 import kotlin.math.sin
@@ -84,9 +86,10 @@ class MultiplayerPhysicalScene(private val graphicalScene: GraphicalScene, val p
             it.generateGraphicalCastle(secondCastle)
             it.generateGraphicalTower(firstTower)
             it.generateGraphicalTower(secondTower)
-            it.bindBlocksGraphics(firstBlocks as ArrayList<PhysicalBlock>?, secondBlocks as ArrayList<PhysicalBlock>?)
-            graphicalScene.generateGraphicalForeground(background)
+            it.generateGraphicalForeground(background)
         }
+
+        GybomlClient.sendTCP(GameLoaded())
     }
 
     // add or update movable
@@ -100,6 +103,7 @@ class MultiplayerPhysicalScene(private val graphicalScene: GraphicalScene, val p
     private fun addBlock(firstBlocks: Boolean, vararg blocks: PhysicalBlock) {
         for (b in blocks) {
             addMovable(b) // this will set up new id for b if it has not
+            graphicalScene.generateGraphicalBlock(b)
             if (firstBlocks) this.firstBlocks[b.id] = b
             else this.secondBlocks[b.id] = b
         }
@@ -112,47 +116,31 @@ class MultiplayerPhysicalScene(private val graphicalScene: GraphicalScene, val p
         val blockP2Y: Float = castleP2.y + 240 * SceneConstants.SCALE
 
         // 1st row
-        addBlock(true,
-                PhysicalBlock(material, Location(blockP1X, blockP1Y, 0f, SceneConstants.BLOCKS_SCALE), world),
-                PhysicalBlock(material, Location(blockP1X, blockP1Y + 1.2f * SceneConstants.blockWoodHeight * SceneConstants.BLOCKS_SCALE, 0f, SceneConstants.BLOCKS_SCALE), world),
-                PhysicalBlock(material, Location(blockP1X, blockP1Y + 2 * 1.2f * SceneConstants.blockWoodHeight * SceneConstants.BLOCKS_SCALE, 0f, SceneConstants.BLOCKS_SCALE), world)
-        )
-        addBlock(false,
-                PhysicalBlock(material, Location(blockP2X, blockP2Y, 0f, SceneConstants.BLOCKS_SCALE), world),
-                PhysicalBlock(material, Location(blockP2X, blockP2Y + 1.2f * SceneConstants.blockWoodHeight * SceneConstants.BLOCKS_SCALE, 0f, SceneConstants.BLOCKS_SCALE), world),
-                PhysicalBlock(material, Location(blockP2X, blockP2Y + 2 * 1.2f * SceneConstants.blockWoodHeight * SceneConstants.BLOCKS_SCALE, 0f, SceneConstants.BLOCKS_SCALE), world)
-        )
+        sendTCP(CreateBlock(true, Vector2(blockP1X, blockP1Y), 0f, material))
+        sendTCP(CreateBlock(true, Vector2(blockP1X, blockP1Y + 1.2f * SceneConstants.blockWoodHeight * SceneConstants.BLOCKS_SCALE), 0f, material))
+        sendTCP(CreateBlock(true, Vector2(blockP1X, blockP1Y + 2 * 1.2f * SceneConstants.blockWoodHeight * SceneConstants.BLOCKS_SCALE), 0f, material))
+        sendTCP(CreateBlock(false, Vector2(blockP2X, blockP2Y), 0f, material))
+        sendTCP(CreateBlock(false, Vector2(blockP2X, blockP2Y + 1.2f * SceneConstants.blockWoodHeight * SceneConstants.BLOCKS_SCALE), 0f, material))
+        sendTCP(CreateBlock(false, Vector2(blockP2X, blockP2Y + 2 * 1.2f * SceneConstants.blockWoodHeight * SceneConstants.BLOCKS_SCALE), 0f, material))
 
         // 2nd row
-        addBlock(true,
-                PhysicalBlock(material, Location(blockP1X + 2 * SceneConstants.blockWoodWidth * SceneConstants.BLOCKS_SCALE, blockP1Y, 0f, SceneConstants.BLOCKS_SCALE), world),
-                PhysicalBlock(material, Location(blockP1X + 2 * SceneConstants.blockWoodWidth * SceneConstants.BLOCKS_SCALE, blockP1Y + 1.2f * SceneConstants.blockWoodHeight * SceneConstants.BLOCKS_SCALE, 0f, SceneConstants.BLOCKS_SCALE), world)
-        )
-        addBlock(false,
-                PhysicalBlock(material, Location(blockP2X - 2 * SceneConstants.blockWoodWidth * SceneConstants.BLOCKS_SCALE, blockP2Y, 0f, SceneConstants.BLOCKS_SCALE), world),
-                PhysicalBlock(material, Location(blockP2X - 2 * SceneConstants.blockWoodWidth * SceneConstants.BLOCKS_SCALE, blockP2Y + 1.2f * SceneConstants.blockWoodHeight * SceneConstants.BLOCKS_SCALE, 0f, SceneConstants.BLOCKS_SCALE), world)
-        )
+        sendTCP(CreateBlock(true, Vector2(blockP1X + 2 * SceneConstants.blockWoodWidth * SceneConstants.BLOCKS_SCALE, blockP1Y), 0f, material))
+        sendTCP(CreateBlock(true, Vector2(blockP1X + 2 * SceneConstants.blockWoodWidth * SceneConstants.BLOCKS_SCALE, blockP1Y + 1.2f * SceneConstants.blockWoodHeight * SceneConstants.BLOCKS_SCALE), 0f, material))
+        sendTCP(CreateBlock(false, Vector2(blockP2X - 2 * SceneConstants.blockWoodWidth * SceneConstants.BLOCKS_SCALE, blockP2Y), 0f, material))
+        sendTCP(CreateBlock(false, Vector2(blockP2X - 2 * SceneConstants.blockWoodWidth * SceneConstants.BLOCKS_SCALE, blockP2Y + 1.2f * SceneConstants.blockWoodHeight * SceneConstants.BLOCKS_SCALE), 0f, material))
 
-        // 3rd row
-        addBlock(true,
-                PhysicalBlock(material, Location(blockP1X + 4 * SceneConstants.blockWoodWidth * SceneConstants.BLOCKS_SCALE, blockP1Y, 0f, SceneConstants.BLOCKS_SCALE), world)
-        )
-        addBlock(false,
-                PhysicalBlock(material, Location(blockP2X - 4 * SceneConstants.blockWoodWidth * SceneConstants.BLOCKS_SCALE, blockP2Y, 0f, SceneConstants.BLOCKS_SCALE), world)
-        )
+        // 2d row
+        sendTCP(CreateBlock(true, Vector2(blockP1X + 4 * SceneConstants.blockWoodWidth * SceneConstants.BLOCKS_SCALE, blockP1Y), 0f, material))
+        sendTCP(CreateBlock(true, Vector2(blockP2X - 4 * SceneConstants.blockWoodWidth * SceneConstants.BLOCKS_SCALE, blockP2Y), 0f, material))
 
-        // back row
-        addBlock(true,
-                PhysicalBlock(material, Location(castleP1.x - 60 * SceneConstants.SCALE - SceneConstants.blockWoodWidth * SceneConstants.BLOCKS_SCALE, blockP1Y, 0f, SceneConstants.BLOCKS_SCALE), world),
-                PhysicalBlock(material, Location(castleP1.x - 60 * SceneConstants.SCALE - SceneConstants.blockWoodWidth * SceneConstants.BLOCKS_SCALE, blockP1Y + 1.2f * SceneConstants.blockWoodHeight * SceneConstants.BLOCKS_SCALE, 0f, SceneConstants.BLOCKS_SCALE), world)
-        )
-        addBlock(false,
-                PhysicalBlock(material, Location(castleP2.x + (SceneConstants.castleWidth + 60) * SceneConstants.SCALE, blockP2Y, 0f, SceneConstants.BLOCKS_SCALE), world),
-                PhysicalBlock(material, Location(castleP2.x + (SceneConstants.castleWidth + 60) * SceneConstants.SCALE, blockP2Y + 1.2f * SceneConstants.blockWoodHeight * SceneConstants.BLOCKS_SCALE, 0f, SceneConstants.BLOCKS_SCALE), world)
-        )
+        // back
+        //sendTCP(CreateBlock(true, Vector2(castleP1.x - 60 * SceneConstants.SCALE - SceneConstants.blockWoodWidth * SceneConstants.BLOCKS_SCALE, blockP1Y), 0f, material))
+        //sendTCP(CreateBlock(true, Vector2(castleP1.x - 60 * SceneConstants.SCALE - SceneConstants.blockWoodWidth * SceneConstants.BLOCKS_SCALE, blockP1Y + 1.2f * SceneConstants.blockWoodHeight * SceneConstants.BLOCKS_SCALE), 0f, material))
+        //sendTCP(CreateBlock(false, Vector2(castleP2.x + (SceneConstants.castleWidth + 60) * SceneConstants.SCALE, blockP2Y), 0f, material))
+        //sendTCP(CreateBlock(false, Vector2(castleP2.x + (SceneConstants.castleWidth + 60) * SceneConstants.SCALE, blockP2Y + 1.2f * SceneConstants.blockWoodHeight * SceneConstants.BLOCKS_SCALE), 0f, material))
     }
 
-    fun generateShot(turn: PlayerType, type: ShotType) {
+    private fun generateShot(turn: PlayerType, type: ShotType) {
         val sign = if (turn == FIRST_PLAYER) 1 else -1
         val angle = if (turn == FIRST_PLAYER) firstTower.movablePartAngle else secondTower.movablePartAngle
         val jointPosition = if (turn == FIRST_PLAYER) firstTower.jointPosition else secondTower.jointPosition
@@ -182,9 +170,7 @@ class MultiplayerPhysicalScene(private val graphicalScene: GraphicalScene, val p
      * Method updates current world state AND returns all messages, that
      * needed to be sent to both players
      */
-    fun stepWorld(type: PlayerType) {
-        val messages = mutableListOf<GameMessage>()
-
+    fun stepWorld() {
         if (!watch.isStarted()) {
             watch.start()
             time = watch.time * 1000f
@@ -202,14 +188,14 @@ class MultiplayerPhysicalScene(private val graphicalScene: GraphicalScene, val p
             synchronized(movables) { movables.values.forEach { it.updateSprite() } }
 
             // collect corps (only for first player)
-            if (type == FIRST_PLAYER) notifyAboutDeadBodies()
+            if (playerType == FIRST_PLAYER) notifyAboutDeadBodies()
         }
     }
 
     private fun notifyAboutDeadBodies() {
-        firstBlocks.filter { it.value.hp <= 0 }.forEach { GybomlClient.sendTCP(RemoveBlock(it.key)) }
-        secondBlocks.filter { it.value.hp <= 0 }.forEach { GybomlClient.sendTCP(RemoveBlock(it.key)) }
-        if (shot?.velocity?.isZero(.1f) ?: return) GybomlClient.sendTCP(RemoveShot())
+        firstBlocks.filter { it.value.hp <= 0 }.forEach { sendTCP(RemoveBlock(it.key)) }
+        secondBlocks.filter { it.value.hp <= 0 }.forEach { sendTCP(RemoveBlock(it.key)) }
+        if (shot?.velocity?.isZero(.1f) ?: return) sendTCP(RemoveShot())
     }
 
     fun connectWithHPBar(type: PlayerType, bar: HPBar) =
@@ -243,8 +229,7 @@ class MultiplayerPhysicalScene(private val graphicalScene: GraphicalScene, val p
     }
     fun createBlock(message: CreateBlock) {
         addBlock(message.firstBlock,
-                PhysicalBlock(message.material, Location(message.position.x, message.position.y, message.angle,
-                SceneConstants.BLOCKS_SCALE), world)
+                PhysicalBlock(message.material, Location(message.position.x, message.position.y, message.angle, SceneConstants.BLOCKS_SCALE), world)
         )
     }
     fun removeBlock(message: RemoveBlock) {

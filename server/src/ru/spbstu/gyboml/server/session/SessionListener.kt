@@ -5,10 +5,12 @@ import com.esotericsoftware.kryonet.Listener
 import com.esotericsoftware.minlog.Log
 import ru.spbstu.gyboml.core.Player
 import ru.spbstu.gyboml.core.PlayerType.FIRST_PLAYER
+import ru.spbstu.gyboml.core.PlayerType.SECOND_PLAYER
 import ru.spbstu.gyboml.core.net.SessionPlayer
 import ru.spbstu.gyboml.core.net.SessionRequests
 import ru.spbstu.gyboml.core.net.SessionResponses
 import ru.spbstu.gyboml.core.net.SessionResponses.NameRegistred
+import ru.spbstu.gyboml.core.net.SessionResponses.SessionStarted
 import ru.spbstu.gyboml.server.Controller
 import ru.spbstu.gyboml.server.GybomlConnection
 import ru.spbstu.gyboml.server.game.Game
@@ -95,13 +97,10 @@ class SessionListener(private val controller: Controller) : Listener() {
         firstConnection?.player?.let {first ->
         secondConnection?.player?.let {second ->
             if (first.ready && second.ready) {
-                first.ready = false
-                second.ready = false
-
                 val firstPlayer = Player(FIRST_PLAYER, first.name, true, 0)
-                val secondPlayer = Player(FIRST_PLAYER, first.name, true, 0)
-                session.firstConnection?.sendTCP(SessionResponses.SessionStarted(firstPlayer))
-                session.secondConnection?.sendTCP(SessionResponses.SessionStarted(secondPlayer))
+                val secondPlayer = Player(SECOND_PLAYER, second.name, false, 0)
+                firstConnection?.sendTCP(SessionStarted(firstPlayer))
+                secondConnection?.sendTCP(SessionStarted(secondPlayer))
 
                 game = Game(session, firstPlayer, secondPlayer)
             }

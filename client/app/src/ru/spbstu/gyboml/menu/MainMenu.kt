@@ -10,6 +10,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.victor.loading.rotate.RotateLoading
+import ru.spbstu.gyboml.GybomlUtils
 import ru.spbstu.gyboml.core.net.GybomlClient
 import ru.spbstu.gyboml.R
 import ru.spbstu.gyboml.core.net.SessionRequests
@@ -51,11 +52,7 @@ class MainMenu : AppCompatActivity() {
             rotateLoading?.start()
 
             val connectedReaction = {
-                runOnUiThread {
-                    val toast = Toast.makeText(this, "Connected to server", Toast.LENGTH_SHORT)
-                    toast.setGravity(Gravity.CENTER_HORIZONTAL, 0, 0)
-                    toast.show()
-                }
+                GybomlUtils.showToast(this, "Connected to server")
 
                 val intent = Intent(applicationContext, Lobby::class.java)
                 startActivity(intent)
@@ -64,11 +61,7 @@ class MainMenu : AppCompatActivity() {
             }
 
             val notConnectedReaction = {
-                runOnUiThread {
-                    val toast = Toast.makeText(this, "Couldn't connect to server", Toast.LENGTH_SHORT)
-                    toast.setGravity(Gravity.CENTER_HORIZONTAL, 0, 0)
-                    toast.show()
-                }
+                GybomlUtils.showToast(this, "Couldn't connect to server")
             }
 
             GybomlClient.connect(connectedReaction, notConnectedReaction)

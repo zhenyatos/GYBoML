@@ -17,4 +17,7 @@ enum class Stage {
 
 data class Game(val session: Session, val firstPlayer: Player = Player(),
                 val secondPlayer: Player = Player(),
-                var stage: Stage = Stage.FIRST_PLAYER_ATTACK)
+                var stage: Stage = Stage.FIRST_PLAYER_ATTACK) {
+    var firstLoaded = false
+    var secondLoaded = false
+}

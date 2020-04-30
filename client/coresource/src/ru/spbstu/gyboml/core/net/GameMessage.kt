@@ -13,9 +13,8 @@ open class GameMessage {
                       var linearVelocity: Vector2 = Vector2(), var angularVelocity: Float = 0f) : GameMessage()
 
     /** Create block if there is no block with same id */
-    class CreateBlock(var id: Int = 0, var firstBlock: Boolean = true,
+    class CreateBlock(var firstBlock: Boolean = true,
                       var position: Vector2 = Vector2(), var angle: Float = 0f,
-                      var linearVelocity: Vector2 = Vector2(), var angularVelocity: Float = 0f,
                       var material: Material = Material.WOOD) : GameMessage()
 
     /** Remove block with specific id, if exists */

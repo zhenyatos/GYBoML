@@ -116,7 +116,10 @@ public class GraphicalScene {
         graphicalBackground.setSize(SceneConstants.canvasWidth, SceneConstants.canvasHeight);
         graphicalBackground.setOrigin(0, 0);
         graphicalBackground.setPosition(physicalBackground.getPosition().x, physicalBackground.getPosition().y);
-        drawables.add(graphicalBackground);
+
+        synchronized (drawables) {
+            drawables.add(graphicalBackground);
+        }
     }
 
     void generateGraphicalCastle(PhysicalCastle physicalCastle) {
@@ -128,7 +131,10 @@ public class GraphicalScene {
                 SceneConstants.CASTLES_SCALE, 100);
         graphicalCastle.setOrigin(0, 0);
         graphicalCastle.setPosition(physicalCastle.getPosition().x, physicalCastle.getPosition().y);
-        drawables.add(graphicalCastle);
+
+        synchronized (drawables) {
+            drawables.add(graphicalCastle);
+        }
     }
 
     void generateGraphicalTower(PhysicalTower physicalTower) {
@@ -138,13 +144,18 @@ public class GraphicalScene {
         graphicalCannon.setOrigin(0, 0);
         graphicalCannon.setPosition(physicalTower.getMovablePartPosition().x, physicalTower.getMovablePartPosition().y);
         graphicalCannon.setRotation(physicalTower.getMovablePartAngle());
-        drawables.add(graphicalCannon);
+        synchronized (drawables) {
+            drawables.add(graphicalCannon);
+        }
         physicalTower.setUpdatableSprite(graphicalCannon);
 
         GraphicalTower graphicalTower = new GraphicalTower(objects.createSprite("tower" + playerName), SceneConstants.TOWERS_SCALE);
         graphicalTower.setOrigin(0, 0);
         graphicalTower.setPosition(physicalTower.getPosition().x, physicalTower.getPosition().y);
-        drawables.add(graphicalTower);
+
+        synchronized (drawables) {
+            drawables.add(graphicalTower);
+        }
     }
 
     void generateGraphicalForeground(PhysicalBackground physicalBackground) {
@@ -152,14 +163,19 @@ public class GraphicalScene {
         graphicalForeground.setSize(SceneConstants.canvasWidth, SceneConstants.canvasHeight);
         graphicalForeground.setOrigin(0, 0);
         graphicalForeground.setPosition(physicalBackground.getPosition().x, physicalBackground.getPosition().y);
-        drawables.add(graphicalForeground);
+
+        synchronized (drawables) {
+            drawables.add(graphicalForeground);
+        }
     }
 
     public void generateGraphicalShot(PhysicalShot physicalShot) {
         GraphicalShot graphicalShot = new GraphicalShot(objects.createSprite("shot_" + physicalShot.shotType.getName()), SceneConstants.SHOTS_SCALE);
         graphicalShot.setOrigin(0, 0);
         graphicalShot.setPosition(physicalShot.getPosition().x, physicalShot.getPosition().y);
-        drawables.add(graphicalShot);
+        synchronized (drawables) {
+            drawables.add(graphicalShot);
+        }
         physicalShot.setUpdatableSprite(graphicalShot);
         objectsMap.put(physicalShot, graphicalShot);
 
@@ -205,7 +221,9 @@ public class GraphicalScene {
                 SceneConstants.BLOCKS_SCALE);
         graphicalBlock.setOrigin(0,0);
         graphicalBlock.setPosition(physicalBlock.getPosition().x, physicalBlock.getPosition().y);
-        drawables.add(graphicalBlock);
+        synchronized (drawables) {
+            drawables.add(graphicalBlock);
+        }
         physicalBlock.setUpdatableSprite(graphicalBlock);
         objectsMap.put(physicalBlock, graphicalBlock);
     }
@@ -225,13 +243,17 @@ public class GraphicalScene {
 
     void removeObject(Physical object) {
         destroyed.add(objectsMap.get(object));
-        drawables.remove(objectsMap.get(object));
+        synchronized (drawables) {
+            drawables.remove(objectsMap.get(object));
+        }
         objectsMap.remove(object);
     }
 
     public void draw(Batch batch) {
-        for (Drawable object : drawables) {
-            object.draw(batch);
+        synchronized (drawables) {
+            for (Drawable object : drawables) {
+                object.draw(batch);
+            }
         }
 
         ListIterator<Drawable> destroyedIterator = destroyed.listIterator();
