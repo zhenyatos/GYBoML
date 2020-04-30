@@ -14,7 +14,6 @@ import ru.spbstu.gyboml.core.scene.SoundEffects;
 public class CollisionHandler implements ContactListener {
     private final GraphicalScene graphicalScene;
     private final SoundEffects soundEffects;
-    private final float marginSpeed = 128.0f;   // x^2 + y^2
 
     public CollisionHandler(GraphicalScene graphicalScene, SoundEffects soundEffects) {
         this.graphicalScene = graphicalScene;
@@ -37,39 +36,15 @@ public class CollisionHandler implements ContactListener {
 
         // Shot - Block
         if (typeA == Type.BLOCK && typeB == Type.SHOT) {
-            //Destructible block = (Destructible) objA;
             PhysicalBlock block = (PhysicalBlock) objA;
             PhysicalShot shot = (PhysicalShot) objB;
-            block.handleDamage(shot.generateDamage(block));
-            if (!shot.getVelocity().isZero(marginSpeed)) {
-                if (graphicalScene != null) {
-                    graphicalScene.generateAnimatedImpact(shot);
-                }
-                if (soundEffects != null) {
-                    if (block.getHP() > 0)
-                        soundEffects.playImpact(block.material);
-                    else
-                        soundEffects.playBroken(block.material);
-                }
-            }
+            collisionShotBlock(shot, block);
             return;
         }
         if (typeA == Type.SHOT && typeB == Type.BLOCK) {
             PhysicalShot shot = (PhysicalShot) objA;
             PhysicalBlock block = (PhysicalBlock) objB;
-            //Destructible block = (Destructible) objB;
-            block.handleDamage(shot.generateDamage(block));
-            if (!shot.getVelocity().isZero(marginSpeed)) {
-                if (graphicalScene != null) {
-                    graphicalScene.generateAnimatedImpact(shot);
-                }
-                if (soundEffects != null) {
-                    if (block.getHP() > 0f)
-                        soundEffects.playImpact(block.material);
-                    else
-                        soundEffects.playBroken(block.material);
-                }
-            }
+            collisionShotBlock(shot, block);
             return;
         }
 
@@ -77,50 +52,15 @@ public class CollisionHandler implements ContactListener {
         if (typeA == Type.SHOT && typeB == Type.CASTLE) {
             PhysicalShot shot = (PhysicalShot) objA;
             PhysicalCastle castle = (PhysicalCastle) objB;
-            if (bodyB == castle.getFront())
-                castle.handleDamage(shot.generateDamage(castle));
-            else {
-                Damage damage = shot.generateDamage(castle);
-                // Double the damage
-                castle.handleDamage(damage);
-                castle.handleDamage(damage);
-            }
-            if (!shot.getVelocity().isZero(marginSpeed)) {
-                if (graphicalScene != null) {
-                    graphicalScene.generateAnimatedImpact(shot);
-                }
-                if (soundEffects != null) {
-                    if (castle.getHP() > 0f)
-                        soundEffects.playImpact(castle.material);
-                    else
-                        soundEffects.playBroken(castle.material);
-                }
-            }
-            //System.out.println(castle.getHP());
+            boolean doubleDamage = !(bodyB  == castle.getFront());
+            collisionShotCastle(shot, castle, doubleDamage);
             return;
         }
         if (typeA == Type.CASTLE && typeB == Type.SHOT) {
             PhysicalCastle castle = (PhysicalCastle) objA;
             PhysicalShot shot = (PhysicalShot) objB;
-            if (bodyA == castle.getFront())
-                castle.handleDamage(shot.generateDamage(castle));
-            else {
-                Damage damage = shot.generateDamage(castle);
-                // Double the damage
-                castle.handleDamage(damage);
-                castle.handleDamage(damage);
-            }
-            if (!shot.getVelocity().isZero(marginSpeed)) {
-                if (graphicalScene != null) {
-                    graphicalScene.generateAnimatedImpact(shot);
-                }
-                if (soundEffects != null) {
-                    if (castle.getHP() > 0f)
-                        soundEffects.playImpact(castle.material);
-                    else
-                        soundEffects.playBroken(castle.material);
-                }
-            }
+            boolean doubleDamage = !(bodyA  == castle.getFront());
+            collisionShotCastle(shot, castle, doubleDamage);
             return;
         }
     }
@@ -138,5 +78,46 @@ public class CollisionHandler implements ContactListener {
     @Override
     public void postSolve(Contact contact, ContactImpulse impulse) {
 
+    }
+
+    private void collisionShotBlock(PhysicalShot shot, PhysicalBlock block) {
+        block.handleDamage(shot.generateDamage(block));
+
+        // Effects
+        if (!shot.getVelocity().isZero(PhysicalShot.COLLISION_MARGIN)) {
+            if (graphicalScene != null) {
+                graphicalScene.generateAnimatedImpact(shot);
+            }
+            if (soundEffects != null) {
+                if (block.getHP() > 0f)
+                    soundEffects.playImpact(block.material);
+                else
+                    soundEffects.playBroken(block.material);
+            }
+        }
+    }
+
+    private void collisionShotCastle(PhysicalShot shot, PhysicalCastle castle, boolean doubleDamage) {
+        if (doubleDamage) {
+            Damage damage = shot.generateDamage(castle);
+            // Double the damage
+            castle.handleDamage(damage);
+            castle.handleDamage(damage);
+        }
+        else
+            castle.handleDamage(shot.generateDamage(castle));
+
+        // Effects
+        if (!shot.getVelocity().isZero(PhysicalShot.COLLISION_MARGIN)) {
+            if (graphicalScene != null) {
+                graphicalScene.generateAnimatedImpact(shot);
+            }
+            if (soundEffects != null) {
+                if (castle.getHP() > 0f)
+                    soundEffects.playImpact(castle.material);
+                else
+                    soundEffects.playBroken(castle.material);
+            }
+        }
     }
 }

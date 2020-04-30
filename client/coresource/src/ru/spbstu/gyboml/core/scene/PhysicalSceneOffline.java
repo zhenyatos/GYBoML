@@ -307,16 +307,6 @@ public class PhysicalSceneOffline {
         }
     }
 
-    public void connectWithSoundEffects(SoundEffects soundEffects) {
-        // TODO: remove, because we don't want to connect each time by creation a new one
-        for (PhysicalBlock block : physicalBlocksP1)
-            ;//EventSystem.get().connect(block, "handleDamage", soundEffects, "playWood");
-
-        for (PhysicalBlock block : physicalBlocksP2)
-            ;//EventSystem.get().connect(block, "handleDamage", soundEffects, "playWood");
-
-    }
-
     public void connectWithHPBar(PlayerType type, HPBar bar) {
             Method handleDamage = Events.get().find(PhysicalCastle.class, "handleDamage", Damage.class);
             Method update = Events.get().find(HPBar.class, "update", float.class);

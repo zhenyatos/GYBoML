@@ -1,5 +1,6 @@
 package ru.spbstu.gyboml.core.physical;
 
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.World;
 
@@ -12,7 +13,7 @@ import ru.spbstu.gyboml.core.util.PhysicsShapeCache;
 
 public class PhysicalBasicShot extends PhysicalShot {
     private static final float BASE_DAMAGE = 100;
-    private boolean damaged = false;
+    private static final float SPEED_PROP_LIMIT = 500.f;
 
     public PhysicalBasicShot(Location location, World world) {
         InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(PHYSICS_PATH_OBJECTS);
@@ -26,10 +27,13 @@ public class PhysicalBasicShot extends PhysicalShot {
 
     @Override
     public Damage generateDamage(Destructible destructible) {
-        if (!damaged) {
-            damaged = true;
-            return new Damage((BASE_DAMAGE * (1 - destructible.material.getDefenceRatio())));
-        }
-        return new Damage(0);
+        if (getVelocity().isZero(COLLISION_MARGIN))
+            return new Damage(0.f);
+        return new Damage(speedProportion(BASE_DAMAGE *
+                (1 - destructible.material.getDefenceRatio())));
+    }
+
+    private float speedProportion(float damage) {
+        return damage * Math.min(getVelocity().len2(), SPEED_PROP_LIMIT) / SPEED_PROP_LIMIT;
     }
 }
