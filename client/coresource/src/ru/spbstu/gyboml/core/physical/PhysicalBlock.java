@@ -17,9 +17,9 @@ public class PhysicalBlock extends Destructible implements Physical, Movable, In
     private Body body;
     private Updatable sprite;
 
-    private int id;
-        public void setId(int id) { this.id = id; }
-        public int getId() { return id; }
+    private Integer id = null;
+        public void setId(Integer id) { this.id = id; }
+        public Integer getId() { return id; }
 
     public PhysicalBlock(Material material, Location location, World world) {
         super(BASE_HP, material);

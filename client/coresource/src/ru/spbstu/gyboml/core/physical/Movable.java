@@ -10,6 +10,7 @@ public interface Movable {
     void setUpdatableSprite(Updatable sprite);
     void updateSprite();
 
-    int getId();
-    void setId( int id );
+    /** By default `id` field is null until it set with `setId` method */
+    Integer getId();
+    void setId( Integer id );
 }

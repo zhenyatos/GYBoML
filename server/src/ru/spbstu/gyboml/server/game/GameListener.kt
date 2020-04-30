@@ -28,33 +28,10 @@ class  GameListener(private val controller: Controller) : Listener() {
         connection as GybomlConnection
 
         when (request) {
-            is GameRequests.Shoot -> shot(connection, request)
             is GameRequests.GameExit -> gameExit(connection)
         }
     }
-
-    private fun shot(connection: GybomlConnection, request: GameRequests.Shoot) {
-        connection.player?.let { player ->
-            player.sessionId?.let { sessionId ->
-                val session = controller.getSession(sessionId) ?: return
-                if (!session.isStarted()) return
-
-                if (connection == session.firstConnection && session.game!!.stage != FIRST_PLAYER_ATTACK ||
-                    connection == session.secondConnection && session.game!!.stage != SECOND_PLAYER_ATTACK)
-                    return
-
-                session.getOther(connection)?.sendTCP(Shooted(request.ballPosition, request.ballVelocity))
-
-                // send pass turn response to both players
-                val fromFirst = connection == session.firstConnection
-                session.firstConnection?.sendTCP(PassTurned(!fromFirst))
-                session.secondConnection?.sendTCP(PassTurned(fromFirst))
-
-                // revert game stage
-                session.game?.let { it.stage = it.stage.reverted() }
-            }
-        }
-    }
+    
     private fun gameExit(connection: GybomlConnection) {
         connection.player?.let { player ->
             player.sessionId?.let {  sessionId ->

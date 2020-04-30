@@ -4,7 +4,9 @@ import com.badlogic.gdx.math.Vector2
 import com.esotericsoftware.kryonet.EndPoint
 import ru.spbstu.gyboml.core.Player
 import ru.spbstu.gyboml.core.PlayerType
+import ru.spbstu.gyboml.core.destructible.Material
 import ru.spbstu.gyboml.core.net.SessionRequests.*
+import ru.spbstu.gyboml.core.shot.ShotType
 import java.util.*
 
 object Network {
@@ -34,7 +36,6 @@ object Network {
             register(ExitSession::class.java)
             register(ExitSession::class.java)
             register(GameRequests.GameExit::class.java)
-            register(GameRequests.Shoot::class.java)
 
             register(SessionResponses.ReadyApproved::class.java)
             register(SessionResponses.SessionExited::class.java)
@@ -43,9 +44,19 @@ object Network {
             register(SessionResponses.TakeSessions::class.java)
             register(SessionResponses.NameRegistred::class.java)
             register(SessionResponses.SessionStarted::class.java)
-            register(GameResponses.Shooted::class.java)
             register(GameResponses.GameExited::class.java)
             register(GameResponses.PassTurned::class.java)
+
+            register(GameMessage.CreateShot::class.java)
+            register(GameMessage.UpdateShot::class.java)
+            register(GameMessage.RemoveShot::class.java)
+
+            register(GameMessage.CreateBlock::class.java)
+            register(GameMessage.UpdateBlock::class.java)
+            register(GameMessage.RemoveBlock::class.java)
+
+            register(Material::class.java)
+            register(ShotType::class.java)
         }
     }
 }

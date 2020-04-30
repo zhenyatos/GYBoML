@@ -29,7 +29,7 @@
             android:theme="@style/GdxTheme.NoActionBar">
         </activity>
         <activity
-            android:name="ru.spbstu.gyboml.game.GameActivity"
+            android:name="ru.spbstu.gyboml.multiplayer.GameActivity"
             android:configChanges="keyboard|keyboardHidden|navigation|orientation|screenSize|screenLayout"
             android:label="gyboml"
             android:screenOrientation="landscape">

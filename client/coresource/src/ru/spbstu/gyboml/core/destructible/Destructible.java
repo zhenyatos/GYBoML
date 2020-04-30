@@ -1,15 +1,16 @@
 package ru.spbstu.gyboml.core.destructible;
 
 import org.jetbrains.annotations.NotNull;
-import ru.spbstu.gyboml.core.damage.Effect;
-import ru.spbstu.gyboml.core.damage.Damage;
-import ru.spbstu.gyboml.core.event.EventSystem;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import ru.spbstu.gyboml.core.damage.Damage;
+import ru.spbstu.gyboml.core.damage.Effect;
+import ru.spbstu.gyboml.core.event.EventSystem;
+
 public class Destructible {
-    public final Material material;
+    public Material material;
     protected final float initialHP;
     private float HP;
     private List<Effect> activeEffects;

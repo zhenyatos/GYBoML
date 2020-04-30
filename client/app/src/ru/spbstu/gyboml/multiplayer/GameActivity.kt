@@ -1,4 +1,4 @@
-package ru.spbstu.gyboml.game
+package ru.spbstu.gyboml.multiplayer
 
 import android.os.Bundle
 import com.badlogic.gdx.backends.android.AndroidApplication

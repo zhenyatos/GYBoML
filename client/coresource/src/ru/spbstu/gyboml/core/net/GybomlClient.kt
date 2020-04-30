@@ -1,20 +1,15 @@
-package ru.spbstu.gyboml
+package ru.spbstu.gyboml.core.net
 
-import android.app.Activity
-import android.view.Gravity
-import android.widget.Toast
 import com.esotericsoftware.kryonet.Client
 import com.esotericsoftware.kryonet.Connection
 import com.esotericsoftware.kryonet.Listener
-import ru.spbstu.gyboml.core.net.Network
-import ru.spbstu.gyboml.core.net.SessionPlayer
 import java.io.IOException
 import kotlin.concurrent.thread
 
 object GybomlClient {
     var client: Client? = null
 
-    fun connect(activity: Activity, connectedReaction: () -> Unit) {
+    fun connect(connectedReaction: () -> Unit = {}, notConnectedReaction: () -> Unit = {}) {
         client?.close()
         client = Client()
         client?.let {
@@ -25,13 +20,7 @@ object GybomlClient {
             })
             thread {
                 try { it.connect(5000, Network.address, Network.tcpPort, Network.udpPort) }
-                catch (ex: IOException) {
-                    activity.runOnUiThread {
-                        val toast = Toast.makeText(activity, "Couldn't connect to server", Toast.LENGTH_LONG)
-                        toast.setGravity(Gravity.CENTER_HORIZONTAL, 0, 0)
-                        toast.show()
-                    }
-                }
+                catch (ex: IOException) { notConnectedReaction() }
             }
         }
     }

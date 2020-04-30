@@ -1,4 +1,4 @@
-package ru.spbstu.gyboml.game;
+package ru.spbstu.gyboml.multiplayer;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
@@ -9,7 +9,6 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
@@ -30,17 +29,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 
-import ru.spbstu.gyboml.GybomlClient;
+import ru.spbstu.gyboml.core.net.GybomlClient;
 import ru.spbstu.gyboml.core.Player;
 import ru.spbstu.gyboml.core.PlayerType;
 import ru.spbstu.gyboml.core.Winnable;
 import ru.spbstu.gyboml.core.event.EventSystem;
 import ru.spbstu.gyboml.core.net.GameRequests;
-import ru.spbstu.gyboml.core.physical.PhysicalShot;
 import ru.spbstu.gyboml.core.scene.GameOver;
 import ru.spbstu.gyboml.core.scene.GraphicalScene;
 import ru.spbstu.gyboml.core.scene.HPBar;
-import ru.spbstu.gyboml.core.scene.PhysicalScene;
+import ru.spbstu.gyboml.core.scene.MultiplayerPhysicalScene;
 import ru.spbstu.gyboml.core.scene.SceneConstants;
 import ru.spbstu.gyboml.core.scene.SoundEffects;
 import ru.spbstu.gyboml.core.shot.ShotType;
@@ -61,7 +59,7 @@ public class Game extends ApplicationAdapter implements InputProcessor, Winnable
     private static final int armoryColumnCount = 4;
     private static final float armoryChooseButtonWidthFactor = 2 / 3.0f;
 
-    PhysicalScene physicalScene;
+    MultiplayerPhysicalScene physicalScene;
     GraphicalScene graphicalScene;
     private SoundEffects soundEffects;
 
@@ -111,7 +109,7 @@ public class Game extends ApplicationAdapter implements InputProcessor, Winnable
         batch = new SpriteBatch();
 
         graphicalScene = new GraphicalScene();
-        physicalScene = new PhysicalScene(graphicalScene);
+        physicalScene = new MultiplayerPhysicalScene(graphicalScene, player.getType());
         soundEffects = SoundEffects.get();
 
         this.connectWithGraphicalScene();
@@ -195,14 +193,7 @@ public class Game extends ApplicationAdapter implements InputProcessor, Winnable
 
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                physicalScene.generateShot(player.getType(), shotType);
-                graphicalScene.generateGraphicalShot(physicalScene.getLastShot());
-
-                // send shot to server
-                PhysicalShot shot = physicalScene.getLastShot();
-                Vector2 position = shot.getPosition();
-                Vector2 velocity = shot.getVelocity();
-                GybomlClient.INSTANCE.sendTCP(new GameRequests.Shoot(shot.getPosition(), shot.getVelocity()));
+                // todo: make shot!
 
                 switchTurn();
             }
@@ -307,7 +298,7 @@ public class Game extends ApplicationAdapter implements InputProcessor, Winnable
     synchronized public void render() {
         Gdx.gl.glClearColor(1, 0, 0, 0);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        physicalScene.stepWorld();
+        physicalScene.stepWorld(player.getType());
 
         batch.setProjectionMatrix(camera.combined);
         batch.begin();

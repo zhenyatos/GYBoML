@@ -8,7 +8,7 @@ import android.widget.EditText
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
-import ru.spbstu.gyboml.GybomlClient
+import ru.spbstu.gyboml.core.net.GybomlClient
 import ru.spbstu.gyboml.R
 import ru.spbstu.gyboml.core.net.SessionRequests
 import ru.spbstu.gyboml.databinding.ActivityLobbyBinding

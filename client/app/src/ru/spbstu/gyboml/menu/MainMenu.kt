@@ -10,7 +10,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.victor.loading.rotate.RotateLoading
-import ru.spbstu.gyboml.GybomlClient
+import ru.spbstu.gyboml.core.net.GybomlClient
 import ru.spbstu.gyboml.R
 import ru.spbstu.gyboml.core.net.SessionRequests
 import ru.spbstu.gyboml.lobby.Lobby
@@ -50,9 +50,9 @@ class MainMenu : AppCompatActivity() {
             val name = input.text.toString()
             rotateLoading?.start()
 
-            GybomlClient.connect(this) {
+            val connectedReaction = {
                 runOnUiThread {
-                    val toast = Toast.makeText(this, "Connected to server", Toast.LENGTH_LONG)
+                    val toast = Toast.makeText(this, "Connected to server", Toast.LENGTH_SHORT)
                     toast.setGravity(Gravity.CENTER_HORIZONTAL, 0, 0)
                     toast.show()
                 }
@@ -62,6 +62,16 @@ class MainMenu : AppCompatActivity() {
 
                 GybomlClient.sendTCP(SessionRequests.RegisterName(name))
             }
+
+            val notConnectedReaction = {
+                runOnUiThread {
+                    val toast = Toast.makeText(this, "Couldn't connect to server", Toast.LENGTH_SHORT)
+                    toast.setGravity(Gravity.CENTER_HORIZONTAL, 0, 0)
+                    toast.show()
+                }
+            }
+
+            GybomlClient.connect(connectedReaction, notConnectedReaction)
         }
         builder.setNegativeButton("Cancel") { dialog, which -> dialog.cancel() }
         builder.show()
