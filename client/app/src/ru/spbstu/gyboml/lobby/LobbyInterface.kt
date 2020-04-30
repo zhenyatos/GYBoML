@@ -1,20 +1,14 @@
 package ru.spbstu.gyboml.lobby
 
 import android.view.View.*
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import ru.spbstu.gyboml.databinding.ActivityLobbyBinding
 
 class LobbyInterface(val binding: ActivityLobbyBinding) {
-
-    // views
     lateinit var layoutManager: RecyclerView.LayoutManager
-    lateinit var inSessionLayout: ConstraintLayout
-
-    // buttons
     lateinit var sessionsAdapter: ButtonAdapter
 
-    // set different view models
+    // different view models
     fun inSession() = with(binding) {
         inSessionLayout.visibility = VISIBLE
         ready.visibility = VISIBLE

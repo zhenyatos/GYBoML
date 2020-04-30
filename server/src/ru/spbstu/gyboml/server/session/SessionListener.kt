@@ -3,8 +3,8 @@ package ru.spbstu.gyboml.server.session
 import com.esotericsoftware.kryonet.Connection
 import com.esotericsoftware.kryonet.Listener
 import com.esotericsoftware.minlog.Log
+import ru.spbstu.gyboml.core.Player
 import ru.spbstu.gyboml.core.PlayerType.FIRST_PLAYER
-import ru.spbstu.gyboml.core.PlayerType.SECOND_PLAYER
 import ru.spbstu.gyboml.core.net.SessionPlayer
 import ru.spbstu.gyboml.core.net.SessionRequests
 import ru.spbstu.gyboml.core.net.SessionResponses
@@ -19,7 +19,7 @@ class SessionListener(private val controller: Controller) : Listener() {
 
         // if player and session id are not null
         connection.player?.let { player -> player.sessionId?.let{ id ->
-            controller.removeFromSession(id, player.type)
+            controller.removeFromSession(id, connection)
         }}
     }
 
@@ -60,7 +60,7 @@ class SessionListener(private val controller: Controller) : Listener() {
         player?.let {
             it.ready = false
             it.sessionId = session.id
-            session.add(connection, it)
+            session.add(connection)
 
             // send
             sendTCP(SessionResponses.SessionConnected(session.id))
@@ -71,7 +71,7 @@ class SessionListener(private val controller: Controller) : Listener() {
     private fun exitSession(connection: GybomlConnection) = with (connection) {
         player?.let { player ->
             player.sessionId?.let { sessionId ->
-                controller.removeFromSession(sessionId, player.type)
+                controller.removeFromSession(sessionId, connection)
             }
             player.sessionId = null
         }
@@ -84,26 +84,26 @@ class SessionListener(private val controller: Controller) : Listener() {
     }
     private fun setReady(connection: GybomlConnection, session: Session) = with(connection) {
         player?.let {
-            val ready = session.invertReady(it.type)
-            sendTCP(SessionResponses.ReadyApproved(ready))
+            session.invertReady(connection)
+            sendTCP(SessionResponses.ReadyApproved(it.ready))
             it.sessionId?.let { id -> controller.notifySessionPlayers(id) }
 
-            startGameIfReady(session.firstPlayer ?: return@let,
-                session.secondPlayer ?: return@let, session)
+            startGameIfReady(session)
         }
     }
-    private fun startGameIfReady(firstPlayer: NetPlayer, secondPlayer: NetPlayer, session: Session) = with(session) {
-        firstPlayer.player?.let {first ->
-        secondPlayer.player?.let {second ->
+    private fun startGameIfReady(session: Session) = with(session) {
+        firstConnection?.player?.let {first ->
+        secondConnection?.player?.let {second ->
             if (first.ready && second.ready) {
-                first.type = FIRST_PLAYER
-                second.type = SECOND_PLAYER
                 first.ready = false
                 second.ready = false
-                firstPlayer.connection.sendTCP(SessionResponses.SessionStarted())
-                secondPlayer.connection.sendTCP(SessionResponses.SessionStarted())
 
-                game = Game(session)
+                val firstPlayer = Player(FIRST_PLAYER, first.name, true, 0)
+                val secondPlayer = Player(FIRST_PLAYER, first.name, true, 0)
+                session.firstConnection?.sendTCP(SessionResponses.SessionStarted(firstPlayer))
+                session.secondConnection?.sendTCP(SessionResponses.SessionStarted(secondPlayer))
+
+                game = Game(session, firstPlayer, secondPlayer)
             }
         }}
     }

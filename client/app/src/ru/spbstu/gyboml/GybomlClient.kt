@@ -13,7 +13,6 @@ import kotlin.concurrent.thread
 
 object GybomlClient {
     var client: Client? = null
-    var player: SessionPlayer? = null
 
     fun connect(activity: Activity, connectedReaction: () -> Unit) {
         client?.close()

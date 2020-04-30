@@ -1,7 +1,6 @@
 package ru.spbstu.gyboml.server.game
 
 import ru.spbstu.gyboml.core.Player
-import ru.spbstu.gyboml.server.GybomlConnection
 import ru.spbstu.gyboml.server.session.Session
 
 enum class Stage {
@@ -16,10 +15,6 @@ enum class Stage {
     }
 }
 
-data class Game(val session: Session, var stage: Stage = Stage.FIRST_PLAYER_ATTACK) {
-    val firstPlayer = Player()
-    val secondPlayer = Player()
-
-    private fun firstConnection() : GybomlConnection? = session.firstPlayer?.connection
-    private fun secondConnection() : GybomlConnection? = session.secondPlayer?.connection
-}
+data class Game(val session: Session, val firstPlayer: Player = Player(),
+                val secondPlayer: Player = Player(),
+                var stage: Stage = Stage.FIRST_PLAYER_ATTACK)

@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Timer;
 
 import ru.spbstu.gyboml.GybomlClient;
+import ru.spbstu.gyboml.core.Player;
 import ru.spbstu.gyboml.core.PlayerType;
 import ru.spbstu.gyboml.core.Winnable;
 import ru.spbstu.gyboml.core.event.EventSystem;
@@ -51,7 +52,7 @@ import ru.spbstu.gyboml.core.shot.ShotType;
  * @since   2020-03-11
  */
 public class Game extends ApplicationAdapter implements InputProcessor, Winnable {
-    GameActivity gameActivity;
+    private GameActivity gameActivity;
 
     private static final float buttonWidth  = 200 / 1920.0f;
     private static final float buttonHeight = 100 / 1080.0f;
@@ -62,7 +63,7 @@ public class Game extends ApplicationAdapter implements InputProcessor, Winnable
 
     PhysicalScene physicalScene;
     GraphicalScene graphicalScene;
-    SoundEffects soundEffects;
+    private SoundEffects soundEffects;
 
     // drawing and stuff
     private Box2DDebugRenderer debugRenderer;
@@ -74,7 +75,6 @@ public class Game extends ApplicationAdapter implements InputProcessor, Winnable
     private Stage stageForUI;
     private Table table;
     private final List<Button> buttons = new ArrayList<>();
-    //private Label victoryLabel;
 
     private Skin earthSkin;
     private Table armoryCells;
@@ -82,12 +82,15 @@ public class Game extends ApplicationAdapter implements InputProcessor, Winnable
 
     private GameListener gameListener;
     private ImageButton fireButton;
-    private PlayerType playerTurn = PlayerType.FIRST_PLAYER;
+    Player player;
 
     // temp
     ShotType shotType = ShotType.BASIC;
 
-    public Game(GameActivity gameActivity) {this.gameActivity = gameActivity;}
+    public Game(GameActivity gameActivity, Player player) {
+        this.gameActivity = gameActivity;
+        this.player = player;
+    }
 
     /**
      * This is the method that is called on client's creation.
@@ -135,7 +138,6 @@ public class Game extends ApplicationAdapter implements InputProcessor, Winnable
      */
     private void setUpUI() {
         table = new Table();
-        //table.setDebug(true);
         table.setBounds(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
         stageForUI.addActor(table);
@@ -193,7 +195,7 @@ public class Game extends ApplicationAdapter implements InputProcessor, Winnable
 
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                physicalScene.generateShot(GybomlClient.INSTANCE.getPlayer().getType(), shotType);
+                physicalScene.generateShot(player.getType(), shotType);
                 graphicalScene.generateGraphicalShot(physicalScene.getLastShot());
 
                 // send shot to server
@@ -289,8 +291,8 @@ public class Game extends ApplicationAdapter implements InputProcessor, Winnable
             fireButton.setTouchable(Touchable.disabled);
         else
             fireButton.setTouchable(Touchable.enabled);
-        playerTurn = playerTurn.reverted();
-        EventSystem.get().emit(this, "switchTurn", playerTurn);
+        player.setTurn(!player.isTurn());
+        EventSystem.get().emit(this, "switchTurn", player.isTurn());
     }
 
     private void connectWithGraphicalScene() {

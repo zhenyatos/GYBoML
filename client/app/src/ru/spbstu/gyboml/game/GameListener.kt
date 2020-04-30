@@ -17,7 +17,7 @@ class GameListener(private val game: Game) : Listener() {
 
     private fun shoted(response: Shooted) {
         synchronized(game) {
-            game.physicalScene.generateShot(GybomlClient.player?.type?.reverted(), game.shotType)
+            game.physicalScene.generateShot(game.player.type.reverted(), game.shotType)
             game.physicalScene.lastShot.body.setTransform(response.ballPosition, 0f)
             game.physicalScene.lastShot.velocity = response.ballVelocity
             game.graphicalScene.generateGraphicalShot(game.physicalScene.lastShot)

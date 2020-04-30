@@ -9,6 +9,7 @@ import com.esotericsoftware.kryonet.Listener
 import ru.spbstu.gyboml.GybomlClient
 import ru.spbstu.gyboml.core.net.SessionRequests
 import ru.spbstu.gyboml.core.net.SessionResponses
+import ru.spbstu.gyboml.game.GameActivity
 import ru.spbstu.gyboml.lobby.Lobby.State.IN
 import ru.spbstu.gyboml.menu.MainMenu
 
@@ -67,7 +68,9 @@ class SessionListener(private val lobby: Lobby) : Listener() {
         }
     }
     private fun sessionStarted(connection: Connection, response: SessionResponses.SessionStarted) {
-        // TODO: !!!
+        val intent = Intent(lobby.applicationContext, GameActivity::class.java)
+        intent.putExtra(GameActivity.PLAYER_PARAM_KEY, response.player)
+        lobby.startActivity(intent)
     }
     private fun sessionExited(connection: Connection, response: SessionResponses.SessionExited) {
         lobby.runOnUiThread { lobby.out() }

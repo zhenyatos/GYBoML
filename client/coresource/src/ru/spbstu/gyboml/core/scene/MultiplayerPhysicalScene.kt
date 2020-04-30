@@ -15,7 +15,7 @@ import kotlin.math.cos
 import kotlin.math.min
 import kotlin.math.sin
 
-class MultiplayerPhysicalScene(val graphicalScene: GraphicalScene) {
+class MultiplayerPhysicalScene(private val graphicalScene: GraphicalScene, val playerType: PlayerType) {
 
     // scene objects
     val world: World
@@ -73,11 +73,7 @@ class MultiplayerPhysicalScene(val graphicalScene: GraphicalScene) {
                 PhysicalCastle(baseHP, Location(castleP2.x, castleP2.y, 0f, SceneConstants.CASTLES_SCALE), SECOND_PLAYER, world)
         background =
                 PhysicalBackground(Location(SceneConstants.backgroundX, SceneConstants.backgroundY, 0f, SceneConstants.SCALE), world)
-        fillBlocks(Material.WOOD)
-
-        addMovable(firstTower, secondTower)
-        firstBlocks.forEach { addMovable(it) }
-        secondBlocks.forEach { addMovable(it) }
+        addNewMovable(firstTower, secondTower)
 
         graphicalScene?.let {
             it.generateGraphicalBackground(background)
@@ -90,20 +86,25 @@ class MultiplayerPhysicalScene(val graphicalScene: GraphicalScene) {
         }
     }
 
-    private fun addMovable(vararg movable: Movable) {
+    // only for first player, known as 'host'
+    private fun addNewMovable(vararg movable: Movable) {
         for (m in movable) {
             m.id = nextAvailableId++
             movables[m.id] = m
         };
     }
 
-    private fun fillBlocks(material: Material) {
+    // only for second player
+    private fun addExistingMovable(vararg movable: Pair<Int, Movable>) {
+        for (m in movable) movables[m.first] = m.second
+    }
+
+    fun setUpBlocks(material: Material) {
         val blockP1X: Float = castleP1.x + (SceneConstants.castleWidth + 60) * SceneConstants.SCALE
         val blockP1Y: Float = castleP1.y + 240 * SceneConstants.SCALE
         val blockP2X: Float = castleP2.x - 60 * SceneConstants.SCALE - SceneConstants.blockWoodWidth * SceneConstants.BLOCKS_SCALE
         val blockP2Y: Float = castleP2.y + 240 * SceneConstants.SCALE
 
-        // 1st row
         // 1st row
         firstBlocks.add(PhysicalBlock(material, Location(blockP1X, blockP1Y, 0f, SceneConstants.BLOCKS_SCALE), world))
         secondBlocks.add(PhysicalBlock(material, Location(blockP2X, blockP2Y, 0f, SceneConstants.BLOCKS_SCALE), world))
@@ -113,23 +114,23 @@ class MultiplayerPhysicalScene(val graphicalScene: GraphicalScene) {
         secondBlocks.add(PhysicalBlock(material, Location(blockP2X, blockP2Y + 2 * 1.2f * SceneConstants.blockWoodHeight * SceneConstants.BLOCKS_SCALE, 0f, SceneConstants.BLOCKS_SCALE), world))
 
         // 2nd row
-        // 2nd row
         firstBlocks.add(PhysicalBlock(material, Location(blockP1X + 2 * SceneConstants.blockWoodWidth * SceneConstants.BLOCKS_SCALE, blockP1Y, 0f, SceneConstants.BLOCKS_SCALE), world))
         secondBlocks.add(PhysicalBlock(material, Location(blockP2X - 2 * SceneConstants.blockWoodWidth * SceneConstants.BLOCKS_SCALE, blockP2Y, 0f, SceneConstants.BLOCKS_SCALE), world))
         firstBlocks.add(PhysicalBlock(material, Location(blockP1X + 2 * SceneConstants.blockWoodWidth * SceneConstants.BLOCKS_SCALE, blockP1Y + 1.2f * SceneConstants.blockWoodHeight * SceneConstants.BLOCKS_SCALE, 0f, SceneConstants.BLOCKS_SCALE), world))
         secondBlocks.add(PhysicalBlock(material, Location(blockP2X - 2 * SceneConstants.blockWoodWidth * SceneConstants.BLOCKS_SCALE, blockP2Y + 1.2f * SceneConstants.blockWoodHeight * SceneConstants.BLOCKS_SCALE, 0f, SceneConstants.BLOCKS_SCALE), world))
 
         // 3rd row
-        // 3rd row
         firstBlocks.add(PhysicalBlock(material, Location(blockP1X + 4 * SceneConstants.blockWoodWidth * SceneConstants.BLOCKS_SCALE, blockP1Y, 0f, SceneConstants.BLOCKS_SCALE), world))
         secondBlocks.add(PhysicalBlock(material, Location(blockP2X - 4 * SceneConstants.blockWoodWidth * SceneConstants.BLOCKS_SCALE, blockP2Y, 0f, SceneConstants.BLOCKS_SCALE), world))
 
-        // back row
         // back row
         firstBlocks.add(PhysicalBlock(material, Location(castleP1.x - 60 * SceneConstants.SCALE - SceneConstants.blockWoodWidth * SceneConstants.BLOCKS_SCALE, blockP1Y, 0f, SceneConstants.BLOCKS_SCALE), world))
         firstBlocks.add(PhysicalBlock(material, Location(castleP1.x - 60 * SceneConstants.SCALE - SceneConstants.blockWoodWidth * SceneConstants.BLOCKS_SCALE, blockP1Y + 1.2f * SceneConstants.blockWoodHeight * SceneConstants.BLOCKS_SCALE, 0f, SceneConstants.BLOCKS_SCALE), world))
         secondBlocks.add(PhysicalBlock(material, Location(castleP2.x + (SceneConstants.castleWidth + 60) * SceneConstants.SCALE, blockP2Y, 0f, SceneConstants.BLOCKS_SCALE), world))
         secondBlocks.add(PhysicalBlock(material, Location(castleP2.x + (SceneConstants.castleWidth + 60) * SceneConstants.SCALE, blockP2Y + 1.2f * SceneConstants.blockWoodHeight * SceneConstants.BLOCKS_SCALE, 0f, SceneConstants.BLOCKS_SCALE), world))
+
+        firstBlocks.forEach { addNewMovable(it) }
+        secondBlocks.forEach { addNewMovable(it) }
     }
 
     fun genereateShot(turn: PlayerType, type: ShotType) {
@@ -150,7 +151,7 @@ class MultiplayerPhysicalScene(val graphicalScene: GraphicalScene) {
         shot.playerType = turn
         shot.velocity = Vector2(sign * 25f * cos, sign * 25f * sin)
 
-        synchronized(movables) { addMovable(shot) }
+        synchronized(movables) { addNewMovable(shot) }
         this.shot = shot
     }
     fun stepWorld() {

@@ -2,15 +2,14 @@ package ru.spbstu.gyboml.server.game
 
 import com.esotericsoftware.kryonet.Connection
 import com.esotericsoftware.kryonet.Listener
-import ru.spbstu.gyboml.core.PlayerType.*
 import ru.spbstu.gyboml.core.net.GameRequests
-import ru.spbstu.gyboml.core.net.GameResponses
+import ru.spbstu.gyboml.core.net.GameResponses.*
 import ru.spbstu.gyboml.server.Controller
 import ru.spbstu.gyboml.server.GybomlConnection
 import ru.spbstu.gyboml.server.game.Stage.FIRST_PLAYER_ATTACK
 import ru.spbstu.gyboml.server.game.Stage.SECOND_PLAYER_ATTACK
 
-class GameListener(private val controller: Controller) : Listener() {
+class  GameListener(private val controller: Controller) : Listener() {
     override fun disconnected(connection: Connection?) {
         connection as GybomlConnection
 
@@ -19,9 +18,7 @@ class GameListener(private val controller: Controller) : Listener() {
                 val session = controller.getSession(sessionId) ?: return
                 if (!session.isStarted()) return
 
-                session.getPlayer(player.type.reverted())
-                    ?.connection
-                    ?.sendTCP(GameResponses.GameExited())
+                session.getOther(connection)?.sendTCP(GameExited())
                 session.game = null
             }
         }
@@ -42,18 +39,16 @@ class GameListener(private val controller: Controller) : Listener() {
                 val session = controller.getSession(sessionId) ?: return
                 if (!session.isStarted()) return
 
-                if (player.type == FIRST_PLAYER && session.game!!.stage != FIRST_PLAYER_ATTACK ||
-                    player.type == SECOND_PLAYER && session.game!!.stage != SECOND_PLAYER_ATTACK)
+                if (connection == session.firstConnection && session.game!!.stage != FIRST_PLAYER_ATTACK ||
+                    connection == session.secondConnection && session.game!!.stage != SECOND_PLAYER_ATTACK)
                     return
 
-                session.getPlayer(player.type.reverted())
-                    ?.connection
-                    ?.sendTCP(GameResponses.Shooted(request.ballPosition, request.ballVelocity))
+                session.getOther(connection)?.sendTCP(Shooted(request.ballPosition, request.ballVelocity))
 
                 // send pass turn response to both players
-                val fromFirst = player.type == FIRST_PLAYER
-                session.firstPlayer?.connection?.sendTCP(GameResponses.PassTurned(!fromFirst))
-                session.secondPlayer?.connection?.sendTCP(GameResponses.PassTurned(fromFirst))
+                val fromFirst = connection == session.firstConnection
+                session.firstConnection?.sendTCP(PassTurned(!fromFirst))
+                session.secondConnection?.sendTCP(PassTurned(fromFirst))
 
                 // revert game stage
                 session.game?.let { it.stage = it.stage.reverted() }
@@ -66,9 +61,7 @@ class GameListener(private val controller: Controller) : Listener() {
                 val session = controller.getSession(sessionId) ?: return
                 if (!session.isStarted()) return
 
-                arrayOf(session.firstPlayer, session.secondPlayer).forEach { player ->
-                    player?.connection?.sendTCP(GameResponses.GameExited())
-                }
+                arrayOf(session.firstConnection, session.secondConnection).forEach { it?.sendTCP(GameExited()) }
             }
         }
     }
