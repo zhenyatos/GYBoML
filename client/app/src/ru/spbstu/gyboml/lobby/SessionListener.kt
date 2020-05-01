@@ -1,12 +1,10 @@
 package ru.spbstu.gyboml.lobby
 
 import android.content.Intent
-import android.view.Gravity
 import android.view.View.*
-import android.widget.Toast
 import com.esotericsoftware.kryonet.Connection
 import com.esotericsoftware.kryonet.Listener
-import ru.spbstu.gyboml.GybomlUtils
+import ru.spbstu.gyboml.AndroidUtils
 import ru.spbstu.gyboml.core.net.GybomlClient
 import ru.spbstu.gyboml.core.net.SessionRequests
 import ru.spbstu.gyboml.core.net.SessionResponses
@@ -16,7 +14,7 @@ import ru.spbstu.gyboml.menu.MainMenu
 
 class SessionListener(private val lobby: Lobby) : Listener() {
     override fun disconnected(connection: Connection?) {
-        GybomlUtils.showToast(lobby, "Disconnected from server")
+        AndroidUtils.showToast(lobby, "Disconnected from server")
 
         val intent = Intent(lobby.applicationContext, MainMenu::class.java)
         lobby.startActivity(intent)
@@ -74,7 +72,7 @@ class SessionListener(private val lobby: Lobby) : Listener() {
     }
     private fun sessionCreated(connection: Connection, response: SessionResponses.SessionCreated) {
         GybomlClient.sendTCP(SessionRequests.ConnectSession(response.sessionId))
-        GybomlUtils.showToast(lobby, "Session created")
+        AndroidUtils.showToast(lobby, "Session created")
     }
     private fun sessionConnected(connection: Connection, response: SessionResponses.SessionConnected) {
         lobby.runOnUiThread {

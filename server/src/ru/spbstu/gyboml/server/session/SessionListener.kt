@@ -19,19 +19,18 @@ class SessionListener(private val controller: Controller) : Listener() {
     override fun disconnected(connection: Connection?) {
         connection as GybomlConnection
 
-        // if player and session id are not null
         connection.player?.let { player -> player.sessionId?.let{ id ->
             controller.removeFromSession(id, connection)
         }}
+
+        controller.notifyAllPlayers()
     }
 
     override fun received(connection: Connection?, request: Any?) {
         connection as GybomlConnection
-
         Log.info("[SessionListener] Received $request from $connection")
 
         if (connection.player == null && request !is SessionRequests.RegisterName) return
-
         when (request) {
             is SessionRequests.RegisterName -> registerName(connection, request.name)
             is SessionRequests.GetSessions -> controller.notifyOne(connection)

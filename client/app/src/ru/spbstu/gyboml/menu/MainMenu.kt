@@ -3,14 +3,12 @@ package ru.spbstu.gyboml.menu
 import android.content.Intent
 import android.os.Bundle
 import android.text.InputType
-import android.view.Gravity
 import android.widget.Button
 import android.widget.EditText
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.victor.loading.rotate.RotateLoading
-import ru.spbstu.gyboml.GybomlUtils
+import ru.spbstu.gyboml.AndroidUtils
 import ru.spbstu.gyboml.core.net.GybomlClient
 import ru.spbstu.gyboml.R
 import ru.spbstu.gyboml.core.net.SessionRequests
@@ -52,7 +50,7 @@ class MainMenu : AppCompatActivity() {
             rotateLoading?.start()
 
             val connectedReaction = {
-                GybomlUtils.showToast(this, "Connected to server")
+                AndroidUtils.showToast(this, "Connected to server")
 
                 val intent = Intent(applicationContext, Lobby::class.java)
                 startActivity(intent)
@@ -61,7 +59,7 @@ class MainMenu : AppCompatActivity() {
             }
 
             val notConnectedReaction = {
-                GybomlUtils.showToast(this, "Couldn't connect to server")
+                AndroidUtils.showToast(this, "Couldn't connect to server")
             }
 
             GybomlClient.connect(connectedReaction, notConnectedReaction)

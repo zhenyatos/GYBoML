@@ -171,7 +171,7 @@ class MultiplayerPhysicalScene(private val graphicalScene: GraphicalScene, val p
      * needed to be sent to both players
      */
     fun stepWorld() {
-        if (!watch.isStarted()) {
+        if (!watch.isStarted) {
             watch.start()
             time = watch.time * 1000f
         }
@@ -183,11 +183,11 @@ class MultiplayerPhysicalScene(private val graphicalScene: GraphicalScene, val p
 
         if (accumulator >= step) {
             accumulator -= step
+
             world.step(step, velocityIterations, positionIterations)
 
             synchronized(movables) { movables.values.forEach { it.updateSprite() } }
 
-            // collect corps (only for first player)
             if (playerType == FIRST_PLAYER) notifyAboutDeadBodies()
         }
     }
@@ -217,7 +217,6 @@ class MultiplayerPhysicalScene(private val graphicalScene: GraphicalScene, val p
             EventSystem.get().connect(secondCastle, "handleDamage", gameOver, "defeatCheck")
         }
     }
-    fun getTowerAngle(type: PlayerType) = if (type == FIRST_PLAYER) firstTower.movablePartAngle else secondTower.movablePartAngle
 
     // block operations
     fun updateBlock(message: UpdateBlock) {

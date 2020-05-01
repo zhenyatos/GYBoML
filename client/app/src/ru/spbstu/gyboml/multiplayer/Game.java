@@ -271,7 +271,6 @@ public class Game extends ApplicationAdapter implements InputProcessor, Winnable
         armoryTable.add(showArmory).width(buttonWidth * Gdx.graphics.getWidth()).height(buttonHeight * Gdx.graphics.getHeight()).bottom();
         armoryTable.add(armoryCells);
 
-
         table.add(armoryTable);//.spaceBottom(Gdx.graphics.getHeight() -
         //(buttonHeight + armoryRowCount * buttonHeight * heightFactor) * Gdx.graphics.getHeight());
     }
@@ -307,7 +306,6 @@ public class Game extends ApplicationAdapter implements InputProcessor, Winnable
 
         stageForUI.act(Gdx.graphics.getDeltaTime());
         stageForUI.draw();
-
 
         //debugRenderer.render(physicalScene.getWorld(), camera.combined);
     }
