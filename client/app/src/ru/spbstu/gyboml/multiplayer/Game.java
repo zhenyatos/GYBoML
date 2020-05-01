@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 
+import ru.spbstu.gyboml.core.net.GameMessage;
 import ru.spbstu.gyboml.core.net.GybomlClient;
 import ru.spbstu.gyboml.core.Player;
 import ru.spbstu.gyboml.core.PlayerType;
@@ -193,9 +194,8 @@ public class Game extends ApplicationAdapter implements InputProcessor, Winnable
 
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                // todo: make shot!
-
-                switchTurn();
+                GybomlClient.INSTANCE.sendTCP(new GameMessage.CreateShot(player.getType(), ShotType.BASIC));
+                //switchTurn();
             }
         });
         table.add(fireButton).width(buttonWidth * Gdx.graphics.getWidth()).height(buttonHeight * Gdx.graphics.getHeight()).bottom().

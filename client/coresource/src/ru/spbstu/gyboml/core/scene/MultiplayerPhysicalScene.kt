@@ -8,9 +8,7 @@ import ru.spbstu.gyboml.core.PlayerType.FIRST_PLAYER
 import ru.spbstu.gyboml.core.PlayerType.SECOND_PLAYER
 import ru.spbstu.gyboml.core.destructible.Material
 import ru.spbstu.gyboml.core.event.EventSystem
-import ru.spbstu.gyboml.core.net.GameMessage
 import ru.spbstu.gyboml.core.net.GameMessage.*
-import ru.spbstu.gyboml.core.net.GameRequests
 import ru.spbstu.gyboml.core.net.GameRequests.GameLoaded
 import ru.spbstu.gyboml.core.net.GybomlClient
 import ru.spbstu.gyboml.core.net.GybomlClient.sendTCP
@@ -37,11 +35,13 @@ class MultiplayerPhysicalScene(private val graphicalScene: GraphicalScene, val p
 
     private val watch = StopWatch()
     private var time = 0f
-    private var accumulator = 0f
+    private var updateAccumulator = 0f
+    private var notifyAccumulator = 0f
 
     companion object {
         val gravity = Vector2(0f, -10f)
-        const val step = 1 / 60f
+        const val updateStep = 1 / 60f
+        const val notifyStep = 5 / 60f
         const val positionIterations = 2
         const val velocityIterations = 6
         const val baseHP = 100f
@@ -97,7 +97,10 @@ class MultiplayerPhysicalScene(private val graphicalScene: GraphicalScene, val p
     private fun addMovable(vararg movable: Movable) {
         for (m in movable) {
             if (m.id == null) m.id = nextAvailableId++
-            movables[m.id] = m
+
+            synchronized(movables) {
+                movables[m.id] = m
+            }
         };
     }
 
@@ -181,31 +184,52 @@ class MultiplayerPhysicalScene(private val graphicalScene: GraphicalScene, val p
 
         watch.split()
         val currentTime = watch.splitTime * 1000f
-        accumulator += min(currentTime - time, 0.25f)
+        updateAccumulator += min(currentTime - time, 0.25f)
+        notifyAccumulator += min(currentTime - time, 0.25f)
         time = currentTime
 
-        if (accumulator >= step) {
-            accumulator -= step
+        if (updateAccumulator >= updateStep) {
+            updateAccumulator -= updateStep
 
-            world.step(step, velocityIterations, positionIterations)
+            world.step(updateStep, velocityIterations, positionIterations)
 
             synchronized(movables) { movables.values.forEach { it.updateSprite() } }
+
+            if ((firstTower.joint.jointAngle >= firstTower.joint.upperLimit && firstTower.joint.motorSpeed > 0)||
+                    (firstTower.joint.jointAngle <= firstTower.joint.lowerLimit && firstTower.joint.motorSpeed < 0))
+                firstTower.joint.motorSpeed = -firstTower.joint.motorSpeed;
+
+            if ((secondTower.joint.jointAngle >= secondTower.joint.upperLimit && secondTower.joint.motorSpeed > 0)||
+                    (secondTower.joint.jointAngle <= secondTower.joint.lowerLimit && secondTower.joint.motorSpeed < 0))
+                secondTower.joint.motorSpeed = -secondTower.joint.motorSpeed;
+        }
+
+        if (notifyAccumulator >= notifyStep) {
+            notifyAccumulator -= notifyStep
 
             if (playerType == FIRST_PLAYER) {
                 notifyAboutDeadBodies()
                 notifyObjectsInfo()
             }
+
+            // todo: notify tower info
+        }
+    }
+
+    private fun notifyTowerInfo() {
+        when (playerType) {
         }
     }
 
     private fun notifyObjectsInfo() {
+
         (firstBlocks + secondBlocks).forEach {
             sendUDP(UpdateBlock(it.key, it.value.position, it.value.movablePartAngle,
                     it.value.body.linearVelocity, it.value.body.angularVelocity))
         }
 
-        shot?.let {
-            sendUDP(UpdateShot(it.position, it.velocity))
+        shot?.body?.let {
+            sendUDP(UpdateShot(it.position, it.angle, it.linearVelocity, it.angularVelocity))
         }
     }
 
@@ -237,11 +261,13 @@ class MultiplayerPhysicalScene(private val graphicalScene: GraphicalScene, val p
 
     // block operations
     fun updateBlock(message: UpdateBlock) {
-        if (!movables.contains(message.id)) return
-        val block = movables[message.id] as PhysicalBlock
-        block.body.setTransform(message.position, message.angle)
-        block.body.linearVelocity = message.linearVelocity
-        block.body.angularVelocity = message.angularVelocity
+        synchronized(movables) {
+            if (!movables.contains(message.id)) return
+            val block = movables[message.id] as PhysicalBlock
+            block.body.setTransform(message.position, message.angle)
+            block.body.linearVelocity = message.linearVelocity
+            block.body.angularVelocity = message.angularVelocity
+        }
     }
     fun createBlock(message: CreateBlock) {
         addBlock(message.firstBlock,
@@ -249,26 +275,34 @@ class MultiplayerPhysicalScene(private val graphicalScene: GraphicalScene, val p
         )
     }
     fun removeBlock(message: RemoveBlock) {
-        if (movables.containsKey(message.id)) {
-            val block = movables[message.id] as PhysicalBlock
-            world.destroyBody(block.body)
-            graphicalScene.removeObject(block)
-            movables.remove(message.id)
-            firstBlocks.remove(message.id)
-            secondBlocks.remove(message.id)
+        synchronized(movables) {
+            if (movables.containsKey(message.id)) {
+                val block = movables[message.id] as PhysicalBlock
+                world.destroyBody(block.body)
+                graphicalScene.removeObject(block)
+                movables.remove(message.id)
+                firstBlocks.remove(message.id)
+                secondBlocks.remove(message.id)
+            }
         }
     }
 
     // shot operations
     fun updateShot(message: UpdateShot) {
-        shot?.body?.setTransform(message.position, 0f)
-        shot?.velocity = message.velocity
+        shot?.body?.let {
+            it.setTransform(message.position.add(it.position).scl(.5f),
+                    .5f * (message.angle + it.angle))
+            it.linearVelocity = message.linearVelocity.add(it.linearVelocity).scl(.5f)
+            it.angularVelocity = .5f * (message.angularVelocity + it.angularVelocity)
+        }
     }
-    fun createShot(message: CreateShot) = generateShot(message.turn, message.type)
+    fun createShot(message: CreateShot) = generateShot(message.side, message.type)
     fun removeShot() {
         shot?.let {
             world.destroyBody(it.body)
-            movables.remove(it.id)
+            synchronized(movables) {
+                movables.remove(it.id)
+            }
             graphicalScene.removeObject(it)
 
             this.shot = null
