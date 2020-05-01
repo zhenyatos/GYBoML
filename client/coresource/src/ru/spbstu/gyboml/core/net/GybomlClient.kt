@@ -39,4 +39,10 @@ object GybomlClient {
             client?.sendTCP(obj)
         }
     }
+
+    fun sendUDP(obj: Any) {
+        thread {
+            client?.sendUDP(obj)
+        }
+    }
 }

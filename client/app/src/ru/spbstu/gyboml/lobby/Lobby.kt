@@ -33,12 +33,12 @@ class Lobby : AppCompatActivity() {
         lobbyInterface.binding.gameSessions.adapter = lobbyInterface.sessionsAdapter
 
         // set up listeners
-        lobbyInterface.binding.ready.setOnCheckedChangeListener { buttonView, isChecked ->
-            readyEvent(buttonView, isChecked)
+        lobbyInterface.binding.ready.setOnCheckedChangeListener { _, _ ->
+            readyEvent()
         }
-        lobbyInterface.binding.exit.setOnClickListener {v ->  exitEvent()}
-        lobbyInterface.binding.createSession.setOnClickListener {v ->  createSessionEvent(v)}
-        lobbyInterface.sessionsAdapter.onClickListener = OnClickListener { v: View -> connectSessionEvent(v) }
+        lobbyInterface.binding.exit.setOnClickListener { exitEvent() }
+        lobbyInterface.binding.createSession.setOnClickListener { createSessionEvent() }
+        lobbyInterface.sessionsAdapter.onClickListener = OnClickListener(this::connectSessionEvent)
         lobbyInterface.binding.swipeContainer.setOnRefreshListener { refreshEvent() }
 
         GybomlClient.addListener(SessionListener(this))
@@ -46,7 +46,7 @@ class Lobby : AppCompatActivity() {
     override fun onBackPressed() = GybomlClient.disconnect()
 
     // listeners
-    private fun createSessionEvent(view: View) {
+    private fun createSessionEvent() {
         val builder = AlertDialog.Builder(this, R.style.MyDialogTheme)
         builder.setTitle("Create new session")
 
@@ -54,18 +54,18 @@ class Lobby : AppCompatActivity() {
         input.inputType = InputType.TYPE_CLASS_TEXT
         builder.setView(input)
 
-        builder.setPositiveButton("OK") { dialog, which ->
+        builder.setPositiveButton("OK") { _, _ ->
             GybomlClient.sendTCP(SessionRequests.CreateSession(input.text.toString().trim()))
             GybomlClient.sendTCP(SessionRequests.GetSessions())
         }
-        builder.setNegativeButton("Cancel") { dialog, which -> dialog.cancel() }
+        builder.setNegativeButton("Cancel") { dialog, _ -> dialog.cancel() }
         builder.show()
     }
     private fun connectSessionEvent(view: View) {
         lobbyInterface.sessionsAdapter.chosenSessionId = view.id
         GybomlClient.sendTCP(SessionRequests.ConnectSession(view.id))
     }
-    private fun readyEvent(view: View, isChecked: Boolean) = GybomlClient.sendTCP(SessionRequests.Ready())
+    private fun readyEvent() = GybomlClient.sendTCP(SessionRequests.Ready())
     private fun refreshEvent() = GybomlClient.sendTCP(SessionRequests.GetSessions())
     private fun exitEvent() = GybomlClient.sendTCP(SessionRequests.ExitSession())
 

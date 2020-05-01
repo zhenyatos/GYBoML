@@ -27,11 +27,12 @@ class  GameListener(private val controller: Controller) : Listener() {
         when (request) {
             is GameRequests.GameExit -> gameExit(connection)
             is CreateBlock -> sendToBoth(connection, request)
+            is UpdateBlock -> traceUdpMessage(connection, request)
             is RemoveBlock -> sendToBoth(connection, request)
             is CreateShot -> sendToBoth(connection, request)
+            is UpdateShot -> traceUdpMessage(connection, request)
             is RemoveShot -> sendToBoth(connection, request)
             is GameLoaded -> gameLoaded(connection)
-
         }
     }
 
@@ -67,4 +68,9 @@ class  GameListener(private val controller: Controller) : Listener() {
             }
         }
     }
+
+    // udp messages doesn't handled by server,
+    // server only traces them
+    private fun traceUdpMessage(connection: GybomlConnection, message: GameMessage) =
+        extractSessionAndDo(controller, connection) { it.getOther(connection)?.sendUDP(message) }
 }

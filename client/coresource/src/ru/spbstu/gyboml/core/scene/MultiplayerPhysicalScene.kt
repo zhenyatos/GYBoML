@@ -14,6 +14,7 @@ import ru.spbstu.gyboml.core.net.GameRequests
 import ru.spbstu.gyboml.core.net.GameRequests.GameLoaded
 import ru.spbstu.gyboml.core.net.GybomlClient
 import ru.spbstu.gyboml.core.net.GybomlClient.sendTCP
+import ru.spbstu.gyboml.core.net.GybomlClient.sendUDP
 import ru.spbstu.gyboml.core.physical.*
 import ru.spbstu.gyboml.core.shot.ShotType
 import kotlin.math.cos
@@ -95,7 +96,7 @@ class MultiplayerPhysicalScene(private val graphicalScene: GraphicalScene, val p
     // add or update movable
     private fun addMovable(vararg movable: Movable) {
         for (m in movable) {
-            if (m.id == null) m.id = nextAvailableId
+            if (m.id == null) m.id = nextAvailableId++
             movables[m.id] = m
         };
     }
@@ -134,10 +135,10 @@ class MultiplayerPhysicalScene(private val graphicalScene: GraphicalScene, val p
         sendTCP(CreateBlock(true, Vector2(blockP2X - 4 * SceneConstants.blockWoodWidth * SceneConstants.BLOCKS_SCALE, blockP2Y), 0f, material))
 
         // back
-        //sendTCP(CreateBlock(true, Vector2(castleP1.x - 60 * SceneConstants.SCALE - SceneConstants.blockWoodWidth * SceneConstants.BLOCKS_SCALE, blockP1Y), 0f, material))
-        //sendTCP(CreateBlock(true, Vector2(castleP1.x - 60 * SceneConstants.SCALE - SceneConstants.blockWoodWidth * SceneConstants.BLOCKS_SCALE, blockP1Y + 1.2f * SceneConstants.blockWoodHeight * SceneConstants.BLOCKS_SCALE), 0f, material))
-        //sendTCP(CreateBlock(false, Vector2(castleP2.x + (SceneConstants.castleWidth + 60) * SceneConstants.SCALE, blockP2Y), 0f, material))
-        //sendTCP(CreateBlock(false, Vector2(castleP2.x + (SceneConstants.castleWidth + 60) * SceneConstants.SCALE, blockP2Y + 1.2f * SceneConstants.blockWoodHeight * SceneConstants.BLOCKS_SCALE), 0f, material))
+        sendTCP(CreateBlock(true, Vector2(castleP1.x - 60 * SceneConstants.SCALE - SceneConstants.blockWoodWidth * SceneConstants.BLOCKS_SCALE, blockP1Y), 0f, material))
+        sendTCP(CreateBlock(true, Vector2(castleP1.x - 60 * SceneConstants.SCALE - SceneConstants.blockWoodWidth * SceneConstants.BLOCKS_SCALE, blockP1Y + 1.2f * SceneConstants.blockWoodHeight * SceneConstants.BLOCKS_SCALE), 0f, material))
+        sendTCP(CreateBlock(false, Vector2(castleP2.x + (SceneConstants.castleWidth + 60) * SceneConstants.SCALE, blockP2Y), 0f, material))
+        sendTCP(CreateBlock(false, Vector2(castleP2.x + (SceneConstants.castleWidth + 60) * SceneConstants.SCALE, blockP2Y + 1.2f * SceneConstants.blockWoodHeight * SceneConstants.BLOCKS_SCALE), 0f, material))
     }
 
     private fun generateShot(turn: PlayerType, type: ShotType) {
@@ -158,7 +159,9 @@ class MultiplayerPhysicalScene(private val graphicalScene: GraphicalScene, val p
         shot.playerType = turn
         shot.velocity = Vector2(sign * 25f * cos, sign * 25f * sin)
 
-        synchronized(movables) { addMovable(shot) }
+        synchronized(movables) {
+            addMovable(shot)
+        }
         this.shot = shot
 
         graphicalScene.generateGraphicalShot(this.shot);
@@ -188,7 +191,21 @@ class MultiplayerPhysicalScene(private val graphicalScene: GraphicalScene, val p
 
             synchronized(movables) { movables.values.forEach { it.updateSprite() } }
 
-            if (playerType == FIRST_PLAYER) notifyAboutDeadBodies()
+            if (playerType == FIRST_PLAYER) {
+                notifyAboutDeadBodies()
+                notifyObjectsInfo()
+            }
+        }
+    }
+
+    private fun notifyObjectsInfo() {
+        (firstBlocks + secondBlocks).forEach {
+            sendUDP(UpdateBlock(it.key, it.value.position, it.value.movablePartAngle,
+                    it.value.body.linearVelocity, it.value.body.angularVelocity))
+        }
+
+        shot?.let {
+            sendUDP(UpdateShot(it.position, it.velocity))
         }
     }
 

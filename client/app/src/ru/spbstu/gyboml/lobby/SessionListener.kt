@@ -22,16 +22,16 @@ class SessionListener(private val lobby: Lobby) : Listener() {
 
     override fun received(connection: Connection, response: Any) {
         when (response) {
-            is SessionResponses.TakeSessions -> takeSessions(connection, response)
-            is SessionResponses.SessionConnected -> sessionConnected(connection, response)
-            is SessionResponses.ReadyApproved -> readyApproved(connection, response)
-            is SessionResponses.SessionCreated -> sessionCreated(connection, response)
-            is SessionResponses.SessionExited -> sessionExited(connection, response)
-            is SessionResponses.SessionStarted -> sessionStarted(connection, response)
+            is SessionResponses.TakeSessions -> takeSessions(response)
+            is SessionResponses.SessionConnected -> sessionConnected(response)
+            is SessionResponses.ReadyApproved -> readyApproved(response)
+            is SessionResponses.SessionCreated -> sessionCreated(response)
+            is SessionResponses.SessionExited -> sessionExited()
+            is SessionResponses.SessionStarted -> sessionStarted(response)
         }
     }
 
-    private fun takeSessions(connection: Connection, response: SessionResponses.TakeSessions) {
+    private fun takeSessions(response: SessionResponses.TakeSessions) {
         lobby.runOnUiThread {
             lobby.lobbyInterface.sessionsAdapter.update(response.sessions)
             lobby.lobbyInterface.binding.swipeContainer.isRefreshing = false
@@ -54,7 +54,7 @@ class SessionListener(private val lobby: Lobby) : Listener() {
             }
         }
     }
-    private fun readyApproved(connection: Connection, response: SessionResponses.ReadyApproved) {
+    private fun readyApproved(response: SessionResponses.ReadyApproved) {
         lobby.runOnUiThread {
             val ready = response.ready
 
@@ -62,19 +62,19 @@ class SessionListener(private val lobby: Lobby) : Listener() {
             lobby.lobbyInterface.binding.exit.visibility = if (ready) GONE else VISIBLE
         }
     }
-    private fun sessionStarted(connection: Connection, response: SessionResponses.SessionStarted) {
+    private fun sessionStarted(response: SessionResponses.SessionStarted) {
         val intent = Intent(lobby.applicationContext, GameActivity::class.java)
         intent.putExtra(GameActivity.PLAYER_PARAM_KEY, response.player)
         lobby.startActivity(intent)
     }
-    private fun sessionExited(connection: Connection, response: SessionResponses.SessionExited) {
+    private fun sessionExited() {
         lobby.runOnUiThread { lobby.out() }
     }
-    private fun sessionCreated(connection: Connection, response: SessionResponses.SessionCreated) {
+    private fun sessionCreated(response: SessionResponses.SessionCreated) {
         GybomlClient.sendTCP(SessionRequests.ConnectSession(response.sessionId))
         AndroidUtils.showToast(lobby, "Session created")
     }
-    private fun sessionConnected(connection: Connection, response: SessionResponses.SessionConnected) {
+    private fun sessionConnected(response: SessionResponses.SessionConnected) {
         lobby.runOnUiThread {
             lobby.join(response.sessionId)
         }

@@ -45,7 +45,7 @@ class MainMenu : AppCompatActivity() {
         input.inputType = InputType.TYPE_CLASS_TEXT
         builder.setView(input)
 
-        builder.setPositiveButton("OK") {dialog, which -> //try to connect
+        builder.setPositiveButton("OK") { _, _ -> //try to connect
             val name = input.text.toString()
             rotateLoading?.start()
 
@@ -64,7 +64,7 @@ class MainMenu : AppCompatActivity() {
 
             GybomlClient.connect(connectedReaction, notConnectedReaction)
         }
-        builder.setNegativeButton("Cancel") { dialog, which -> dialog.cancel() }
+        builder.setNegativeButton("Cancel") { dialog, _ -> dialog.cancel() }
         builder.show()
     }
 }
