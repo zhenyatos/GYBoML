@@ -9,8 +9,8 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 
 public class ShotBar {
     private ProgressBar shotPowerBar;
-    public static final int width = 25;
-    public static final int height = 125;
+    public static final int width = 30;
+    public static final int height = 120;
 
     private final float min = 0.5f;
     private final float max = 1.2f;

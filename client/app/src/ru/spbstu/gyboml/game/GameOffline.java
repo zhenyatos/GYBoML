@@ -16,11 +16,12 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
@@ -46,16 +47,11 @@ import ru.spbstu.gyboml.core.Winnable;
  * @since   2020-03-11
  */
 public class GameOffline extends ApplicationAdapter implements InputProcessor, Winnable {
+    //TODO: remove unnecessary
     private final MainActivityOffline activity;
 
-    private static final float buttonWidth  = 200 / 1920.0f;
-    private static final float buttonHeight = 100 / 1080.0f;
-    //private static final float buttonWidth  = 0.2f * Gdx.graphics.getWidth();
-    //private static final float buttonHeight = 0.1f * Gdx.graphics.getWidth();   // yes, width
-
-    private static final int armoryRowCount = 4;
-    private static final int armoryColumnCount = 4;
-    private static final float armoryChooseButtonWidthFactor = 2 / 3.0f;
+    private static final int armoryRows = 4;
+    private static final int armoryCols = 3;
 
     private SoundEffects soundEffects;
     private GraphicalScene graphicalScene;
@@ -68,20 +64,18 @@ public class GameOffline extends ApplicationAdapter implements InputProcessor, W
     private ExtendViewport viewport;
 
     //UI
-    private Stage stageForUI;
-    private Table table;
     private final List<Button> buttons = new ArrayList<>();
+    private Stage stageForUI;
+    private Skin UISkin;
     private Button fireButton;
     private ShotBar shotBar;
-    //private Label victoryLabel;
-
-    private Skin earthSkin;
     private Table armoryCells;
     private boolean visibleArmory;
+    private ImageButtonStyle fireStyle;
+    private ImageButtonStyle aimStyle;
+    private Image currentShotTexture;
 
     private PlayerType playerTurn = PlayerType.FIRST_PLAYER;
-
-    // temp
     private ShotType shotType = ShotType.BASIC;
 
     public GameOffline(MainActivityOffline activity) {
@@ -124,28 +118,18 @@ public class GameOffline extends ApplicationAdapter implements InputProcessor, W
      * Creates the UI table and creates the layout of the UI elements.
      */
     private void setUpUI() {
-        table = new Table();
-        //table.setDebug(true);
-        table.setBounds(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        float buttonWidth  = 0.13f * Gdx.graphics.getWidth();
+        float buttonHeight = buttonWidth / 2f;
+        UISkin = new Skin(Gdx.files.internal("skin/flat-earth-ui.json"));
 
-        stageForUI.addActor(table);
-
-        Skin UISkin = new Skin(Gdx.files.internal("skin/flat-earth-ui.json"));
-
-        // End turn button
-        TextureRegionDrawable leaveUp   = new TextureRegionDrawable(
-                new TextureRegion(
-                        new Texture(Gdx.files.internal("skin/buttons/leave_up.png"))));
-        TextureRegionDrawable leaveDown = new TextureRegionDrawable(
-                new TextureRegion(
-                        new Texture(Gdx.files.internal("skin/buttons/leave_down.png"))));
+        // leave button
+        TextureRegionDrawable leaveUp = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("skin/buttons/leave_up.png"))));
+        TextureRegionDrawable leaveDown = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("skin/buttons/leave_down.png"))));
         ImageButton leaveButton = new ImageButton(leaveUp, leaveDown);
-
         leaveButton.addListener(new InputListener() {
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                Dialog dialog = new Dialog("Leave", UISkin)
-                {
+                Dialog dialog = new Dialog("Leave", UISkin) {
                     @Override
                     protected void result(Object object) {
                         if ((boolean)object) {
@@ -153,6 +137,7 @@ public class GameOffline extends ApplicationAdapter implements InputProcessor, W
                         }
                     }
                 };
+                // TODO: remake
                 dialog.text("Are you sure you want to exit?").setScale(2f);
                 dialog.button("Yes", true).setWidth(2f);
                 dialog.button("No", false).setWidth(2f);
@@ -164,25 +149,27 @@ public class GameOffline extends ApplicationAdapter implements InputProcessor, W
                 return true;
             }
         });
-
-        table.bottom().left();
-        table.row();
-        table.add(leaveButton).width(buttonWidth * Gdx.graphics.getWidth()).height(buttonHeight * Gdx.graphics.getHeight()).bottom();
-
-        setUpArmoryStorage();
+        leaveButton.setSize(buttonWidth, buttonHeight);
+        leaveButton.setPosition(0, 0);
+        stageForUI.addActor(leaveButton);
 
         // shot bar
         shotBar = new ShotBar();
         shotBar.getShotPowerBar().setVisible(false);
-        shotBar.getShotPowerBar().setPosition(Gdx.graphics.getWidth() - 50, 100);
+        shotBar.getShotPowerBar().setPosition(
+                Gdx.graphics.getWidth() - (buttonWidth + shotBar.getShotPowerBar().getWidth()) / 2,
+                buttonHeight * 1.1f);
         stageForUI.addActor(shotBar.getShotPowerBar());
 
         // Fire button
-        TextureRegionDrawable fireUp   = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("skin/buttons/fire_up.png"))));
-        TextureRegionDrawable fireDown = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("skin/buttons/fire_down.png"))));
-        fireButton = new ImageButton(fireUp, fireDown);
+        fireStyle = new ImageButtonStyle();
+        aimStyle = new ImageButtonStyle();
+        fireStyle.up   = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("skin/buttons/fire_up.png"))));
+        fireStyle.down = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("skin/buttons/fire_down.png"))));
+        aimStyle.up    = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("skin/buttons/aim_up.png"))));
+        aimStyle.down  = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("skin/buttons/aim_down.png"))));
+        fireButton = new ImageButton(aimStyle);
         fireButton.addListener(new InputListener() {
-
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 return true;
@@ -190,13 +177,16 @@ public class GameOffline extends ApplicationAdapter implements InputProcessor, W
 
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                // if aimed
                 if (shotBar.getShotPowerBar().isVisible()) {
+                    fireButton.setStyle(aimStyle);
                     physicalScene.generateShot(playerTurn, shotType, shotBar.getShotPowerBar().getValue());
                     physicalScene.setCannonStatus(playerTurn, true);
                     fireButton.setTouchable(Touchable.disabled);
                     shotBar.getShotPowerBar().setVisible(false);
                 }
                 else {
+                    fireButton.setStyle(fireStyle);
                     physicalScene.setCannonStatus(playerTurn, false);
                     soundEffects.playLoadShot();
                     shotBar.resetValue();
@@ -204,81 +194,79 @@ public class GameOffline extends ApplicationAdapter implements InputProcessor, W
                 }
             }
         });
-        table.add(fireButton).width(buttonWidth * Gdx.graphics.getWidth()).height(buttonHeight * Gdx.graphics.getHeight()).bottom().
-                spaceLeft(Gdx.graphics.getWidth() * (1 - (3 + armoryColumnCount * armoryChooseButtonWidthFactor) * buttonWidth));
-
+        fireButton.setSize(buttonWidth, buttonHeight);
+        fireButton.setPosition(Gdx.graphics.getWidth() - buttonWidth,0);
+        stageForUI.addActor(fireButton);
         buttons.add(fireButton);
 
-        // HP progress bar
-        HPBar bar1 = new HPBar(100);
-        physicalScene.connectWithHPBar(PlayerType.FIRST_PLAYER, bar1);
-        bar1.getHealthBar().setPosition(10, Gdx.graphics.getHeight() - 30);
-        stageForUI.addActor(bar1.getHealthBar());
+        //currentShotTexture = new Image(new TextureRegion(new Texture(Gdx.files.internal("skin/buttons/shots/shot_basic.png"))));
+        //currentShotTexture.setSize(buttonHeight, buttonHeight);
+        //currentShotTexture.setPosition(Gdx.graphics.getWidth() - buttonWidth - 1.1f * buttonHeight, 0);
+        //stageForUI.addActor(currentShotTexture);
 
+        setUpArmory(buttonWidth, buttonHeight);
+
+        // HP progress bars
+        HPBar bar1 = new HPBar(100);
         HPBar bar2 = new HPBar(100);
+        physicalScene.connectWithHPBar(PlayerType.FIRST_PLAYER, bar1);
         physicalScene.connectWithHPBar(PlayerType.SECOND_PLAYER, bar2);
+        bar1.getHealthBar().setPosition(10, Gdx.graphics.getHeight() - 30);
         bar2.getHealthBar().setPosition(Gdx.graphics.getWidth() - HPBar.width - 10,Gdx.graphics.getHeight() - 30);
+        stageForUI.addActor(bar1.getHealthBar());
         stageForUI.addActor(bar2.getHealthBar());
 
         //Game over labels
-        Label won1stPlayer = new Label("First player won!", UISkin, "title");
-        won1stPlayer.setPosition(Gdx.graphics.getWidth() / 2f - won1stPlayer.getWidth() / 2f,
-                Gdx.graphics.getHeight() / 2f - won1stPlayer.getHeight() / 2f);
-        Label won2ndPlayer = new Label("Second player won!", UISkin, "title");
-        won2ndPlayer.setPosition(Gdx.graphics.getWidth() / 2f - won2ndPlayer.getWidth() / 2f,
-                Gdx.graphics.getHeight() / 2f - won2ndPlayer.getHeight() / 2f);
+        Label won1stPlayer = new Label("Player 1 wins!", UISkin, "title");
+        Label won2ndPlayer = new Label("Player 2 wins!", UISkin, "title");
+        won1stPlayer.setPosition(Gdx.graphics.getWidth() / 2f - won1stPlayer.getWidth() / 2f,Gdx.graphics.getHeight() / 2f - won1stPlayer.getHeight() / 2f);
+        won2ndPlayer.setPosition(Gdx.graphics.getWidth() / 2f - won2ndPlayer.getWidth() / 2f,Gdx.graphics.getHeight() / 2f - won2ndPlayer.getHeight() / 2f);
         stageForUI.addActor(won1stPlayer);
         stageForUI.addActor(won2ndPlayer);
         physicalScene.connectWithGameOver(new GameOver(this, won1stPlayer, won2ndPlayer));
     }
 
-    private void setUpArmoryStorage() {
-        Table armoryTable = new Table();
+    private void setUpArmory(float buttonWidth, float buttonHeight) {
+        float armoryCellsWidth  = buttonWidth  * armoryCols;
+        float armoryCellsHeight = buttonHeight * armoryRows;
         armoryCells = new Table();
+        armoryCells.setVisible(false);
         visibleArmory = false;
-        armoryCells.setVisible(visibleArmory);
 
-        earthSkin = new Skin(Gdx.files.internal("skin/flat-earth-ui.json"));
-
-        for (int y = 0; y < armoryRowCount; y++) {
+        TextureRegionDrawable cellUp = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("skin/buttons/button.png"))));
+        TextureRegionDrawable cellDown = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("skin/buttons/button.png"))));
+        for (int y = 0; y < armoryRows; y++) {
             armoryCells.row();
-            for (int x = 0; x < armoryColumnCount; x++){
-                TextButton cell = new TextButton("Cell " + y + ", " + x, earthSkin, "default");
-                armoryCells.add(cell).
-                        width(buttonWidth * armoryChooseButtonWidthFactor * Gdx.graphics.getWidth());
-                buttons.add(cell);
+            for (int x = 0; x < armoryCols; x++){
+                // TODO: #134 shots shop - after checking a cell change shotType and currentShotTexture fields
+                ImageButton cellButton = new ImageButton(cellUp, cellDown);
+                armoryCells.add(cellButton).width(buttonWidth).height(buttonHeight);
             }
-
         }
 
         // Show armory button
         TextureRegionDrawable armoryUp      = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("skin/buttons/armory_up.png"))));
         TextureRegionDrawable armoryDown    = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("skin/buttons/armory_down.png"))));
         TextureRegionDrawable armoryChecked = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("skin/buttons/armory_down.png"))));
-        ImageButton showArmory = new ImageButton(armoryUp, armoryDown, armoryChecked);
-        buttons.add(showArmory);
-
-        showArmory.addListener(new InputListener() {
+        ImageButton armoryButton = new ImageButton(armoryUp, armoryDown, armoryChecked);
+        armoryButton.addListener(new InputListener() {
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
                 visibleArmory = !visibleArmory;
                 armoryCells.setVisible(visibleArmory);
+                soundEffects.playArmory();
             }
-
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 return true;
             }
         });
-
-        armoryTable.row();
-        armoryTable.bottom().left();
-        armoryTable.add(showArmory).width(buttonWidth * Gdx.graphics.getWidth()).height(buttonHeight * Gdx.graphics.getHeight()).bottom();
-        armoryTable.add(armoryCells);
-
-
-        table.add(armoryTable);//.spaceBottom(Gdx.graphics.getHeight() -
-        //(buttonHeight + armoryRowCount * buttonHeight * heightFactor) * Gdx.graphics.getHeight());
+        buttons.add(armoryButton);
+        armoryButton.setSize(buttonWidth, buttonHeight);
+        armoryButton.setPosition(buttonWidth,0);
+        armoryCells.setPosition(2 * buttonWidth + armoryCellsWidth / 2, 0 + armoryCellsHeight / 2);
+        stageForUI.addActor(armoryButton);
+        stageForUI.addActor(armoryCells);
     }
 
     // TODO: set timer and wait for objects to sleep

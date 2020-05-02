@@ -15,6 +15,7 @@ public class SoundEffects {
     private final Sound stoneBroken;
     private final Sound p1Turn;
     private final Sound p2Turn;
+    private final Sound armory;
     private float effectsVolume = 1.0f;
 
     public SoundEffects() {
@@ -26,6 +27,7 @@ public class SoundEffects {
         stoneBroken = Gdx.audio.newSound(Gdx.files.internal("sound/stone_broken.wav"));
         p1Turn = Gdx.audio.newSound(Gdx.files.internal("sound/coin_p1_turn.wav"));
         p2Turn = Gdx.audio.newSound(Gdx.files.internal("sound/coin_p2_turn.wav"));
+        armory = Gdx.audio.newSound(Gdx.files.internal("sound/armory.wav"));
     }
 
     public void setEffectsVolume(float effectsVolume) {
@@ -69,5 +71,9 @@ public class SoundEffects {
             p1Turn.play(effectsVolume);
         else if (playerType == PlayerType.SECOND_PLAYER)
             p2Turn.play(effectsVolume);
+    }
+
+    public void playArmory() {
+        armory.play(effectsVolume);
     }
 }
