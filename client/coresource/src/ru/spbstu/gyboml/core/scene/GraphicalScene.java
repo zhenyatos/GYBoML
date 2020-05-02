@@ -184,7 +184,7 @@ public class GraphicalScene {
                 SceneConstants.coinY + SceneConstants.COIN_SCALE * coinP1TurnAnimation.getKeyFrames()[0].getRegionHeight());
         text.setSize(text.getWidth() * SceneConstants.TURN_SCALE, text.getHeight() * SceneConstants.TURN_SCALE);
         text.setAlpha(0.0f);
-        animations.add(new AnimatedFading(text, 0.014f));
+        animations.add(new AnimatedFading(text, 0.015f));
     }
 
     public void generateAnimatedImpact(PhysicalShot shot) {

@@ -118,14 +118,16 @@ public class GameOffline extends ApplicationAdapter implements InputProcessor, W
      * Creates the UI table and creates the layout of the UI elements.
      */
     private void setUpUI() {
+        // TODO: place buttons using table properly
         float buttonWidth  = 0.13f * Gdx.graphics.getWidth();
         float buttonHeight = buttonWidth / 2f;
         UISkin = new Skin(Gdx.files.internal("skin/flat-earth-ui.json"));
 
         // leave button
-        TextureRegionDrawable leaveUp = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("skin/buttons/leave_up.png"))));
-        TextureRegionDrawable leaveDown = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("skin/buttons/leave_down.png"))));
-        ImageButton leaveButton = new ImageButton(leaveUp, leaveDown);
+        ImageButtonStyle leaveStyle = new ImageButtonStyle();
+        leaveStyle.up   = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("skin/buttons/leave_up.png"))));
+        leaveStyle.down = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("skin/buttons/leave_down.png"))));
+        ImageButton leaveButton = new ImageButton(leaveStyle);
         leaveButton.addListener(new InputListener() {
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
@@ -137,7 +139,7 @@ public class GameOffline extends ApplicationAdapter implements InputProcessor, W
                         }
                     }
                 };
-                // TODO: remake
+                // TODO: refactor scales
                 dialog.text("Are you sure you want to exit?").setScale(2f);
                 dialog.button("Yes", true).setWidth(2f);
                 dialog.button("No", false).setWidth(2f);
@@ -154,7 +156,7 @@ public class GameOffline extends ApplicationAdapter implements InputProcessor, W
         stageForUI.addActor(leaveButton);
 
         // shot bar
-        shotBar = new ShotBar();
+        shotBar = new ShotBar(buttonWidth);
         shotBar.getShotPowerBar().setVisible(false);
         shotBar.getShotPowerBar().setPosition(
                 Gdx.graphics.getWidth() - (buttonWidth + shotBar.getShotPowerBar().getWidth()) / 2,
@@ -163,7 +165,7 @@ public class GameOffline extends ApplicationAdapter implements InputProcessor, W
 
         // Fire button
         fireStyle = new ImageButtonStyle();
-        aimStyle = new ImageButtonStyle();
+        aimStyle  = new ImageButtonStyle();
         fireStyle.up   = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("skin/buttons/fire_up.png"))));
         fireStyle.down = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("skin/buttons/fire_down.png"))));
         aimStyle.up    = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("skin/buttons/aim_up.png"))));
@@ -199,10 +201,11 @@ public class GameOffline extends ApplicationAdapter implements InputProcessor, W
         stageForUI.addActor(fireButton);
         buttons.add(fireButton);
 
-        //currentShotTexture = new Image(new TextureRegion(new Texture(Gdx.files.internal("skin/buttons/shots/shot_basic.png"))));
-        //currentShotTexture.setSize(buttonHeight, buttonHeight);
-        //currentShotTexture.setPosition(Gdx.graphics.getWidth() - buttonWidth - 1.1f * buttonHeight, 0);
-        //stageForUI.addActor(currentShotTexture);
+        // TODO: shots folder with .png is temp, remake with Skin (same for buttons)
+        currentShotTexture = new Image(new TextureRegion(new Texture(Gdx.files.internal("skin/buttons/shots/shot_basic.png"))));
+        currentShotTexture.setSize(buttonHeight, buttonHeight);
+        currentShotTexture.setPosition(Gdx.graphics.getWidth() - buttonWidth - 1.1f * buttonHeight, 0);
+        stageForUI.addActor(currentShotTexture);
 
         setUpArmory(buttonWidth, buttonHeight);
 
@@ -233,22 +236,24 @@ public class GameOffline extends ApplicationAdapter implements InputProcessor, W
         armoryCells.setVisible(false);
         visibleArmory = false;
 
-        TextureRegionDrawable cellUp = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("skin/buttons/button.png"))));
-        TextureRegionDrawable cellDown = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("skin/buttons/button.png"))));
+        ImageButtonStyle cellStyle = new ImageButtonStyle();
+        cellStyle.up   = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("skin/buttons/button.png"))));
+        cellStyle.down = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("skin/buttons/button.png"))));
         for (int y = 0; y < armoryRows; y++) {
             armoryCells.row();
             for (int x = 0; x < armoryCols; x++){
                 // TODO: #134 shots shop - after checking a cell change shotType and currentShotTexture fields
-                ImageButton cellButton = new ImageButton(cellUp, cellDown);
+                ImageButton cellButton = new ImageButton(cellStyle);
                 armoryCells.add(cellButton).width(buttonWidth).height(buttonHeight);
             }
         }
 
         // Show armory button
-        TextureRegionDrawable armoryUp      = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("skin/buttons/armory_up.png"))));
-        TextureRegionDrawable armoryDown    = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("skin/buttons/armory_down.png"))));
-        TextureRegionDrawable armoryChecked = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("skin/buttons/armory_down.png"))));
-        ImageButton armoryButton = new ImageButton(armoryUp, armoryDown, armoryChecked);
+        ImageButtonStyle armoryStyle = new ImageButtonStyle();
+        armoryStyle.up = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("skin/buttons/armory_up.png"))));
+        armoryStyle.down = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("skin/buttons/armory_down.png"))));
+        armoryStyle.checked = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("skin/buttons/armory_down.png"))));
+        ImageButton armoryButton = new ImageButton(armoryStyle);
         armoryButton.addListener(new InputListener() {
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {

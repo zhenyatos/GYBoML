@@ -9,15 +9,17 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 
 public class ShotBar {
     private ProgressBar shotPowerBar;
-    public static final int width = 30;
-    public static final int height = 120;
-
-    private final float min = 0.5f;
-    private final float max = 1.2f;
-    private final float step = 0.018f;
+    private int width;
+    private int height;
     private boolean increasing = true;
 
-    public ShotBar() {
+    private final static float min = 0.5f;
+    private final static float max = 1.2f;
+    private final static float step = 0.018f;
+
+    public ShotBar(float buttonWidth) {
+        width = (int)(buttonWidth / 4f);
+        height = width * 3;
         Pixmap pixmap = new Pixmap(width, height, Pixmap.Format.RGBA8888);
         pixmap.setColor(Color.RED);
         pixmap.fill();
