@@ -13,7 +13,7 @@ object Network {
     const val tcpPort = 4445
     const val udpPort = 3335
 
-    const val address = "192.168.1.177"//"34.91.65.96"
+    const val address = "34.91.65.96"//"192.168.1.177"//"34.91.65.96"
 
     fun register(endpoint: EndPoint) {
         with (endpoint.kryo) {
