@@ -14,7 +14,7 @@ import ru.spbstu.gyboml.menu.MainMenu
 
 class SessionListener(private val lobby: Lobby) : Listener() {
     override fun disconnected(connection: Connection?) {
-        AndroidUtils.showToast(lobby, "Disconnected from server")
+        AndroidUtils.showToast(lobby, "Disconnected")
 
         val intent = Intent(lobby.applicationContext, MainMenu::class.java)
         lobby.startActivity(intent)

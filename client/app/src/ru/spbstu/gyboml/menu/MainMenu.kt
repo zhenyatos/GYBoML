@@ -18,7 +18,6 @@ import kotlin.system.exitProcess
 class MainMenu : AppCompatActivity() {
     private var startButton: Button? = null
     private var exitButton: Button? = null
-    private var rotateLoading: RotateLoading? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,8 +32,6 @@ class MainMenu : AppCompatActivity() {
             finishAffinity()
             exitProcess(0)
         }
-
-        rotateLoading = findViewById(R.id.rotateloading)
     }
 
     private fun createDialogueWindow() {
@@ -47,10 +44,9 @@ class MainMenu : AppCompatActivity() {
 
         builder.setPositiveButton("OK") { _, _ -> //try to connect
             val name = input.text.toString()
-            rotateLoading?.start()
 
             val connectedReaction = {
-                AndroidUtils.showToast(this, "Connected to server")
+                AndroidUtils.showToast(this, "Connected!")
 
                 val intent = Intent(applicationContext, Lobby::class.java)
                 startActivity(intent)
@@ -62,6 +58,7 @@ class MainMenu : AppCompatActivity() {
                 AndroidUtils.showToast(this, "Couldn't connect to server")
             }
 
+            AndroidUtils.showToast(this, "Connecting...")
             GybomlClient.connect(connectedReaction, notConnectedReaction)
         }
         builder.setNegativeButton("Cancel") { dialog, _ -> dialog.cancel() }
