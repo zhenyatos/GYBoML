@@ -8,7 +8,7 @@
 		<angular_damping>0</angular_damping>
 		<allow_sleep/>
 		<fixture>
-			<density>600</density>
+			<density>800</density>
 			<friction>0.6</friction>
 			<restitution>0.1</restitution>
 			<filter_category_bits>1</filter_category_bits>
@@ -304,7 +304,7 @@
 		<angular_damping>0</angular_damping>
 		<allow_sleep/>
 		<fixture>
-			<density>600</density>
+			<density>800</density>
 			<friction>0.6</friction>
 			<restitution>0.1</restitution>
 			<filter_category_bits>1</filter_category_bits>

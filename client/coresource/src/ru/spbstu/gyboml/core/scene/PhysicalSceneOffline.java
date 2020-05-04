@@ -102,11 +102,11 @@ public class PhysicalSceneOffline {
 
     private void generatePhysicalCastle(Location location, PlayerType playerType) {
         if (playerType == PlayerType.FIRST_PLAYER && physicalCastleP1 == null) {
-            physicalCastleP1 = new PhysicalCastle(100, location, playerType, world);
+            physicalCastleP1 = new PhysicalCastle(SceneConstants.castleHP, location, playerType, world);
             graphicalScene.generateGraphicalCastle(physicalCastleP1);
         }
         else if (playerType == PlayerType.SECOND_PLAYER && physicalCastleP2 == null) {
-            physicalCastleP2 = new PhysicalCastle(100, location, playerType, world);
+            physicalCastleP2 = new PhysicalCastle(SceneConstants.castleHP, location, playerType, world);
             graphicalScene.generateGraphicalCastle(physicalCastleP2);
         }
     }
@@ -200,7 +200,9 @@ public class PhysicalSceneOffline {
         }
 
         physicalShot.playerType = playerTurn;
-        physicalShot.setVelocity(new Vector2(sign * 25.f * cos * powerCoeff, sign * 25.f * sin * powerCoeff));
+        physicalShot.setVelocity(new Vector2(
+                sign * SceneConstants.basicShotSpeed * cos * powerCoeff,
+                sign * SceneConstants.basicShotSpeed * sin * powerCoeff));
         physicalShot.getBody().setBullet(true);
         movables.add(physicalShot);
 

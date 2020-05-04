@@ -14,7 +14,7 @@ abstract public class PhysicalShot implements Physical, Movable, Interactable {
     protected Body body;
     public ShotType shotType;
     public PlayerType playerType;
-    public static float COLLISION_MARGIN = 128.f;
+    public static float COLLISION_MARGIN = 100.f;
 
     abstract public Damage generateDamage(Destructible destructible);
 

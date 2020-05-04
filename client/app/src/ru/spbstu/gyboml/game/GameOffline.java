@@ -77,6 +77,7 @@ public class GameOffline extends ApplicationAdapter implements InputProcessor, W
 
     private PlayerType playerTurn = PlayerType.FIRST_PLAYER;
     private ShotType shotType = ShotType.BASIC;
+    private boolean over = false;
 
     public GameOffline(MainActivityOffline activity) {
         this.activity = activity;
@@ -166,10 +167,10 @@ public class GameOffline extends ApplicationAdapter implements InputProcessor, W
         // Fire button
         fireStyle = new ImageButtonStyle();
         aimStyle  = new ImageButtonStyle();
-        fireStyle.up   = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("skin/buttons/fire_up.png"))));
-        fireStyle.down = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("skin/buttons/fire_down.png"))));
-        aimStyle.up    = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("skin/buttons/aim_up.png"))));
-        aimStyle.down  = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("skin/buttons/aim_down.png"))));
+        fireStyle.up      = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("skin/buttons/fire_up.png"))));
+        fireStyle.down    = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("skin/buttons/fire_down.png"))));
+        aimStyle.up       = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("skin/buttons/aim_up.png"))));
+        aimStyle.down     = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("skin/buttons/aim_down.png"))));
         fireButton = new ImageButton(aimStyle);
         fireButton.addListener(new InputListener() {
             @Override
@@ -210,8 +211,8 @@ public class GameOffline extends ApplicationAdapter implements InputProcessor, W
         setUpArmory(buttonWidth, buttonHeight);
 
         // HP progress bars
-        HPBar bar1 = new HPBar(100);
-        HPBar bar2 = new HPBar(100);
+        HPBar bar1 = new HPBar(SceneConstants.castleHP);
+        HPBar bar2 = new HPBar(SceneConstants.castleHP);
         physicalScene.connectWithHPBar(PlayerType.FIRST_PLAYER, bar1);
         physicalScene.connectWithHPBar(PlayerType.SECOND_PLAYER, bar2);
         bar1.getHealthBar().setPosition(10, Gdx.graphics.getHeight() - 30);
@@ -296,7 +297,7 @@ public class GameOffline extends ApplicationAdapter implements InputProcessor, W
             shotBar.update();
         }
 
-        if (!fireButton.isTouchable() && physicalScene.isStopped()) {
+        if (!over && !fireButton.isTouchable() && physicalScene.isStopped()) {
             fireButton.setTouchable(Touchable.enabled);
             switchTurn();
         }
@@ -369,6 +370,7 @@ public class GameOffline extends ApplicationAdapter implements InputProcessor, W
     public void disableButtons() {
         for (Button button : buttons)
             button.setTouchable(Touchable.disabled);
+        over = true;
     }
 
     /** Called when key is pressed, fires with P1 cannon

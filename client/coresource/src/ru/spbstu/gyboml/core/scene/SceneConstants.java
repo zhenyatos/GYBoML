@@ -27,6 +27,11 @@ public class SceneConstants {
     public static final int blockWoodWidth = 200;
     public static final int blockWoodHeight = 600;
 
+    // objects in-game parameters
+    // TODO: balance hp
+    public static final float castleHP = 200.0f;
+    public static final float basicShotSpeed = 22.0f;
+
     public static final float SCALE = canvasWidth / resolutionWidth;
     public static final float TOWERS_SCALE = SCALE;
     public static final float CASTLES_SCALE = SCALE;
