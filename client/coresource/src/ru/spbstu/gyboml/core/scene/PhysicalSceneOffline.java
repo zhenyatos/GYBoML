@@ -23,6 +23,7 @@ import ru.spbstu.gyboml.core.physical.PhysicalBackground;
 import ru.spbstu.gyboml.core.physical.PhysicalBasicShot;
 import ru.spbstu.gyboml.core.physical.PhysicalBlock;
 import ru.spbstu.gyboml.core.physical.PhysicalCastle;
+import ru.spbstu.gyboml.core.physical.PhysicalFireShot;
 import ru.spbstu.gyboml.core.physical.PhysicalShot;
 import ru.spbstu.gyboml.core.physical.PhysicalTower;
 import ru.spbstu.gyboml.core.shot.ShotType;
@@ -72,7 +73,9 @@ public class PhysicalSceneOffline {
 
         final float castleIndentX   = 860;  // manually set value for castle placement on platform
         final float towerIndentX    = 450;  // manually set value for tower  placement on platform
-        final float platformIndentY = 364;  // y position of platforms for objects from background.xml
+        // y position of platforms for objects from background.xml
+        final float platformIndentY = SceneConstants.platformHeight;
+
         final float castleTextureWidth = SceneConstants.castleWidth * SceneConstants.CASTLES_SCALE;
         final float towerTextureWidth  = SceneConstants.towerWidth * SceneConstants.TOWERS_SCALE;
 
@@ -90,7 +93,7 @@ public class PhysicalSceneOffline {
         generatePhysicalCastle(new Location(castleP2X, castleP2Y, 0, SceneConstants.CASTLES_SCALE), PlayerType.SECOND_PLAYER);
         generatePhysicalTower(new Location(towerP1X, towerP1Y, 0, SceneConstants.TOWERS_SCALE), PlayerType.FIRST_PLAYER);
         generatePhysicalTower(new Location(towerP2X, towerP2Y, 0, SceneConstants.TOWERS_SCALE), PlayerType.SECOND_PLAYER);
-        generateDefaultBlocks(castleP1X, castleP1Y, castleP2X, castleP2Y, Material.WOOD);
+        generateDefaultBlocks(castleP1X, castleP1Y, castleP2X, castleP2Y);
     }
 
     private void generatePhysicalBackground(Location location) {
@@ -130,35 +133,35 @@ public class PhysicalSceneOffline {
      * several blocks placed by default same for both players.
      * Blocks placed manually in general.
      */
-    private void generateDefaultBlocks(float castleP1X, float castleP1Y, float castleP2X, float castleP2Y, Material material) {
+    private void generateDefaultBlocks(float castleP1X, float castleP1Y, float castleP2X, float castleP2Y) {
         float blockP1X = castleP1X + (SceneConstants.castleWidth + 60) * SceneConstants.SCALE;
         float blockP1Y = castleP1Y + 240 * SceneConstants.SCALE;
         float blockP2X = castleP2X -  60 * SceneConstants.SCALE - SceneConstants.blockWoodWidth * SceneConstants.BLOCKS_SCALE;
         float blockP2Y = castleP2Y + 240 * SceneConstants.SCALE;
 
         // 1st row
-        physicalBlocksP1.add(new PhysicalBlock(material, new Location(blockP1X, blockP1Y, 0, SceneConstants.BLOCKS_SCALE), world));
-        physicalBlocksP2.add(new PhysicalBlock(material, new Location(blockP2X, blockP2Y, 0, SceneConstants.BLOCKS_SCALE), world));
-        physicalBlocksP1.add(new PhysicalBlock(material, new Location(blockP1X, blockP1Y + 1.2f * SceneConstants.blockWoodHeight * SceneConstants.BLOCKS_SCALE, 0, SceneConstants.BLOCKS_SCALE), world));
-        physicalBlocksP2.add(new PhysicalBlock(material, new Location(blockP2X, blockP2Y + 1.2f * SceneConstants.blockWoodHeight * SceneConstants.BLOCKS_SCALE, 0, SceneConstants.BLOCKS_SCALE), world));
-        physicalBlocksP1.add(new PhysicalBlock(material, new Location(blockP1X, blockP1Y + 2 * 1.2f * SceneConstants.blockWoodHeight * SceneConstants.BLOCKS_SCALE, 0, SceneConstants.BLOCKS_SCALE), world));
-        physicalBlocksP2.add(new PhysicalBlock(material, new Location(blockP2X, blockP2Y + 2 * 1.2f * SceneConstants.blockWoodHeight * SceneConstants.BLOCKS_SCALE, 0, SceneConstants.BLOCKS_SCALE), world));
+        physicalBlocksP1.add(new PhysicalBlock(Material.STONE, new Location(blockP1X, blockP1Y, 0, SceneConstants.BLOCKS_SCALE), world));
+        physicalBlocksP2.add(new PhysicalBlock(Material.STONE, new Location(blockP2X, blockP2Y, 0, SceneConstants.BLOCKS_SCALE), world));
+        physicalBlocksP1.add(new PhysicalBlock(Material.STONE, new Location(blockP1X, blockP1Y + 1.2f * SceneConstants.blockWoodHeight * SceneConstants.BLOCKS_SCALE, 0, SceneConstants.BLOCKS_SCALE), world));
+        physicalBlocksP2.add(new PhysicalBlock(Material.STONE, new Location(blockP2X, blockP2Y + 1.2f * SceneConstants.blockWoodHeight * SceneConstants.BLOCKS_SCALE, 0, SceneConstants.BLOCKS_SCALE), world));
+        //physicalBlocksP1.add(new PhysicalBlock(Material.STONE, new Location(blockP1X, blockP1Y + 2 * 1.2f * SceneConstants.blockWoodHeight * SceneConstants.BLOCKS_SCALE, 0, SceneConstants.BLOCKS_SCALE), world));
+        //physicalBlocksP2.add(new PhysicalBlock(Material.STONE, new Location(blockP2X, blockP2Y + 2 * 1.2f * SceneConstants.blockWoodHeight * SceneConstants.BLOCKS_SCALE, 0, SceneConstants.BLOCKS_SCALE), world));
 
         // 2nd row
-        physicalBlocksP1.add(new PhysicalBlock(material, new Location(blockP1X + 2 * SceneConstants.blockWoodWidth * SceneConstants.BLOCKS_SCALE, blockP1Y, 0, SceneConstants.BLOCKS_SCALE), world));
-        physicalBlocksP2.add(new PhysicalBlock(material, new Location(blockP2X - 2 * SceneConstants.blockWoodWidth * SceneConstants.BLOCKS_SCALE, blockP2Y, 0, SceneConstants.BLOCKS_SCALE), world));
-        physicalBlocksP1.add(new PhysicalBlock(material, new Location(blockP1X + 2 * SceneConstants.blockWoodWidth * SceneConstants.BLOCKS_SCALE, blockP1Y + 1.2f * SceneConstants.blockWoodHeight * SceneConstants.BLOCKS_SCALE, 0, SceneConstants.BLOCKS_SCALE), world));
-        physicalBlocksP2.add(new PhysicalBlock(material, new Location(blockP2X - 2 * SceneConstants.blockWoodWidth * SceneConstants.BLOCKS_SCALE, blockP2Y + 1.2f * SceneConstants.blockWoodHeight * SceneConstants.BLOCKS_SCALE, 0, SceneConstants.BLOCKS_SCALE), world));
+        physicalBlocksP1.add(new PhysicalBlock(Material.WOOD, new Location(blockP1X + 2 * SceneConstants.blockWoodWidth * SceneConstants.BLOCKS_SCALE, blockP1Y, 0, SceneConstants.BLOCKS_SCALE), world));
+        physicalBlocksP2.add(new PhysicalBlock(Material.WOOD, new Location(blockP2X - 2 * SceneConstants.blockWoodWidth * SceneConstants.BLOCKS_SCALE, blockP2Y, 0, SceneConstants.BLOCKS_SCALE), world));
+        physicalBlocksP1.add(new PhysicalBlock(Material.WOOD, new Location(blockP1X + 2 * SceneConstants.blockWoodWidth * SceneConstants.BLOCKS_SCALE, blockP1Y + 1.2f * SceneConstants.blockWoodHeight * SceneConstants.BLOCKS_SCALE, 0, SceneConstants.BLOCKS_SCALE), world));
+        physicalBlocksP2.add(new PhysicalBlock(Material.WOOD, new Location(blockP2X - 2 * SceneConstants.blockWoodWidth * SceneConstants.BLOCKS_SCALE, blockP2Y + 1.2f * SceneConstants.blockWoodHeight * SceneConstants.BLOCKS_SCALE, 0, SceneConstants.BLOCKS_SCALE), world));
 
         // 3rd row
-        physicalBlocksP1.add(new PhysicalBlock(material, new Location(blockP1X + 4 * SceneConstants.blockWoodWidth * SceneConstants.BLOCKS_SCALE, blockP1Y, 0, SceneConstants.BLOCKS_SCALE), world));
-        physicalBlocksP2.add(new PhysicalBlock(material, new Location(blockP2X - 4 * SceneConstants.blockWoodWidth * SceneConstants.BLOCKS_SCALE, blockP2Y, 0, SceneConstants.BLOCKS_SCALE), world));
+        physicalBlocksP1.add(new PhysicalBlock(Material.WOOD, new Location(blockP1X + 4 * SceneConstants.blockWoodWidth * SceneConstants.BLOCKS_SCALE, blockP1Y, 0, SceneConstants.BLOCKS_SCALE), world));
+        physicalBlocksP2.add(new PhysicalBlock(Material.WOOD, new Location(blockP2X - 4 * SceneConstants.blockWoodWidth * SceneConstants.BLOCKS_SCALE, blockP2Y, 0, SceneConstants.BLOCKS_SCALE), world));
 
         // back row
-        physicalBlocksP1.add(new PhysicalBlock(material, new Location(castleP1X - 60 * SceneConstants.SCALE - SceneConstants.blockWoodWidth * SceneConstants.BLOCKS_SCALE, blockP1Y, 0, SceneConstants.BLOCKS_SCALE), world));
-        physicalBlocksP1.add(new PhysicalBlock(material, new Location(castleP1X - 60 * SceneConstants.SCALE - SceneConstants.blockWoodWidth * SceneConstants.BLOCKS_SCALE, blockP1Y + 1.2f * SceneConstants.blockWoodHeight * SceneConstants.BLOCKS_SCALE, 0, SceneConstants.BLOCKS_SCALE), world));
-        physicalBlocksP2.add(new PhysicalBlock(material, new Location(castleP2X + (SceneConstants.castleWidth + 60) * SceneConstants.SCALE, blockP2Y, 0, SceneConstants.BLOCKS_SCALE), world));
-        physicalBlocksP2.add(new PhysicalBlock(material, new Location(castleP2X + (SceneConstants.castleWidth + 60) * SceneConstants.SCALE, blockP2Y + 1.2f * SceneConstants.blockWoodHeight * SceneConstants.BLOCKS_SCALE, 0, SceneConstants.BLOCKS_SCALE), world));
+        physicalBlocksP1.add(new PhysicalBlock(Material.STONE, new Location(castleP1X - 60 * SceneConstants.SCALE - SceneConstants.blockWoodWidth * SceneConstants.BLOCKS_SCALE, blockP1Y, 0, SceneConstants.BLOCKS_SCALE), world));
+        physicalBlocksP1.add(new PhysicalBlock(Material.STONE, new Location(castleP1X - 60 * SceneConstants.SCALE - SceneConstants.blockWoodWidth * SceneConstants.BLOCKS_SCALE, blockP1Y + 1.2f * SceneConstants.blockWoodHeight * SceneConstants.BLOCKS_SCALE, 0, SceneConstants.BLOCKS_SCALE), world));
+        physicalBlocksP2.add(new PhysicalBlock(Material.STONE, new Location(castleP2X + (SceneConstants.castleWidth + 60) * SceneConstants.SCALE, blockP2Y, 0, SceneConstants.BLOCKS_SCALE), world));
+        physicalBlocksP2.add(new PhysicalBlock(Material.STONE, new Location(castleP2X + (SceneConstants.castleWidth + 60) * SceneConstants.SCALE, blockP2Y + 1.2f * SceneConstants.blockWoodHeight * SceneConstants.BLOCKS_SCALE, 0, SceneConstants.BLOCKS_SCALE), world));
 
         movables.addAll(physicalBlocksP1);
         movables.addAll(physicalBlocksP2);
@@ -194,6 +197,9 @@ public class PhysicalSceneOffline {
         switch (shotType) {
             case BASIC:
                 physicalShot = new PhysicalBasicShot(location, world);
+                break;
+            case FIRE:
+                physicalShot = new PhysicalFireShot(location, world);
                 break;
             default:
                 return;
@@ -255,7 +261,6 @@ public class PhysicalSceneOffline {
                 world.destroyBody(block.getBody());
                 movables.remove(block);
                 graphicalScene.removeObject(block);
-                //soundEffects.playBroken(block.material);
                 physicalBlocksP1Iterator.remove();
             }
         }
@@ -267,7 +272,6 @@ public class PhysicalSceneOffline {
                 world.destroyBody(block.getBody());
                 movables.remove(block);
                 graphicalScene.removeObject(block);
-                //soundEffects.playBroken(block.material);
                 physicalBlocksP2Iterator.remove();
             }
         }
@@ -276,9 +280,9 @@ public class PhysicalSceneOffline {
         while (physicalShotsIterator.hasNext()) {
             PhysicalShot shot = physicalShotsIterator.next();
             if (shot.getVelocity().isZero(0.5f) ||
-                    shot.getPosition().x < 0.0f ||
-                    shot.getPosition().x > SceneConstants.worldWidth ||
-                    shot.getPosition().y < 0.0f) {
+                shot.getPosition().x < 0.0f ||
+                shot.getPosition().x > SceneConstants.worldWidth ||
+                shot.getPosition().y < 5.0f) {
                 world.destroyBody(shot.getBody());
                 movables.remove(shot);
                 graphicalScene.removeObject(shot);

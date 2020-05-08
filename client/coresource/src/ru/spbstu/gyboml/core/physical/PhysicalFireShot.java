@@ -10,14 +10,14 @@ import ru.spbstu.gyboml.core.destructible.Destructible;
 import ru.spbstu.gyboml.core.shot.ShotType;
 import ru.spbstu.gyboml.core.util.PhysicsShapeCache;
 
-public class PhysicalBasicShot extends PhysicalShot {
-    private static final float BASE_DAMAGE = 100;
+public class PhysicalFireShot extends PhysicalShot {
+    private static final float BASE_DAMAGE = 50;
     private static final float SPEED_PROP_LIMIT = 500.f;
 
-    public PhysicalBasicShot(Location location, World world) {
+    public PhysicalFireShot(Location location, World world) {
         InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(PHYSICS_PATH_OBJECTS);
         PhysicsShapeCache physicsShapeCache = new PhysicsShapeCache(is);
-        shotType = ShotType.BASIC;
+        shotType = ShotType.FIRE;
         body = physicsShapeCache.createBody("shot_" + shotType.getName(), world, location.scale, location.scale);
         body.setTransform(location.x, location.y, location.angle);
         body.setType(BodyDef.BodyType.DynamicBody);

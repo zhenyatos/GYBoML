@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 
+import ru.spbstu.gyboml.core.destructible.Material;
 import ru.spbstu.gyboml.core.graphics.Animated;
 import ru.spbstu.gyboml.core.graphics.AnimatedFading;
 import ru.spbstu.gyboml.core.graphics.AnimatedInstance;
@@ -134,6 +135,8 @@ public class GraphicalScene {
         GraphicalBlock graphicalBlock = new GraphicalBlock(
                 objects.createSprite("block_" + physicalBlock.material.getName()),
                 objects.createSprite("block_" + physicalBlock.material.getName() + "_damaged"),
+                physicalBlock.material == Material.WOOD ?
+                objects.createSprite("block_" + physicalBlock.material.getName() + "_fired") : null,
                 SceneConstants.BLOCKS_SCALE);
         graphicalBlock.setOrigin(0,0);
         graphicalBlock.setPosition(physicalBlock.getPosition().x, physicalBlock.getPosition().y);

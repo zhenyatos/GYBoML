@@ -49,7 +49,11 @@ public class PhysicalBlock extends Destructible implements Physical, Movable, In
             sprite.setUpdatablePartAngle((float) Math.toDegrees(body.getAngle()));
 
             if (this.getHP() < initialHP / 2)
-                sprite.changeSprite();
+                sprite.setDamagedSprite();
+
+            // TODO: change wooden to fired
+            if (false /*fired*/)
+                sprite.setSpecialSprite();
         }
     }
 
