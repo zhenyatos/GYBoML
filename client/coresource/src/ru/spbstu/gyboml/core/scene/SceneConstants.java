@@ -26,6 +26,7 @@ public class SceneConstants {
     public static final int shotBasicHeight = 300;
     public static final int blockWoodWidth = 200;
     public static final int blockWoodHeight = 600;
+    public static final float platformHeight = 364;
 
     // objects in-game parameters
     // TODO: balance hp

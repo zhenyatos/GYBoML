@@ -63,7 +63,7 @@ public class GameOffline extends ApplicationAdapter implements InputProcessor, W
     private OrthographicCamera camera;
     private ExtendViewport viewport;
 
-    //UI
+    //UI TODO: refactor
     private final List<Button> buttons = new ArrayList<>();
     private Stage stageForUI;
     private Skin UISkin;
@@ -73,7 +73,8 @@ public class GameOffline extends ApplicationAdapter implements InputProcessor, W
     private boolean visibleArmory;
     private ImageButtonStyle fireStyle;
     private ImageButtonStyle aimStyle;
-    private Image currentShotTexture;
+    private Image shotBasicTexture;
+    private Image shotFireTexture;
 
     private PlayerType playerTurn = PlayerType.FIRST_PLAYER;
     private ShotType shotType = ShotType.BASIC;
@@ -187,6 +188,8 @@ public class GameOffline extends ApplicationAdapter implements InputProcessor, W
                     physicalScene.setCannonStatus(playerTurn, true);
                     fireButton.setTouchable(Touchable.disabled);
                     shotBar.getShotPowerBar().setVisible(false);
+                    visibleArmory = false;
+                    armoryCells.setVisible(false);
                 }
                 else {
                     fireButton.setStyle(fireStyle);
@@ -194,6 +197,8 @@ public class GameOffline extends ApplicationAdapter implements InputProcessor, W
                     soundEffects.playLoadShot();
                     shotBar.resetValue();
                     shotBar.getShotPowerBar().setVisible(true);
+                    visibleArmory = false;
+                    armoryCells.setVisible(false);
                 }
             }
         });
@@ -203,10 +208,17 @@ public class GameOffline extends ApplicationAdapter implements InputProcessor, W
         buttons.add(fireButton);
 
         // TODO: shots folder with .png is temp, remake with Skin (same for buttons)
-        currentShotTexture = new Image(new TextureRegion(new Texture(Gdx.files.internal("skin/buttons/shots/shot_basic.png"))));
-        currentShotTexture.setSize(buttonHeight, buttonHeight);
-        currentShotTexture.setPosition(Gdx.graphics.getWidth() - buttonWidth - 1.1f * buttonHeight, 0);
-        stageForUI.addActor(currentShotTexture);
+        shotBasicTexture = new Image(new TextureRegion(new Texture(Gdx.files.internal("skin/buttons/shots/shot_basic.png"))));
+        shotBasicTexture.setSize(buttonHeight, buttonHeight);
+        shotBasicTexture.setPosition(Gdx.graphics.getWidth() - buttonWidth - 1.1f * buttonHeight, 0);
+        shotBasicTexture.setVisible(true);
+        stageForUI.addActor(shotBasicTexture);
+
+        shotFireTexture = new Image(new TextureRegion(new Texture(Gdx.files.internal("skin/buttons/shots/shot_fire.png"))));
+        shotFireTexture.setSize(buttonHeight, buttonHeight);
+        shotFireTexture.setPosition(Gdx.graphics.getWidth() - buttonWidth - 1.1f * buttonHeight, 0);
+        shotFireTexture.setVisible(false);
+        stageForUI.addActor(shotFireTexture);
 
         setUpArmory(buttonWidth, buttonHeight);
 
@@ -237,23 +249,73 @@ public class GameOffline extends ApplicationAdapter implements InputProcessor, W
         armoryCells.setVisible(false);
         visibleArmory = false;
 
-        ImageButtonStyle cellStyle = new ImageButtonStyle();
-        cellStyle.up   = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("skin/buttons/button.png"))));
-        cellStyle.down = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("skin/buttons/button.png"))));
-        for (int y = 0; y < armoryRows; y++) {
+        // TODO: refactor
+        ImageButtonStyle emptyCellStyle = new ImageButtonStyle();
+        emptyCellStyle.up   = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("skin/buttons/button.png"))));
+        emptyCellStyle.down = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("skin/buttons/button.png"))));
+
+        ImageButtonStyle shotBasicCellStyle = new ImageButtonStyle();
+        shotBasicCellStyle.up   = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("skin/buttons/armory/armory_shot_basic_up.png"))));
+        shotBasicCellStyle.down = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("skin/buttons/armory/armory_shot_basic_down.png"))));
+
+        ImageButtonStyle shotFireCellStyle = new ImageButtonStyle();
+        shotFireCellStyle.up   = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("skin/buttons/armory/armory_shot_fire_up.png"))));
+        shotFireCellStyle.down = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("skin/buttons/armory/armory_shot_fire_down.png"))));
+
+        ImageButton shotBasicCell = new ImageButton(shotBasicCellStyle);
+        ImageButton shotFireCell  = new ImageButton(shotFireCellStyle);
+        ImageButton emptyCell     = new ImageButton(emptyCellStyle);
+
+        shotBasicCell.addListener(new InputListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                return true;
+            }
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                shotType = ShotType.BASIC;
+                shotBasicTexture.setVisible(true);
+                shotFireTexture.setVisible(false);
+                visibleArmory = false;
+                armoryCells.setVisible(false);
+                soundEffects.playArmory();
+            }
+        });
+
+        shotFireCell.addListener(new InputListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                return true;
+            }
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                shotType = ShotType.FIRE;
+                shotFireTexture.setVisible(true);
+                shotBasicTexture.setVisible(false);
+                visibleArmory = false;
+                armoryCells.setVisible(false);
+                soundEffects.playArmory();
+            }
+        });
+
+        armoryCells.add(shotBasicCell).width(buttonWidth).height(buttonHeight);
+        armoryCells.add(shotFireCell).width(buttonWidth).height(buttonHeight);
+        armoryCells.add(emptyCell).width(buttonWidth).height(buttonHeight);
+
+        // left empty cells
+        for (int y = 1; y < armoryRows; y++) {
             armoryCells.row();
             for (int x = 0; x < armoryCols; x++){
-                // TODO: #134 shots shop - after checking a cell change shotType and currentShotTexture fields
-                ImageButton cellButton = new ImageButton(cellStyle);
-                armoryCells.add(cellButton).width(buttonWidth).height(buttonHeight);
+                // TODO: #134 shots shop - after checking a cell change shotType and shotBasicTexture fields
+                ImageButton cell = new ImageButton(emptyCellStyle);
+                armoryCells.add(cell).width(buttonWidth).height(buttonHeight);
             }
         }
 
         // Show armory button
         ImageButtonStyle armoryStyle = new ImageButtonStyle();
-        armoryStyle.up = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("skin/buttons/armory_up.png"))));
+        armoryStyle.up   = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("skin/buttons/armory_up.png"))));
         armoryStyle.down = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("skin/buttons/armory_down.png"))));
-        armoryStyle.checked = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("skin/buttons/armory_down.png"))));
         ImageButton armoryButton = new ImageButton(armoryStyle);
         armoryButton.addListener(new InputListener() {
             @Override
