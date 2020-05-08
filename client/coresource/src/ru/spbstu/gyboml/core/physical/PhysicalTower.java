@@ -70,6 +70,8 @@ public class PhysicalTower implements Physical, Movable {
         joint = (RevoluteJoint)world.createJoint(revoluteJointDef);
     }
 
+    public void setCannonAwake(boolean flag) { cannon.setAwake(flag);}
+
     public PlayerType getPlayerType() { return playerType; }
 
     public RevoluteJoint getJoint() { return joint; }

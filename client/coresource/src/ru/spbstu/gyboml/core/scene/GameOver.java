@@ -7,30 +7,28 @@ import ru.spbstu.gyboml.core.Winnable;
 
 public class GameOver {
     private final Winnable parent;
-    private final Label victoryLabel;
-    private final Label defeatLabel;
-    private boolean firedBefore = false;
+    private final Label won1stPlayer;
+    private final Label won2ndPlayer;
 
-
-    public GameOver(Winnable parent, Label victoryLabel, Label defeatLabel) {
+    public GameOver(Winnable parent, Label won1stPlayer, Label won2ndPlayer) {
         this.parent = parent;
-        this.victoryLabel = victoryLabel;
-        this.defeatLabel = defeatLabel;
-        victoryLabel.setVisible(false);
-        defeatLabel.setVisible(false);
+        this.won1stPlayer = won1stPlayer;
+        this.won2ndPlayer = won2ndPlayer;
+        won1stPlayer.setVisible(false);
+        won2ndPlayer.setVisible(false);
     }
 
-    public void victoryCheck(float newHP) {
-        if (!firedBefore && !(newHP > 0)) {
+    public void victory1st(float hp2nd) {
+        if (hp2nd <= 0) {
             parent.disableButtons();
-            victoryLabel.setVisible(true);
+            won1stPlayer.setVisible(true);
         }
     }
 
-    public void defeatCheck(float newHP) {
-        if (!firedBefore && !(newHP > 0)) {
+    public void victory2nd(float hp1st) {
+        if (hp1st <= 0) {
             parent.disableButtons();
-            defeatLabel.setVisible(true);
+            won2ndPlayer.setVisible(true);
         }
     }
 }

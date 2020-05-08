@@ -34,11 +34,6 @@ public class AnimatedInstance implements Animated, Updatable {
     }
 
     @Override
-    public Location getLocation() {
-        return location;
-    }
-
-    @Override
     public void setUpdatablePartPosition(Vector2 position) {
         location.x = position.x;
         location.y = position.y;

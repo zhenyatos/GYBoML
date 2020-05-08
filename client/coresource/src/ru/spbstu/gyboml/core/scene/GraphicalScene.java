@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
@@ -13,8 +14,9 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 
-import ru.spbstu.gyboml.core.event.EventSystem;
+import ru.spbstu.gyboml.core.destructible.Material;
 import ru.spbstu.gyboml.core.graphics.Animated;
+import ru.spbstu.gyboml.core.graphics.AnimatedFading;
 import ru.spbstu.gyboml.core.graphics.AnimatedInstance;
 import ru.spbstu.gyboml.core.graphics.Drawable;
 import ru.spbstu.gyboml.core.graphics.GraphicalBackground;
@@ -39,7 +41,6 @@ import ru.spbstu.gyboml.core.physical.PhysicalTower;
  */
 public class GraphicalScene {
     private List<Drawable> drawables;
-    private List<Drawable> destroyed;
     private List<Animated> animations;
     private Map<Physical, Drawable> objectsMap;
 
@@ -47,64 +48,39 @@ public class GraphicalScene {
     private TextureAtlas backgroundBack;
     private TextureAtlas backgroundFront;
     private TextureAtlas objects;
+    private TextureAtlas texts;
     private Animation<TextureRegion> explosionAnimation;
     private Animation<TextureRegion> coinP1TurnAnimation;
     private Animation<TextureRegion> coinP2TurnAnimation;
+    private Animation<TextureRegion> impactAnimation;
 
     public GraphicalScene() {
         drawables = new ArrayList<>();
         animations = new ArrayList<>();
-        destroyed = new ArrayList<>();
         objectsMap = new HashMap<>();
 
         backgroundBack  = new TextureAtlas("sprites/background_1.txt");
         backgroundFront = new TextureAtlas("sprites/background_2.txt");
         objects         = new TextureAtlas("sprites/objects.txt");
+        texts           = new TextureAtlas("sprites/texts.txt");
 
-        initAnimations();
+        explosionAnimation  = initAnimation("animations/explosion.png", 8, 8, 0.02f);
+        coinP1TurnAnimation = initAnimation("animations/coin_p1_turn.png", 10, 10, 0.02f);
+        coinP2TurnAnimation = initAnimation("animations/coin_p2_turn.png", 10, 10, 0.02f);
+        impactAnimation     = initAnimation("animations/impact.png", 6, 3, 0.02f);
     }
 
-    void initAnimations() {
-        final int EXPLOSION_COLS = 8;
-        final int EXPLOSION_ROWS = 8;
-        final int COIN_COLS = 10;
-        final int COIN_ROWS = 10;
-
-        // init explosion animation
-        Texture sheet = new Texture(Gdx.files.internal("animations/explosion.png"));
+    private Animation<TextureRegion> initAnimation(String path, int cols, int rows, float frameDuration) {
+        Texture sheet = new Texture(Gdx.files.internal(path));
         TextureRegion[][] tempTextureRegions = TextureRegion.split(
-                sheet,sheet.getWidth() / EXPLOSION_COLS,sheet.getHeight() / EXPLOSION_ROWS);
-        TextureRegion[] frames = new TextureRegion[EXPLOSION_COLS * EXPLOSION_ROWS];
+                sheet,sheet.getWidth() / cols,sheet.getHeight() / rows);
+        TextureRegion[] frames = new TextureRegion[cols * rows];
         int ind = 0;
-        for (int i = 0; i < EXPLOSION_ROWS; ++i) {
-            for (int j = 0; j < EXPLOSION_COLS; ++j)
+        for (int i = 0; i < rows; ++i) {
+            for (int j = 0; j < cols; ++j)
                 frames[ind++] = tempTextureRegions[i][j];
         }
-        explosionAnimation = new Animation<>(0.02f, frames);
-
-        // init coin player1 turn animation
-        sheet = new Texture(Gdx.files.internal("animations/coin_p1_turn.png"));
-        tempTextureRegions = TextureRegion.split(
-                sheet,sheet.getWidth() / COIN_COLS,sheet.getHeight() / COIN_ROWS);
-        frames = new TextureRegion[COIN_COLS * COIN_ROWS];
-        ind = 0;
-        for (int i = 0; i < COIN_ROWS; ++i) {
-            for (int j = 0; j < COIN_COLS; ++j)
-                frames[ind++] = tempTextureRegions[i][j];
-        }
-        coinP1TurnAnimation = new Animation<>(0.02f, frames);
-
-        // init coin player 2 animation
-        sheet = new Texture(Gdx.files.internal("animations/coin_p2_turn.png"));
-        tempTextureRegions = TextureRegion.split(
-                sheet,sheet.getWidth() /  COIN_COLS,sheet.getHeight() / COIN_ROWS);
-        frames = new TextureRegion[COIN_COLS * COIN_ROWS];
-        ind = 0;
-        for (int i = 0; i < COIN_ROWS; ++i) {
-            for (int j = 0; j < COIN_COLS; ++j)
-                frames[ind++] = tempTextureRegions[i][j];
-        }
-        coinP2TurnAnimation = new Animation<>(0.02f, frames);
+        return new Animation<>(frameDuration, frames);
     }
 
     void generateGraphicalBackground(PhysicalBackground physicalBackground) {
@@ -117,6 +93,14 @@ public class GraphicalScene {
         graphicalBackground.setOrigin(0, 0);
         graphicalBackground.setPosition(physicalBackground.getPosition().x, physicalBackground.getPosition().y);
         drawables.add(graphicalBackground);
+    }
+
+    void generateGraphicalForeground(PhysicalBackground physicalBackground) {
+        GraphicalForeground graphicalForeground = new GraphicalForeground(backgroundFront.createSprite("bg_front"), SceneConstants.SCALE);
+        graphicalForeground.setSize(SceneConstants.canvasWidth, SceneConstants.canvasHeight);
+        graphicalForeground.setOrigin(0, 0);
+        graphicalForeground.setPosition(physicalBackground.getPosition().x, physicalBackground.getPosition().y);
+        drawables.add(graphicalForeground);
     }
 
     void generateGraphicalCastle(PhysicalCastle physicalCastle) {
@@ -147,12 +131,18 @@ public class GraphicalScene {
         drawables.add(graphicalTower);
     }
 
-    void generateGraphicalForeground(PhysicalBackground physicalBackground) {
-        GraphicalForeground graphicalForeground = new GraphicalForeground(backgroundFront.createSprite("bg_front"), SceneConstants.SCALE);
-        graphicalForeground.setSize(SceneConstants.canvasWidth, SceneConstants.canvasHeight);
-        graphicalForeground.setOrigin(0, 0);
-        graphicalForeground.setPosition(physicalBackground.getPosition().x, physicalBackground.getPosition().y);
-        drawables.add(graphicalForeground);
+    void generateGraphicalBlock(PhysicalBlock physicalBlock) {
+        GraphicalBlock graphicalBlock = new GraphicalBlock(
+                objects.createSprite("block_" + physicalBlock.material.getName()),
+                objects.createSprite("block_" + physicalBlock.material.getName() + "_damaged"),
+                physicalBlock.material == Material.WOOD ?
+                objects.createSprite("block_" + physicalBlock.material.getName() + "_fired") : null,
+                SceneConstants.BLOCKS_SCALE);
+        graphicalBlock.setOrigin(0,0);
+        graphicalBlock.setPosition(physicalBlock.getPosition().x, physicalBlock.getPosition().y);
+        drawables.add(graphicalBlock);
+        physicalBlock.setUpdatableSprite(graphicalBlock);
+        objectsMap.put(physicalBlock, graphicalBlock);
     }
 
     public void generateGraphicalShot(PhysicalShot physicalShot) {
@@ -168,46 +158,46 @@ public class GraphicalScene {
 
      private void generateAnimatedExplosion(PhysicalShot physicalShot) {
         String spriteName = "shot_" + physicalShot.shotType.getName();
-        float explosionX = (physicalShot.playerType == PlayerType.FIRST_PLAYER) ?
-                physicalShot.getPosition().x -  SceneConstants.SHOTS_SCALE * objects.findRegion(spriteName).originalWidth / 2f :
-                physicalShot.getPosition().x + (SceneConstants.SHOTS_SCALE * objects.findRegion(spriteName).originalWidth -
-                        SceneConstants.EXPLOSION_SCALE * explosionAnimation.getKeyFrames()[0].getRegionWidth()) / 2f;
-        float explosionY =
-                physicalShot.getPosition().y - Math.abs(SceneConstants.EXPLOSION_SCALE * explosionAnimation.getKeyFrames()[0].getRegionWidth() -
-                        SceneConstants.SHOTS_SCALE * objects.findRegion(spriteName).originalHeight) / 2f;
+        // TODO: take into account body's origin
+        float x = (physicalShot.playerType == PlayerType.FIRST_PLAYER) ?
+                physicalShot.getPosition().x - SceneConstants.EXPLOSION_SCALE * explosionAnimation.getKeyFrames()[0].getRegionWidth() / 6f:
+                physicalShot.getPosition().x + SceneConstants.SHOTS_SCALE * objects.findRegion(spriteName).originalWidth -
+                        SceneConstants.EXPLOSION_SCALE * explosionAnimation.getKeyFrames()[0].getRegionWidth() * (5f / 6f);
+        float y = physicalShot.getPosition().y - (SceneConstants.EXPLOSION_SCALE * explosionAnimation.getKeyFrames()[0].getRegionHeight() -
+                SceneConstants.SHOTS_SCALE * objects.findRegion(spriteName).originalHeight) / 2f;
 
-        animations.add(new AnimatedInstance(explosionAnimation, new Location(explosionX, explosionY, 0, SceneConstants.EXPLOSION_SCALE)));
+        animations.add(new AnimatedInstance(explosionAnimation, new Location(x, y, 0, SceneConstants.EXPLOSION_SCALE)));
     }
 
     public void generateAnimatedPlayerTurn(PlayerType playerTurn) {
-        if (playerTurn == PlayerType.FIRST_PLAYER)
-            generateAnimatedCoinP1Turn();
-        else if (playerTurn == PlayerType.SECOND_PLAYER)
-            generateAnimatedCoinP2Turn();
+        String name;
+        if (playerTurn == PlayerType.FIRST_PLAYER) {
+            animations.add(new AnimatedInstance(coinP1TurnAnimation, new Location(
+                    SceneConstants.coinX, SceneConstants.coinY, 0, SceneConstants.COIN_SCALE)));
+            name = "p1";
+        }
+        else {
+            animations.add(new AnimatedInstance(coinP2TurnAnimation, new Location(
+                    SceneConstants.coinX, SceneConstants.coinY, 0, SceneConstants.COIN_SCALE)));
+            name = "p2";
+        }
+        Sprite text = texts.createSprite(name + "_turn");
+        text.setPosition(
+                SceneConstants.coinX - SceneConstants.TURN_SCALE * (text.getWidth() - coinP1TurnAnimation.getKeyFrames()[0].getRegionWidth()) / 2f,
+                SceneConstants.coinY + SceneConstants.COIN_SCALE * coinP1TurnAnimation.getKeyFrames()[0].getRegionHeight());
+        text.setSize(text.getWidth() * SceneConstants.TURN_SCALE, text.getHeight() * SceneConstants.TURN_SCALE);
+        text.setAlpha(0.0f);
+        animations.add(new AnimatedFading(text, 0.015f));
     }
 
-    private void generateAnimatedCoinP1Turn() {
-        animations.add(new AnimatedInstance(coinP1TurnAnimation, new Location(
-                SceneConstants.coinX, SceneConstants.coinY, 0, SceneConstants.COIN_SCALE)));
-        EventSystem.get().emit(this, "generateAnimatedCoinP1Turn");
-    }
-
-    private void generateAnimatedCoinP2Turn() {
-        animations.add(new AnimatedInstance(coinP2TurnAnimation, new Location(
-                SceneConstants.coinX, SceneConstants.coinY, 0, SceneConstants.COIN_SCALE)));
-        EventSystem.get().emit(this, "generateAnimatedCoinP2Turn");
-    }
-
-    void generateGraphicalBlock(PhysicalBlock physicalBlock) {
-        GraphicalBlock graphicalBlock = new GraphicalBlock(
-                objects.createSprite("block_" + physicalBlock.material.getName()),
-                objects.createSprite("block_" + physicalBlock.material.getName() + "_damaged"),
-                SceneConstants.BLOCKS_SCALE);
-        graphicalBlock.setOrigin(0,0);
-        graphicalBlock.setPosition(physicalBlock.getPosition().x, physicalBlock.getPosition().y);
-        drawables.add(graphicalBlock);
-        physicalBlock.setUpdatableSprite(graphicalBlock);
-        objectsMap.put(physicalBlock, graphicalBlock);
+    public void generateAnimatedImpact(PhysicalShot shot) {
+        String spriteName = "shot_" + shot.shotType.getName();
+        // TODO: take into account body's origin
+        float x = shot.getPosition().x - (SceneConstants.IMPACT_SCALE * impactAnimation.getKeyFrames()[0].getRegionWidth() -
+                SceneConstants.SHOTS_SCALE * objects.findRegion(spriteName).originalWidth) / 2f;
+        float y = shot.getPosition().y - (SceneConstants.IMPACT_SCALE * impactAnimation.getKeyFrames()[0].getRegionHeight() -
+                SceneConstants.SHOTS_SCALE * objects.findRegion(spriteName).originalHeight) / 2f;
+        animations.add(new AnimatedInstance(impactAnimation, new Location(x, y, 0, SceneConstants.IMPACT_SCALE)));
     }
 
     /**
@@ -224,7 +214,7 @@ public class GraphicalScene {
     }
 
     void removeObject(Physical object) {
-        destroyed.add(objectsMap.get(object));
+        animations.add(new AnimatedFading(objectsMap.get(object).getSprite(), 0.03f));
         drawables.remove(objectsMap.get(object));
         objectsMap.remove(object);
     }
@@ -232,16 +222,6 @@ public class GraphicalScene {
     public void draw(Batch batch) {
         for (Drawable object : drawables) {
             object.draw(batch);
-        }
-
-        ListIterator<Drawable> destroyedIterator = destroyed.listIterator();
-        while (destroyedIterator.hasNext()) {
-            Drawable drawable = destroyedIterator.next();
-            drawable.draw(batch);
-            drawable.getSprite().setAlpha(drawable.getSprite().getColor().a - 0.03f);
-            if (drawable.getSprite().getColor().a <= 0.03f) {
-                destroyedIterator.remove();
-            }
         }
 
         ListIterator<Animated> animationsIterator = animations.listIterator();
@@ -257,10 +237,5 @@ public class GraphicalScene {
         backgroundBack.dispose();
         backgroundFront.dispose();
         objects.dispose();
-    }
-
-    public void connectWithSoundEffects(SoundEffects soundEffects) {
-        EventSystem.get().connect(this, "generateAnimatedCoinP1Turn", soundEffects, "playP1Turn");
-        EventSystem.get().connect(this, "generateAnimatedCoinP2Turn", soundEffects, "playP2Turn");
     }
 }

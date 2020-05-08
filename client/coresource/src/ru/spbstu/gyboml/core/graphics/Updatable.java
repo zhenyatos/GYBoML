@@ -9,5 +9,6 @@ import com.badlogic.gdx.math.Vector2;
 public interface Updatable {
    void setUpdatablePartPosition(Vector2 position);
    void setUpdatablePartAngle(float angle);
-   default void changeSprite() {}
+   default void setDamagedSprite() {}
+   default void setSpecialSprite() {}
 }

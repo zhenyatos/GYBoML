@@ -56,7 +56,7 @@
         <key>jxrCompressionLevel</key>
         <uint>0</uint>
         <key>ditherType</key>
-        <enum type="SettingsBase::DitherType">PngQuantLow</enum>
+        <enum type="SettingsBase::DitherType">NearestNeighbour</enum>
         <key>backgroundColor</key>
         <uint>0</uint>
         <key>libGdx</key>
@@ -181,8 +181,11 @@
         </struct>
         <key>individualSpriteSettings</key>
         <map type="IndividualSpriteSettingsMap">
+            <key type="filename">../images/block_stone.png</key>
+            <key type="filename">../images/block_stone_damaged.png</key>
             <key type="filename">../images/block_wood.png</key>
             <key type="filename">../images/block_wood_damaged.png</key>
+            <key type="filename">../images/block_wood_fired.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
                 <point_f>0.5,0.5</point_f>
@@ -234,6 +237,7 @@
                 <false/>
             </struct>
             <key type="filename">../images/shot_basic.png</key>
+            <key type="filename">../images/shot_fire.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
                 <point_f>0.5,0.5</point_f>
@@ -267,19 +271,23 @@
         </map>
         <key>fileList</key>
         <array>
-            <filename>../images/cannon_p1.png</filename>
-            <filename>../images/cannon_p2.png</filename>
-            <filename>../images/tower_p1.png</filename>
-            <filename>../images/tower_p2.png</filename>
+            <filename>../images/block_stone.png</filename>
+            <filename>../images/block_stone_damaged.png</filename>
             <filename>../images/block_wood.png</filename>
             <filename>../images/block_wood_damaged.png</filename>
-            <filename>../images/shot_basic.png</filename>
-            <filename>../images/castle_p1_front.png</filename>
-            <filename>../images/castle_p2_front.png</filename>
+            <filename>../images/block_wood_fired.png</filename>
+            <filename>../images/cannon_p1.png</filename>
+            <filename>../images/cannon_p2.png</filename>
             <filename>../images/castle_p1_back.png</filename>
-            <filename>../images/castle_p2_back.png</filename>
+            <filename>../images/castle_p1_front.png</filename>
             <filename>../images/castle_p1_tower.png</filename>
+            <filename>../images/castle_p2_back.png</filename>
+            <filename>../images/castle_p2_front.png</filename>
             <filename>../images/castle_p2_tower.png</filename>
+            <filename>../images/shot_basic.png</filename>
+            <filename>../images/shot_fire.png</filename>
+            <filename>../images/tower_p1.png</filename>
+            <filename>../images/tower_p2.png</filename>
         </array>
         <key>ignoreFileList</key>
         <array/>

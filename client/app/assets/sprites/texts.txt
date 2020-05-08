@@ -1,0 +1,19 @@
+texts.png
+size: 1200, 100
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+p1_turn
+  rotate: false
+  xy: 0, 0
+  size: 600, 100
+  orig: 600, 100
+  offset: 0, 0
+  index: -1
+p2_turn
+  rotate: false
+  xy: 600, 0
+  size: 600, 100
+  orig: 600, 100
+  offset: 0, 0
+  index: -1
