@@ -4,9 +4,20 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFF"
-    tools:context="ru.spbstu.gyboml.menu.MainMenu">
+    android:background="#FFFFFF"
+    tools:context="main.java.ru.spbstu.gyboml.menu.MainMenu">
 
+
+    <ImageView
+        android:id="@+id/backgroundView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:scaleType="centerCrop"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/background" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/startBottomGuideline"
@@ -53,11 +64,11 @@
         android:text="Exit"
         android:textColor="@android:color/black"
         android:textSize="24sp"
-        app:layout_constraintLeft_toLeftOf="@+id/buttonsLeftGuideline"
+        app:layout_constraintBottom_toBottomOf="@+id/exitBottomGuideline"
         app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintLeft_toLeftOf="@+id/buttonsLeftGuideline"
         app:layout_constraintRight_toRightOf="@+id/buttonsRightGuideline"
-        app:layout_constraintTop_toTopOf="@+id/exitTopGuideline"
-        app:layout_constraintBottom_toBottomOf="@+id/exitBottomGuideline"/>
+        app:layout_constraintTop_toTopOf="@+id/exitTopGuideline" />
 
     <Button
         android:id="@+id/aboutButton"
@@ -68,11 +79,11 @@
         android:gravity="center"
         android:text="About"
         android:textSize="24sp"
-        app:layout_constraintLeft_toLeftOf="@+id/buttonsLeftGuideline"
+        app:layout_constraintBottom_toBottomOf="@+id/aboutBottomGuideline"
         app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintLeft_toLeftOf="@+id/buttonsLeftGuideline"
         app:layout_constraintRight_toRightOf="@+id/buttonsRightGuideline"
-        app:layout_constraintTop_toTopOf="@+id/aboutTopGuideline"
-        app:layout_constraintBottom_toBottomOf="@+id/aboutBottomGuideline"/>
+        app:layout_constraintTop_toTopOf="@+id/aboutTopGuideline" />
 
     <Button
         android:id="@+id/startButton"
@@ -83,11 +94,11 @@
         android:gravity="center"
         android:text="Start"
         android:textSize="24sp"
-        app:layout_constraintLeft_toLeftOf="@+id/buttonsLeftGuideline"
+        app:layout_constraintBottom_toBottomOf="@+id/startBottomGuideline"
         app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintLeft_toLeftOf="@+id/buttonsLeftGuideline"
         app:layout_constraintRight_toRightOf="@+id/buttonsRightGuideline"
-        app:layout_constraintTop_toTopOf="@+id/startTopGuideline"
-        app:layout_constraintBottom_toBottomOf="@+id/startBottomGuideline"/>
+        app:layout_constraintTop_toTopOf="@+id/startTopGuideline" />
 
     <TextView
         android:id="@+id/gameTitle"
@@ -99,10 +110,10 @@
         android:text="Get Your Bombs Off My Lawn!"
         android:textColor="@android:color/black"
         android:textSize="18sp"
-        app:layout_constraintRight_toRightOf="@+id/titleRightGuideline"
+        app:layout_constraintBottom_toBottomOf="@+id/titleLowerGuideline"
         app:layout_constraintLeft_toLeftOf="@+id/titleLeftGuideline"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="@+id/titleLowerGuideline"/>
+        app:layout_constraintRight_toRightOf="@+id/titleRightGuideline"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/titleLowerGuideline"
