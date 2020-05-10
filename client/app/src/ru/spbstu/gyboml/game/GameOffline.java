@@ -4,9 +4,11 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
@@ -25,12 +27,16 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
 import ru.spbstu.gyboml.MainActivityOffline;
+import ru.spbstu.gyboml.core.Player;
 import ru.spbstu.gyboml.core.PlayerType;
+import ru.spbstu.gyboml.core.event.Events;
 import ru.spbstu.gyboml.core.scene.GameOver;
 import ru.spbstu.gyboml.core.scene.GraphicalScene;
 import ru.spbstu.gyboml.core.scene.HPBar;
@@ -52,6 +58,7 @@ public class GameOffline extends ApplicationAdapter implements InputProcessor, W
 
     private static final int armoryRows = 4;
     private static final int armoryCols = 3;
+    private static final int initPoints = 500;
 
     private SoundEffects soundEffects;
     private GraphicalScene graphicalScene;
@@ -68,6 +75,7 @@ public class GameOffline extends ApplicationAdapter implements InputProcessor, W
     private Stage stageForUI;
     private Skin UISkin;
     private Button fireButton;
+    private Button armoryButton;
     private ShotBar shotBar;
     private Table armoryCells;
     private boolean visibleArmory;
@@ -75,10 +83,28 @@ public class GameOffline extends ApplicationAdapter implements InputProcessor, W
     private ImageButtonStyle aimStyle;
     private Image shotBasicTexture;
     private Image shotFireTexture;
+    private Label shotBasicCostLabel;
+    private Label shotFireCostLabel;
+
+    int shotBasicCost = 10;
+    int shotFireCost = 50;
 
     private PlayerType playerTurn = PlayerType.FIRST_PLAYER;
+    private Player player1, player2, current;
+
     private ShotType shotType = ShotType.BASIC;
     private boolean over = false;
+    private boolean stepOver = false;
+
+    private Player getPlayer(PlayerType type) {
+        if (type == PlayerType.FIRST_PLAYER)
+            return player1;
+        else
+            return player2;
+    }
+
+    Score score1;
+    Score score2;
 
     public GameOffline(MainActivityOffline activity) {
         this.activity = activity;
@@ -93,6 +119,9 @@ public class GameOffline extends ApplicationAdapter implements InputProcessor, W
      */
     @Override
     public void create() {
+        player1 = new Player("First", initPoints);
+        player2 = new Player("Second", initPoints);
+
         stageForUI = new Stage(new ScreenViewport());
         InputMultiplexer inputMultiplexer = new InputMultiplexer();
         inputMultiplexer.addProcessor(stageForUI);
@@ -106,6 +135,7 @@ public class GameOffline extends ApplicationAdapter implements InputProcessor, W
         graphicalScene = new GraphicalScene();
         physicalScene = new PhysicalSceneOffline(graphicalScene, soundEffects);
         physicalScene.setTurn(playerTurn);
+
 
         // UI is setup after main game objects was created
         setUpUI();
@@ -187,9 +217,8 @@ public class GameOffline extends ApplicationAdapter implements InputProcessor, W
                     physicalScene.generateShot(playerTurn, shotType, shotBar.getShotPowerBar().getValue());
                     physicalScene.setCannonStatus(playerTurn, true);
                     fireButton.setTouchable(Touchable.disabled);
+                    stepOver = true;
                     shotBar.getShotPowerBar().setVisible(false);
-                    visibleArmory = false;
-                    armoryCells.setVisible(false);
                 }
                 else {
                     fireButton.setStyle(fireStyle);
@@ -198,8 +227,13 @@ public class GameOffline extends ApplicationAdapter implements InputProcessor, W
                     shotBar.resetValue();
                     shotBar.getShotPowerBar().setVisible(true);
                     visibleArmory = false;
-                    armoryCells.setVisible(false);
                 }
+
+                shotFireCostLabel.setVisible(false);
+                shotBasicCostLabel.setVisible(false);
+                visibleArmory = false;
+                armoryCells.setVisible(false);
+
             }
         });
         fireButton.setSize(buttonWidth, buttonHeight);
@@ -211,7 +245,7 @@ public class GameOffline extends ApplicationAdapter implements InputProcessor, W
         shotBasicTexture = new Image(new TextureRegion(new Texture(Gdx.files.internal("skin/buttons/shots/shot_basic.png"))));
         shotBasicTexture.setSize(buttonHeight, buttonHeight);
         shotBasicTexture.setPosition(Gdx.graphics.getWidth() - buttonWidth - 1.1f * buttonHeight, 0);
-        shotBasicTexture.setVisible(true);
+        shotBasicTexture.setVisible(false);
         stageForUI.addActor(shotBasicTexture);
 
         shotFireTexture = new Image(new TextureRegion(new Texture(Gdx.files.internal("skin/buttons/shots/shot_fire.png"))));
@@ -219,6 +253,7 @@ public class GameOffline extends ApplicationAdapter implements InputProcessor, W
         shotFireTexture.setPosition(Gdx.graphics.getWidth() - buttonWidth - 1.1f * buttonHeight, 0);
         shotFireTexture.setVisible(false);
         stageForUI.addActor(shotFireTexture);
+        fireButton.setTouchable(Touchable.disabled);
 
         setUpArmory(buttonWidth, buttonHeight);
 
@@ -240,6 +275,17 @@ public class GameOffline extends ApplicationAdapter implements InputProcessor, W
         stageForUI.addActor(won1stPlayer);
         stageForUI.addActor(won2ndPlayer);
         physicalScene.connectWithGameOver(new GameOver(this, won1stPlayer, won2ndPlayer));
+
+        // Scores
+        score1 = new Score(initPoints, Color.GOLD);
+        score2 = new Score(initPoints, Color.BLUE);
+        score1.getText().setPosition(Gdx.graphics.getWidth() - buttonWidth - 3f * buttonHeight, 10f);
+        score1.getText().setVisible(true);
+        score2.getText().setPosition(Gdx.graphics.getWidth() - buttonWidth - 3f * buttonHeight, 10f);
+        score2.getText().setVisible(false);
+        stageForUI.addActor(score1.getText());
+        stageForUI.addActor(score2.getText());
+        connectScoring();
     }
 
     private void setUpArmory(float buttonWidth, float buttonHeight) {
@@ -262,6 +308,32 @@ public class GameOffline extends ApplicationAdapter implements InputProcessor, W
         shotFireCellStyle.up   = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("skin/buttons/armory/armory_shot_fire_up.png"))));
         shotFireCellStyle.down = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("skin/buttons/armory/armory_shot_fire_down.png"))));
 
+        // Show armory button
+        ImageButtonStyle armoryStyle = new ImageButtonStyle();
+        armoryStyle.up   = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("skin/buttons/armory_up.png"))));
+        armoryStyle.down = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("skin/buttons/armory_down.png"))));
+        armoryButton = new ImageButton(armoryStyle);
+        armoryButton.addListener(new InputListener() {
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                visibleArmory = !visibleArmory;
+                armoryCells.setVisible(visibleArmory);
+                soundEffects.playArmory();
+                shotBasicCostLabel.setVisible(visibleArmory);
+                shotFireCostLabel.setVisible(visibleArmory);
+            }
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                return true;
+            }
+        });
+        buttons.add(armoryButton);
+        armoryButton.setSize(buttonWidth, buttonHeight);
+        armoryButton.setPosition(buttonWidth,0);
+        armoryCells.setPosition(2 * buttonWidth + armoryCellsWidth / 2, 0 + armoryCellsHeight / 2);
+        stageForUI.addActor(armoryButton);
+        stageForUI.addActor(armoryCells);
+
         ImageButton shotBasicCell = new ImageButton(shotBasicCellStyle);
         ImageButton shotFireCell  = new ImageButton(shotFireCellStyle);
         ImageButton emptyCell     = new ImageButton(emptyCellStyle);
@@ -274,13 +346,44 @@ public class GameOffline extends ApplicationAdapter implements InputProcessor, W
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
                 shotType = ShotType.BASIC;
-                shotBasicTexture.setVisible(true);
                 shotFireTexture.setVisible(false);
+                shotBasicCostLabel.setVisible(false);
+                shotFireCostLabel.setVisible(false);
                 visibleArmory = false;
                 armoryCells.setVisible(false);
                 soundEffects.playArmory();
+                if (getPlayer(playerTurn).spentPoints(shotBasicCost)) {
+                    shotBasicTexture.setVisible(true);
+                    fireButton.setTouchable(Touchable.enabled);
+                    armoryButton.setTouchable(Touchable.disabled);
+                }
             }
         });
+
+        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/roboto.ttf"));
+        FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
+        parameter.size = 22;
+        BitmapFont font = generator.generateFont(parameter);
+        generator.dispose();
+
+        Label.LabelStyle textStyle = new Label.LabelStyle();
+        textStyle.font = font;
+        textStyle.fontColor = new Color().set(1, 1, 0, 1);
+
+        shotBasicCostLabel = new Label(String.valueOf(shotBasicCost), textStyle);
+        shotBasicCostLabel.setBounds(0, 0f, 290, 20);
+        shotBasicCostLabel.setFontScale(1f, 1f);
+        shotBasicCostLabel.setPosition(2 * buttonWidth + (buttonWidth - 2 * shotBasicCostLabel.getMinWidth()),
+                (int)((armoryRows - 1 + 0.25) * buttonHeight));
+        shotBasicCostLabel.setVisible(false);
+
+        shotFireCostLabel = new Label(String.valueOf(shotFireCost), textStyle);
+        shotFireCostLabel.setBounds(0, 0f, 290, 20);
+        shotFireCostLabel.setFontScale(1f, 1f);
+        shotFireCostLabel.setPosition(3 * buttonWidth + (buttonWidth - 2 * shotFireCostLabel.getMinWidth()),
+                (int)((armoryRows - 1 + 0.25) * buttonHeight));
+        shotFireCostLabel.setVisible(false);
+
 
         shotFireCell.addListener(new InputListener() {
             @Override
@@ -290,11 +393,17 @@ public class GameOffline extends ApplicationAdapter implements InputProcessor, W
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
                 shotType = ShotType.FIRE;
-                shotFireTexture.setVisible(true);
                 shotBasicTexture.setVisible(false);
                 visibleArmory = false;
                 armoryCells.setVisible(false);
+                shotBasicCostLabel.setVisible(false);
+                shotFireCostLabel.setVisible(false);
                 soundEffects.playArmory();
+                if (getPlayer(playerTurn).spentPoints(shotFireCost)) {
+                    shotFireTexture.setVisible(true);
+                    fireButton.setTouchable(Touchable.enabled);
+                    armoryButton.setTouchable(Touchable.disabled);
+                }
             }
         });
 
@@ -312,34 +421,15 @@ public class GameOffline extends ApplicationAdapter implements InputProcessor, W
             }
         }
 
-        // Show armory button
-        ImageButtonStyle armoryStyle = new ImageButtonStyle();
-        armoryStyle.up   = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("skin/buttons/armory_up.png"))));
-        armoryStyle.down = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("skin/buttons/armory_down.png"))));
-        ImageButton armoryButton = new ImageButton(armoryStyle);
-        armoryButton.addListener(new InputListener() {
-            @Override
-            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                visibleArmory = !visibleArmory;
-                armoryCells.setVisible(visibleArmory);
-                soundEffects.playArmory();
-            }
-            @Override
-            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                return true;
-            }
-        });
-        buttons.add(armoryButton);
-        armoryButton.setSize(buttonWidth, buttonHeight);
-        armoryButton.setPosition(buttonWidth,0);
-        armoryCells.setPosition(2 * buttonWidth + armoryCellsWidth / 2, 0 + armoryCellsHeight / 2);
-        stageForUI.addActor(armoryButton);
-        stageForUI.addActor(armoryCells);
+        stageForUI.addActor(shotBasicCostLabel);
+        stageForUI.addActor(shotFireCostLabel);
     }
 
     // TODO: set timer and wait for objects to sleep
     private void switchTurn() {
         playerTurn = playerTurn.reverted();
+        score1.getText().setVisible(!score1.getText().isVisible());
+        score2.getText().setVisible(!score2.getText().isVisible());
         physicalScene.setTurn(playerTurn);
         graphicalScene.generateAnimatedPlayerTurn(playerTurn);
         soundEffects.playPlayerTurn(playerTurn);
@@ -359,8 +449,12 @@ public class GameOffline extends ApplicationAdapter implements InputProcessor, W
             shotBar.update();
         }
 
-        if (!over && !fireButton.isTouchable() && physicalScene.isStopped()) {
-            fireButton.setTouchable(Touchable.enabled);
+        if (!over /*&& !fireButton.isTouchable() */&& physicalScene.isStopped() && stepOver) {
+            stepOver = false;
+            shotBasicTexture.setVisible(false);
+            shotFireTexture.setVisible(false);
+            armoryButton.setTouchable(Touchable.enabled);
+            //fireButton.setTouchable(Touchable.enabled);
             switchTurn();
         }
 
@@ -433,6 +527,22 @@ public class GameOffline extends ApplicationAdapter implements InputProcessor, W
         for (Button button : buttons)
             button.setTouchable(Touchable.disabled);
         over = true;
+    }
+
+    private void connectScoring() {
+        Method gotPoints = Events.get().find(Player.class, "gotPoints", int.class);
+        Method spentPoints = Events.get().find(Player.class, "spentPoints", int.class);
+        Method player1scores = Events.get().find(PhysicalSceneOffline.class, "player1scores", int.class);
+        Method player2scores = Events.get().find(PhysicalSceneOffline.class, "player2scores", int.class);
+        Events.get().connect(physicalScene, player1scores, player1, gotPoints);
+        Events.get().connect(physicalScene, player2scores, player2, gotPoints);
+
+        Method changeValue = Events.get().find(Score.class, "changeValue", int.class);
+        Events.get().connect(player1, gotPoints, score1, changeValue);
+        Events.get().connect(player2, gotPoints, score2, changeValue);
+
+        Events.get().connect(player1, spentPoints, score1, changeValue);
+        Events.get().connect(player2, spentPoints, score2, changeValue);
     }
 
     /** Called when key is pressed, fires with P1 cannon

@@ -7,6 +7,7 @@ import com.badlogic.gdx.physics.box2d.World;
 
 import org.apache.commons.lang3.time.StopWatch;
 
+import java.awt.Event;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +27,7 @@ import ru.spbstu.gyboml.core.physical.PhysicalCastle;
 import ru.spbstu.gyboml.core.physical.PhysicalFireShot;
 import ru.spbstu.gyboml.core.physical.PhysicalShot;
 import ru.spbstu.gyboml.core.physical.PhysicalTower;
+import ru.spbstu.gyboml.core.physical.Type;
 import ru.spbstu.gyboml.core.shot.ShotType;
 
 /**
@@ -259,6 +261,7 @@ public class PhysicalSceneOffline {
             PhysicalBlock block = physicalBlocksP1Iterator.next();
             if (block.getHP() <= 0) {
                 world.destroyBody(block.getBody());
+                player2scores(block.getPoints());
                 movables.remove(block);
                 graphicalScene.removeObject(block);
                 physicalBlocksP1Iterator.remove();
@@ -270,6 +273,7 @@ public class PhysicalSceneOffline {
             PhysicalBlock block = physicalBlocksP2Iterator.next();
             if (block.getHP() <= 0) {
                 world.destroyBody(block.getBody());
+                player1scores(block.getPoints());
                 movables.remove(block);
                 graphicalScene.removeObject(block);
                 physicalBlocksP2Iterator.remove();
@@ -331,4 +335,14 @@ public class PhysicalSceneOffline {
         Events.get().
                 connect(physicalCastleP1, handleDamage, gameOver, victory2nd);
         }
+
+    public void player1scores(int points) {
+        Method thisMethod = Events.get().find(PhysicalSceneOffline.class, "player1scores", int.class);
+        Events.get().emit(this, thisMethod, points);
+    }
+
+    public void player2scores(int points) {
+        Method thisMethod = Events.get().find(PhysicalSceneOffline.class, "player2scores", int.class);
+        Events.get().emit(this, thisMethod, points);
+    }
     }

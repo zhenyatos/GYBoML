@@ -16,9 +16,11 @@ public class PhysicalBlock extends Destructible implements Physical, Movable, In
     private static final float BASE_HP = 100;
     private Body body;
     private Updatable sprite;
+    private int points;
 
     public PhysicalBlock(Material material, Location location, World world) {
         super(BASE_HP, material);
+        setPointsValue();
         InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(PHYSICS_PATH_OBJECTS);
 
         PhysicsShapeCache physicsShapeCache = new PhysicsShapeCache(is);
@@ -64,5 +66,20 @@ public class PhysicalBlock extends Destructible implements Physical, Movable, In
 
     public Body getBody() {
         return body;
+    }
+
+    private void setPointsValue() {
+        switch (material) {
+            case WOOD:
+                points = 10;
+                break;
+            case STONE:
+                points = 20;
+                break;
+        }
+    }
+
+    public int getPoints() {
+        return points;
     }
 }
