@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="coresource-1.0">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/../client/coresource/build/libs/coresource-1.0.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

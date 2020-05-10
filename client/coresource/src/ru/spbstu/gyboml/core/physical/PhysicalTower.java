@@ -6,6 +6,8 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.physics.box2d.joints.RevoluteJoint;
 import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
+
+import ru.spbstu.gyboml.core.graphics.Updatable;
 import ru.spbstu.gyboml.core.util.PhysicsShapeCache;
 
 import java.io.InputStream;
@@ -36,7 +38,7 @@ public class PhysicalTower implements Physical, Movable {
         tower.setType(BodyDef.BodyType.StaticBody);
         // Cannon can move => dynamic
         cannon.setType(BodyDef.BodyType.DynamicBody);
-
+        
         tower.setTransform(location.x, location.y, location.angle);
         RevoluteJointDef revoluteJointDef = new RevoluteJointDef();
         float cannonWidth = 220 * location.scale;    // .xml full body width
@@ -67,6 +69,8 @@ public class PhysicalTower implements Physical, Movable {
         revoluteJointDef.enableLimit = true;
         joint = (RevoluteJoint)world.createJoint(revoluteJointDef);
     }
+
+    public void setCannonAwake(boolean flag) { cannon.setAwake(flag);}
 
     public PlayerType getPlayerType() { return playerType; }
 

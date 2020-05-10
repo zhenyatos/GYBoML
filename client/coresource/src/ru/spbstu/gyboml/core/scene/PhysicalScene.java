@@ -29,6 +29,7 @@ import ru.spbstu.gyboml.core.shot.ShotType;
  * Builds physical scene for client application.
  */
 public class PhysicalScene {
+    // TODO: emits for GraphicalScene (there's problem with shot tho)
     private final GraphicalScene graphicalScene;
 
     private final World world;
@@ -58,7 +59,7 @@ public class PhysicalScene {
         this.graphicalScene = graphicalScene;
 
         world = new World(new Vector2(gravityAccelerationX, gravityAccelerationY), true);
-        world.setContactListener(new CollisionHandler());
+        //world.setContactListener(new CollisionHandler());
 
         movables = new ArrayList<>();
         physicalBlocksP1 = new ArrayList<>();
@@ -68,23 +69,23 @@ public class PhysicalScene {
         final float castleIndentX   = 860;  // manually set value for castle placement on platform
         final float towerIndentX    = 450;  // manually set value for tower  placement on platform
         final float platformIndentY = 364;  // y position of platforms for objects from background.xml
-        final float castleTextureWidth = SceneConstants.castleWidth;
-        final float towerTextureWidth  = SceneConstants.towerWidth;
+        final float castleTextureWidth = SceneConstants.castleWidth * SceneConstants.CASTLES_SCALE;
+        final float towerTextureWidth  = SceneConstants.towerWidth * SceneConstants.TOWERS_SCALE;
 
         float castleP1X = SceneConstants.backgroundX + castleIndentX * SceneConstants.SCALE;
-        float castleP2X = SceneConstants.backgroundX + (SceneConstants.resolutionWidth - castleIndentX - castleTextureWidth) * SceneConstants.SCALE;
+        float castleP2X = SceneConstants.backgroundX + (SceneConstants.resolutionWidth - castleIndentX) * SceneConstants.SCALE - castleTextureWidth;
         float castleP1Y = SceneConstants.backgroundY + platformIndentY * SceneConstants.SCALE;
         float castleP2Y = SceneConstants.backgroundY + platformIndentY * SceneConstants.SCALE;
         float towerP1X = SceneConstants.backgroundX + towerIndentX * SceneConstants.SCALE;
-        float towerP2X = SceneConstants.backgroundX + (SceneConstants.resolutionWidth - towerIndentX - towerTextureWidth) * SceneConstants.SCALE;
+        float towerP2X = SceneConstants.backgroundX + (SceneConstants.resolutionWidth - towerIndentX) * SceneConstants.SCALE - towerTextureWidth;
         float towerP1Y = SceneConstants.backgroundY + platformIndentY * SceneConstants.SCALE;
         float towerP2Y = SceneConstants.backgroundY + platformIndentY * SceneConstants.SCALE;
 
         physicalBackground = new PhysicalBackground(new Location(SceneConstants.backgroundX, SceneConstants.backgroundY, 0, SceneConstants.SCALE), world);
-        physicalCastleP1 = new PhysicalCastle(100, new Location(castleP1X, castleP1Y, 0, SceneConstants.SCALE), PlayerType.FIRST_PLAYER, world);
-        physicalCastleP2 = new PhysicalCastle(100, new Location(castleP2X, castleP2Y, 0, SceneConstants.SCALE), PlayerType.SECOND_PLAYER, world);
-        physicalTowerP1 = new PhysicalTower(new Location(towerP1X, towerP1Y, 0, SceneConstants.SCALE), PlayerType.FIRST_PLAYER, world);
-        physicalTowerP2 = new PhysicalTower(new Location(towerP2X, towerP2Y, 0, SceneConstants.SCALE), PlayerType.SECOND_PLAYER, world);
+        physicalCastleP1 = new PhysicalCastle(100, new Location(castleP1X, castleP1Y, 0, SceneConstants.CASTLES_SCALE), PlayerType.FIRST_PLAYER, world);
+        physicalCastleP2 = new PhysicalCastle(100, new Location(castleP2X, castleP2Y, 0, SceneConstants.CASTLES_SCALE), PlayerType.SECOND_PLAYER, world);
+        physicalTowerP1 = new PhysicalTower(new Location(towerP1X, towerP1Y, 0, SceneConstants.TOWERS_SCALE), PlayerType.FIRST_PLAYER, world);
+        physicalTowerP2 = new PhysicalTower(new Location(towerP2X, towerP2Y, 0, SceneConstants.TOWERS_SCALE), PlayerType.SECOND_PLAYER, world);
         movables.add(physicalTowerP1);
         movables.add(physicalTowerP2);
         placeDefaultBlocks(castleP1X, castleP1Y, castleP2X, castleP2Y, Material.WOOD);
@@ -180,8 +181,9 @@ public class PhysicalScene {
         }
 
         physicalShots.add(physicalShot);
-//        if (graphicalScene != null)
-//            graphicalScene.generateGraphicalShot(physicalShot);
+        EventSystem.get().emit(this, "generateShot");
+        // if (graphicalScene != null)
+        //    graphicalScene.generateGraphicalShot(physicalShot);
     }
 
     public World getWorld() { return world; }
@@ -269,7 +271,9 @@ public class PhysicalScene {
     }
 
     public void connectWithSoundEffects(SoundEffects soundEffects) {
+        EventSystem.get().connect(this, "generateShot", soundEffects, "playShot");
 
+        // TODO: remove, because we don't want to connect each time by creation a new one
         for (PhysicalBlock block : physicalBlocksP1)
             EventSystem.get().connect(block, "handleDamage", soundEffects, "playWood");
 

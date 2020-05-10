@@ -1,17 +1,22 @@
 package ru.spbstu.gyboml.core.net;
 
+import com.badlogic.gdx.math.Vector2;
+
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+
 public class GameRequests {
 
     /**
      * Shoot request
      * Called when user pushed 'shoot' button
      * */
+    @RequiredArgsConstructor
+    @NoArgsConstructor
     public static class Shoot {
-        public Float ballPositionX;
-        public Float ballPositionY;
-
-        public Float ballVelocityX;
-        public Float ballVelocityY;
+        public @NonNull Vector2 ballPosition;
+        public @NonNull Vector2 ballVelocity;
     }
 
     /**

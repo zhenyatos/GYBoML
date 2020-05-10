@@ -8,8 +8,15 @@ public class Location {
         this.scale = scale;
     }
 
-    float x;
-    float y;
-    float angle;
-    float scale;
+    public Location(Location location) {
+        this.x = location.x;
+        this.y = location.y;
+        this.angle = location.angle;
+        this.scale = location.scale;
+    }
+
+    public float x;
+    public float y;
+    public float angle;
+    public float scale;
 }

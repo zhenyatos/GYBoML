@@ -33,14 +33,12 @@ public class GameListener extends Listener {
 
     private void shoted(Connection connection, GameResponses.Shooted object) {
         synchronized (game) {
-            game.physicalScene.generateShot(GybomlClient.getPlayerType().reverted(), game.shotType);
-            game.physicalScene.getLastShot().getBody().setTransform(object.ballPositionX, object.ballPositionY, 0);
-            game.physicalScene.getLastShot().setVelocity(new Vector2(object.ballVelocityX, object.ballVelocityY));
+            game.physicalScene.generateShot(GybomlClient.getPlayer().type.reverted(), game.shotType);
+            game.physicalScene.getLastShot().getBody().setTransform(object.ballPostition, 0);
+            game.physicalScene.getLastShot().setVelocity(new Vector2(object.ballVelocity.x, object.ballVelocity.y));
             game.graphicalScene.generateGraphicalShot(game.physicalScene.getLastShot());
-            game.soundEffects.shot.play(1.f);
-            synchronized (game.fireButton) {
-                game.fireButton.setTouchable(Touchable.enabled);
-            }
+            // TODO: see Game's switchTurn() method
+            game.switchTurn();
         }
     }
 }

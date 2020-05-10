@@ -34,6 +34,12 @@
             android:label="gyboml"
             android:screenOrientation="landscape">
         </activity>
+        <activity
+            android:name="ru.spbstu.gyboml.MainActivityOffline"
+            android:configChanges="keyboard|keyboardHidden|navigation|orientation|screenSize|screenLayout"
+            android:label="gyboml"
+            android:screenOrientation="landscape">
+        </activity>
     </application>
 
 </manifest>

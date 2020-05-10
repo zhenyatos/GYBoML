@@ -4,19 +4,21 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
 
-import ru.spbstu.gyboml.core.physical.Updatable;
-
 public class GraphicalBlock implements Drawable, Updatable {
     private final Sprite intactBlock;
     private final Sprite damagedBlock;
+    private final Sprite specialBlock;    // e.g. block_wood_fired.png
     private Sprite currentSprite;
 
-    public GraphicalBlock(Sprite intactBlock, Sprite damagedBlock, float scale) {
+    public GraphicalBlock(Sprite intactBlock, Sprite damagedBlock, Sprite specialBlock, float scale) {
         intactBlock.setSize(intactBlock.getWidth() * scale, intactBlock.getHeight() * scale);
         damagedBlock.setSize(damagedBlock.getWidth() * scale, damagedBlock.getHeight() * scale);
+        if (specialBlock != null)
+            specialBlock.setSize(specialBlock.getWidth() * scale, specialBlock.getHeight() * scale);
         this.intactBlock   = intactBlock;
         this.damagedBlock  = damagedBlock;
         this.currentSprite = intactBlock;
+        this.specialBlock = specialBlock;
     }
 
     @Override
@@ -76,9 +78,13 @@ public class GraphicalBlock implements Drawable, Updatable {
     }
 
     @Override
-    public void changeSprite() {
-        if (currentSprite == intactBlock) {
-            currentSprite = damagedBlock;
-        }
+    public void setDamagedSprite() {
+        currentSprite = damagedBlock;
+    }
+
+    @Override
+    public void setSpecialSprite() {
+        if (specialBlock != null)
+            currentSprite = specialBlock;
     }
 }

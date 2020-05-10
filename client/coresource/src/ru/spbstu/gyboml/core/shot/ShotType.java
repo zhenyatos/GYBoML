@@ -1,7 +1,8 @@
 package ru.spbstu.gyboml.core.shot;
 
 public enum ShotType {
-    BASIC("basic");
+    BASIC("basic"),
+    FIRE("fire");
 
     private String name;
 

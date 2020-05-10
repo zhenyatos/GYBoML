@@ -53,12 +53,11 @@ public class PhysicalCastle extends Destructible implements Physical, Interactab
     public Vector2 getPosition() { return front.getPosition(); }
 
     @Override
-    public void handleDamage(@NotNull Damage damage) {
-        super.handleDamage(damage);
-    }
-
-    @Override
     public Type getType() {
         return Type.CASTLE;
     }
+
+    public Body getFrontBody() { return front; }
+
+    public Body getTowerBody() { return tower; }
 }

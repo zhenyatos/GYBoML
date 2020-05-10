@@ -19,16 +19,29 @@ public class SceneConstants {
 
     // objects parameters
     public static final int resolutionWidth = 3734;
+    public static final int resolutionHeight = 1440;
     public static final int castleWidth = 240;
     public static final int towerWidth = 220;
     public static final int shotBasicWidth = 300;
     public static final int shotBasicHeight = 300;
     public static final int blockWoodWidth = 200;
     public static final int blockWoodHeight = 600;
+    public static final float platformHeight = 364;
+
+    // objects in-game parameters
+    // TODO: balance hp
+    public static final float castleHP = 200.0f;
+    public static final float basicShotSpeed = 22.0f;
 
     public static final float SCALE = canvasWidth / resolutionWidth;
+    public static final float TOWERS_SCALE = SCALE;
+    public static final float CASTLES_SCALE = SCALE;
     public static final float BLOCKS_SCALE = SCALE * 0.35f;
     public static final float SHOTS_SCALE  = SCALE * 0.22f;
-    public static final float EXPLOSION_SCALE = SCALE * 0.85f;
-
+    public static final float EXPLOSION_SCALE = SCALE * 1.25f;
+    public static final float COIN_SCALE = SCALE * 1.55f;
+    public static final float TURN_SCALE = COIN_SCALE;
+    public static final float IMPACT_SCALE = SCALE * 1.5f;
+    public static final float coinX = backgroundX + (resolutionWidth  / 2.0f) * SCALE - 100.0f * COIN_SCALE;
+    public static final float coinY = backgroundY + (resolutionHeight / 2.0f) * SCALE;
 }

@@ -24,19 +24,19 @@ class Logger {
     }
 
     private Logger( String logName ) {
-        try {
-            logFile = new BufferedWriter(new FileWriter(logName));
-        } catch (IOException e) {
-            System.out.println("Bad log name " + logName);
-        }
+//        try {
+//            logFile = new BufferedWriter(new FileWriter(logName));
+//        } catch (IOException e) {
+//            System.out.println("Bad log name " + logName);
+//        }
     }
 
     void registerLog( MsgType error, String msg ) {
-        try {
-            logFile.write(error.get() + " " + msg + "\n");
-        } catch (IOException e) {
-            System.out.println("Error: "  + e.getMessage());
-        }
+//        try {
+//            logFile.write(error.get() + " " + msg + "\n");
+//        } catch (IOException e) {
+//            System.out.println("Error: "  + e.getMessage());
+//        }
     }
 
     void registerFatalLog( MsgType error, String msg ) {
@@ -49,11 +49,11 @@ class Logger {
     }
 
     void close() {
-        try {
-            logFile.close();
-        } catch (IOException e) {
-            System.out.println("Error: "  + e.getMessage());
-        }
+//        try {
+//            logFile.close();
+//        } catch (IOException e) {
+//            System.out.println("Error: "  + e.getMessage());
+//        }
     }
 
     static Logger get() {
