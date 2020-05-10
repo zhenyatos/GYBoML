@@ -86,8 +86,8 @@ public class GameOffline extends ApplicationAdapter implements InputProcessor, W
     private Label shotBasicCostLabel;
     private Label shotFireCostLabel;
 
-    int shotBasicCost;
-    int shotFireCost;
+    int shotBasicCost = 10;
+    int shotFireCost = 50;
 
     private PlayerType playerTurn = PlayerType.FIRST_PLAYER;
     private Player player1, player2, current;
@@ -136,9 +136,6 @@ public class GameOffline extends ApplicationAdapter implements InputProcessor, W
         physicalScene = new PhysicalSceneOffline(graphicalScene, soundEffects);
         physicalScene.setTurn(playerTurn);
 
-
-        this.shotBasicCost = 10;
-        this.shotFireCost = 15;
 
         // UI is setup after main game objects was created
         setUpUI();
@@ -349,16 +346,17 @@ public class GameOffline extends ApplicationAdapter implements InputProcessor, W
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
                 shotType = ShotType.BASIC;
-                shotBasicTexture.setVisible(true);
                 shotFireTexture.setVisible(false);
                 shotBasicCostLabel.setVisible(false);
                 shotFireCostLabel.setVisible(false);
                 visibleArmory = false;
                 armoryCells.setVisible(false);
-                armoryButton.setTouchable(Touchable.disabled);
                 soundEffects.playArmory();
-                getPlayer(playerTurn).spentPoints(shotBasicCost);
-                fireButton.setTouchable(Touchable.enabled);
+                if (getPlayer(playerTurn).spentPoints(shotBasicCost)) {
+                    shotBasicTexture.setVisible(true);
+                    fireButton.setTouchable(Touchable.enabled);
+                    armoryButton.setTouchable(Touchable.disabled);
+                }
             }
         });
 
@@ -395,16 +393,17 @@ public class GameOffline extends ApplicationAdapter implements InputProcessor, W
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
                 shotType = ShotType.FIRE;
-                shotFireTexture.setVisible(true);
                 shotBasicTexture.setVisible(false);
                 visibleArmory = false;
                 armoryCells.setVisible(false);
                 shotBasicCostLabel.setVisible(false);
                 shotFireCostLabel.setVisible(false);
                 soundEffects.playArmory();
-                getPlayer(playerTurn).spentPoints(shotFireCost);
-                fireButton.setTouchable(Touchable.enabled);
-                armoryButton.setTouchable(Touchable.disabled);
+                if (getPlayer(playerTurn).spentPoints(shotFireCost)) {
+                    shotFireTexture.setVisible(true);
+                    fireButton.setTouchable(Touchable.enabled);
+                    armoryButton.setTouchable(Touchable.disabled);
+                }
             }
         });
 
