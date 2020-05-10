@@ -58,7 +58,7 @@ public class GameOffline extends ApplicationAdapter implements InputProcessor, W
 
     private static final int armoryRows = 4;
     private static final int armoryCols = 3;
-    private static final int initPoints = 100;
+    private static final int initPoints = 500;
 
     private SoundEffects soundEffects;
     private GraphicalScene graphicalScene;
@@ -278,7 +278,7 @@ public class GameOffline extends ApplicationAdapter implements InputProcessor, W
 
         // Scores
         score1 = new Score(initPoints, Color.GOLD);
-        score2 = new Score(initPoints - 10, Color.BLUE);
+        score2 = new Score(initPoints, Color.BLUE);
         score1.getText().setPosition(Gdx.graphics.getWidth() - buttonWidth - 3f * buttonHeight, 10f);
         score1.getText().setVisible(true);
         score2.getText().setPosition(Gdx.graphics.getWidth() - buttonWidth - 3f * buttonHeight, 10f);
