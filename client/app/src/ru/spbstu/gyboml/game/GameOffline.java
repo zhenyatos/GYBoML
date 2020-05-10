@@ -8,10 +8,10 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
-import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -27,6 +27,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -81,6 +82,11 @@ public class GameOffline extends ApplicationAdapter implements InputProcessor, W
     private ImageButtonStyle aimStyle;
     private Image shotBasicTexture;
     private Image shotFireTexture;
+    private Label shotBasicCostLabel;
+    private Label shotFireCostLabel;
+
+    int shotBasicCost;
+    int shotFireCost;
 
     private PlayerType playerTurn = PlayerType.FIRST_PLAYER;
     private Player player1, player2, current;
@@ -127,6 +133,10 @@ public class GameOffline extends ApplicationAdapter implements InputProcessor, W
         graphicalScene = new GraphicalScene();
         physicalScene = new PhysicalSceneOffline(graphicalScene, soundEffects);
         physicalScene.setTurn(playerTurn);
+
+
+        this.shotBasicCost = 10;
+        this.shotFireCost = 15;
 
         // UI is setup after main game objects was created
         setUpUI();
@@ -308,11 +318,39 @@ public class GameOffline extends ApplicationAdapter implements InputProcessor, W
                 shotType = ShotType.BASIC;
                 shotBasicTexture.setVisible(true);
                 shotFireTexture.setVisible(false);
+                shotBasicCostLabel.setVisible(false);
+                shotFireCostLabel.setVisible(false);
                 visibleArmory = false;
                 armoryCells.setVisible(false);
                 soundEffects.playArmory();
+                getPlayer(playerTurn).spentPoints(shotBasicCost);
             }
         });
+
+        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/roboto.ttf"));
+        FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
+        parameter.size = 22;
+        BitmapFont font = generator.generateFont(parameter);
+        generator.dispose();
+
+        Label.LabelStyle textStyle = new Label.LabelStyle();
+        textStyle.font = font;
+        textStyle.fontColor = new Color().set(1, 1, 0, 1);
+
+        shotBasicCostLabel = new Label(String.valueOf(shotBasicCost), textStyle);
+        shotBasicCostLabel.setBounds(0, 0f, 290, 20);
+        shotBasicCostLabel.setFontScale(1f, 1f);
+        shotBasicCostLabel.setPosition(2 * buttonWidth + (buttonWidth - 2 * shotBasicCostLabel.getMinWidth()),
+                (int)((armoryRows - 1 + 0.25) * buttonHeight));
+        shotBasicCostLabel.setVisible(false);
+
+        shotFireCostLabel = new Label(String.valueOf(shotFireCost), textStyle);
+        shotFireCostLabel.setBounds(0, 0f, 290, 20);
+        shotFireCostLabel.setFontScale(1f, 1f);
+        shotFireCostLabel.setPosition(3 * buttonWidth + (buttonWidth - 2 * shotFireCostLabel.getMinWidth()),
+                (int)((armoryRows - 1 + 0.25) * buttonHeight));
+        shotFireCostLabel.setVisible(false);
+
 
         shotFireCell.addListener(new InputListener() {
             @Override
@@ -326,7 +364,10 @@ public class GameOffline extends ApplicationAdapter implements InputProcessor, W
                 shotBasicTexture.setVisible(false);
                 visibleArmory = false;
                 armoryCells.setVisible(false);
+                shotBasicCostLabel.setVisible(false);
+                shotFireCostLabel.setVisible(false);
                 soundEffects.playArmory();
+                getPlayer(playerTurn).spentPoints(shotFireCost);
             }
         });
 
@@ -355,6 +396,8 @@ public class GameOffline extends ApplicationAdapter implements InputProcessor, W
                 visibleArmory = !visibleArmory;
                 armoryCells.setVisible(visibleArmory);
                 soundEffects.playArmory();
+                shotBasicCostLabel.setVisible(!shotBasicCostLabel.isVisible());
+                shotFireCostLabel.setVisible(!shotFireCostLabel.isVisible());
             }
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
@@ -367,6 +410,9 @@ public class GameOffline extends ApplicationAdapter implements InputProcessor, W
         armoryCells.setPosition(2 * buttonWidth + armoryCellsWidth / 2, 0 + armoryCellsHeight / 2);
         stageForUI.addActor(armoryButton);
         stageForUI.addActor(armoryCells);
+
+        stageForUI.addActor(shotBasicCostLabel);
+        stageForUI.addActor(shotFireCostLabel);
     }
 
     // TODO: set timer and wait for objects to sleep
@@ -471,6 +517,7 @@ public class GameOffline extends ApplicationAdapter implements InputProcessor, W
 
     private void connectScoring() {
         Method gotPoints = Events.get().find(Player.class, "gotPoints", int.class);
+        Method spentPoints = Events.get().find(Player.class, "spentPoints", int.class);
         Method player1scores = Events.get().find(PhysicalSceneOffline.class, "player1scores", int.class);
         Method player2scores = Events.get().find(PhysicalSceneOffline.class, "player2scores", int.class);
         Events.get().connect(physicalScene, player1scores, player1, gotPoints);
@@ -479,6 +526,9 @@ public class GameOffline extends ApplicationAdapter implements InputProcessor, W
         Method changeValue = Events.get().find(Score.class, "changeValue", int.class);
         Events.get().connect(player1, gotPoints, score1, changeValue);
         Events.get().connect(player2, gotPoints, score2, changeValue);
+
+        Events.get().connect(player1, spentPoints, score1, changeValue);
+        Events.get().connect(player2, spentPoints, score2, changeValue);
     }
 
     /** Called when key is pressed, fires with P1 cannon

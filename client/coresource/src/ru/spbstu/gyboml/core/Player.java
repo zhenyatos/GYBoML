@@ -52,6 +52,9 @@ public class Player {
         if (this.points - points < 0)
             return false;
         this.points -= points;
+
+        Method thisMethod = Events.get().find(Player.class, "spentPoints", int.class);
+        Events.get().emit(this, thisMethod, this.points);
         return true;
     }
 
