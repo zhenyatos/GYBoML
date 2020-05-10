@@ -4,12 +4,14 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
+import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -26,11 +28,14 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
 import ru.spbstu.gyboml.MainActivityOffline;
+import ru.spbstu.gyboml.core.Player;
 import ru.spbstu.gyboml.core.PlayerType;
+import ru.spbstu.gyboml.core.event.Events;
 import ru.spbstu.gyboml.core.scene.GameOver;
 import ru.spbstu.gyboml.core.scene.GraphicalScene;
 import ru.spbstu.gyboml.core.scene.HPBar;
@@ -52,6 +57,7 @@ public class GameOffline extends ApplicationAdapter implements InputProcessor, W
 
     private static final int armoryRows = 4;
     private static final int armoryCols = 3;
+    private static final int initPoints = 100;
 
     private SoundEffects soundEffects;
     private GraphicalScene graphicalScene;
@@ -77,8 +83,20 @@ public class GameOffline extends ApplicationAdapter implements InputProcessor, W
     private Image shotFireTexture;
 
     private PlayerType playerTurn = PlayerType.FIRST_PLAYER;
+    private Player player1, player2, current;
+
     private ShotType shotType = ShotType.BASIC;
     private boolean over = false;
+
+    private Player getPlayer(PlayerType type) {
+        if (type == PlayerType.FIRST_PLAYER)
+            return player1;
+        else
+            return player2;
+    }
+
+    Score score1;
+    Score score2;
 
     public GameOffline(MainActivityOffline activity) {
         this.activity = activity;
@@ -93,6 +111,9 @@ public class GameOffline extends ApplicationAdapter implements InputProcessor, W
      */
     @Override
     public void create() {
+        player1 = new Player("First", initPoints);
+        player2 = new Player("Second", initPoints);
+
         stageForUI = new Stage(new ScreenViewport());
         InputMultiplexer inputMultiplexer = new InputMultiplexer();
         inputMultiplexer.addProcessor(stageForUI);
@@ -240,6 +261,17 @@ public class GameOffline extends ApplicationAdapter implements InputProcessor, W
         stageForUI.addActor(won1stPlayer);
         stageForUI.addActor(won2ndPlayer);
         physicalScene.connectWithGameOver(new GameOver(this, won1stPlayer, won2ndPlayer));
+
+        // Scores
+        score1 = new Score(initPoints, Color.GOLD);
+        score2 = new Score(initPoints - 10, Color.BLUE);
+        score1.getText().setPosition(Gdx.graphics.getWidth() - buttonWidth - 3f * buttonHeight, 10f);
+        score1.getText().setVisible(true);
+        score2.getText().setPosition(Gdx.graphics.getWidth() - buttonWidth - 3f * buttonHeight, 10f);
+        score2.getText().setVisible(false);
+        stageForUI.addActor(score1.getText());
+        stageForUI.addActor(score2.getText());
+        connectScoring();
     }
 
     private void setUpArmory(float buttonWidth, float buttonHeight) {
@@ -340,6 +372,8 @@ public class GameOffline extends ApplicationAdapter implements InputProcessor, W
     // TODO: set timer and wait for objects to sleep
     private void switchTurn() {
         playerTurn = playerTurn.reverted();
+        score1.getText().setVisible(!score1.getText().isVisible());
+        score2.getText().setVisible(!score2.getText().isVisible());
         physicalScene.setTurn(playerTurn);
         graphicalScene.generateAnimatedPlayerTurn(playerTurn);
         soundEffects.playPlayerTurn(playerTurn);
@@ -433,6 +467,18 @@ public class GameOffline extends ApplicationAdapter implements InputProcessor, W
         for (Button button : buttons)
             button.setTouchable(Touchable.disabled);
         over = true;
+    }
+
+    private void connectScoring() {
+        Method gotPoints = Events.get().find(Player.class, "gotPoints", int.class);
+        Method player1scores = Events.get().find(PhysicalSceneOffline.class, "player1scores", int.class);
+        Method player2scores = Events.get().find(PhysicalSceneOffline.class, "player2scores", int.class);
+        Events.get().connect(physicalScene, player1scores, player1, gotPoints);
+        Events.get().connect(physicalScene, player2scores, player2, gotPoints);
+
+        Method changeValue = Events.get().find(Score.class, "changeValue", int.class);
+        Events.get().connect(player1, gotPoints, score1, changeValue);
+        Events.get().connect(player2, gotPoints, score2, changeValue);
     }
 
     /** Called when key is pressed, fires with P1 cannon

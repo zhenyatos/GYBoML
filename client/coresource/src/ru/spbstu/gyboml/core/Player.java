@@ -1,12 +1,15 @@
 package ru.spbstu.gyboml.core;
 
+import java.awt.Event;
+import java.lang.reflect.Method;
+
+import ru.spbstu.gyboml.core.event.Events;
+
 /**
  * Class represents player in game.
  * */
 public class Player {
-
-    // is now my turn
-    public boolean isTurn;
+    public static final int MAX_SCORE = 9999;
 
     // current number of points
     public int points;
@@ -26,32 +29,12 @@ public class Player {
     // default ctor
     public Player(){}
 
-    /**
-     * Class constructor.
-     * @param name - name of player
-     * @param type - type of player (first or second)
-     */
-    public Player(String name, PlayerType type) {
+    public Player(String name, int points) {
         this.name = name;
-        this.type = type;
-    }
-
-    /**
-     * Pass turn to other player.
-     * @param other - link to other player
-     * @return true if turn passed, false otherwise
-     * */
-    public boolean passTurn(Player other) {
-        if (isTurn) {
-            isTurn = false;
-            other.isTurn = true;
-            return true;
-        }
-        return false;
+        this.points = points;
     }
 
     // getters
-    public boolean isMyTurn() { return isTurn; }
     public String name() { return this.name; }
     public int sessionid() { return this.sessionId; }
     public boolean ready() {
@@ -64,4 +47,20 @@ public class Player {
     public void setReady(boolean ready) { this.ready = ready; }
     public void setSessionId(int id) { this.sessionId = id; }
     public void setType(PlayerType type) { this.type = type; }
+
+    public boolean spentPoints(int points) {
+        if (this.points - points < 0)
+            return false;
+        this.points -= points;
+        return true;
+    }
+
+    public boolean gotPoints(int points) {
+        if (this.points + points > MAX_SCORE)
+            return false;
+        this.points += points;
+        Method thisMethod = Events.get().find(Player.class, "gotPoints", int.class);
+        Events.get().emit(this, thisMethod, this.points);
+        return true;
+    }
 }
