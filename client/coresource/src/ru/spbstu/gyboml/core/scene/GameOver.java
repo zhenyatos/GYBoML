@@ -4,44 +4,31 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 
 
 import ru.spbstu.gyboml.core.Winnable;
-import ru.spbstu.gyboml.core.destructible.DestructionListener;
 
 public class GameOver {
     private final Winnable parent;
-    private final Label victoryLabel;
-    private final Label defeatLabel;
-    private boolean firedBefore = false;
+    private final Label won1stPlayer;
+    private final Label won2ndPlayer;
 
-
-    public GameOver(Winnable parent, Label victoryLabel, Label defeatLabel) {
+    public GameOver(Winnable parent, Label won1stPlayer, Label won2ndPlayer) {
         this.parent = parent;
-        this.victoryLabel = victoryLabel;
-        this.defeatLabel = defeatLabel;
-        victoryLabel.setVisible(false);
-        defeatLabel.setVisible(false);
+        this.won1stPlayer = won1stPlayer;
+        this.won2ndPlayer = won2ndPlayer;
+        won1stPlayer.setVisible(false);
+        won2ndPlayer.setVisible(false);
     }
 
-    public DestructionListener victoryListener() {
-        return new DestructionListener() {
-            @Override
-            public void destructionOccured(float newHP) {
-                if (!firedBefore && !(newHP > 0)) {
-                    parent.disableButtons();
-                    victoryLabel.setVisible(true);
-                }
-            }
-        };
+    public void victory1st(float hp2nd) {
+        if (hp2nd <= 0) {
+            parent.disableButtons();
+            won1stPlayer.setVisible(true);
+        }
     }
 
-    public DestructionListener defeatListener() {
-        return new DestructionListener() {
-            @Override
-            public void destructionOccured(float newHP) {
-                if (!firedBefore && !(newHP > 0)) {
-                    parent.disableButtons();
-                    defeatLabel.setVisible(true);
-                }
-            }
-        };
+    public void victory2nd(float hp1st) {
+        if (hp1st <= 0) {
+            parent.disableButtons();
+            won2ndPlayer.setVisible(true);
+        }
     }
 }

@@ -62,7 +62,7 @@ public class TestClient extends ApplicationAdapter {
 
         Box2D.init();
         world = new World(new Vector2(0, -10), true);
-        world.setContactListener(new CollisionHandler());
+        //world.setContactListener(new CollisionHandler());
         createTestedObjects();
 
         debugRenderer = new Box2DDebugRenderer();

@@ -3,6 +3,7 @@ package ru.spbstu.gyboml.core.graphics;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 
+// TODO: refactor implementers (make 1 class maybe)
 public interface Drawable {
     void draw(Batch batch);
     void setPosition(float x, float y);

@@ -3,6 +3,7 @@ package ru.spbstu.gyboml.core.destructible;
 import org.jetbrains.annotations.NotNull;
 import ru.spbstu.gyboml.core.damage.Effect;
 import ru.spbstu.gyboml.core.damage.Damage;
+import ru.spbstu.gyboml.core.event.Events;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +24,8 @@ public class Destructible {
     public void handleDamage(@NotNull Damage damage) {
         HP -= damage.value;
         activeEffects.addAll(damage.getEffects());
+        Events.get().emit(this,
+                Events.get().find(this.getClass(), "handleDamage", Damage.class), HP);
     }
 
     public void applyEffects() {

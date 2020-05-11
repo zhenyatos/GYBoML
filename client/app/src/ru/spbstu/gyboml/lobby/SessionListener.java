@@ -51,11 +51,11 @@ public class SessionListener extends Listener {
         else if (object instanceof SessionResponses.ReadyApproved) { readyApproved(connection, (SessionResponses.ReadyApproved)object); }
         else if (object instanceof SessionResponses.SessionExited) { sessionExited(connection, (SessionResponses.SessionExited)object); }
         else if (object instanceof SessionResponses.SessionStarted) { sessionStarted(connection, (SessionResponses.SessionStarted)object); }
+        else if (object instanceof SessionResponses.UpdatePlayer) { GybomlClient.setPlayer(((SessionResponses.UpdatePlayer)object).player); }
     }
 
     private void sessionStarted(Connection connection, SessionResponses.SessionStarted object) {
         GybomlClient.setPlayer(object.player);
-        GybomlClient.setPlayerType(object.playerType);
         lobby.gameStartUp();
     }
 
@@ -85,6 +85,7 @@ public class SessionListener extends Listener {
 
     private void sessionConnected(Connection connection, SessionResponses.SessionConnected object) {
         Player player = object.player;
+
         GybomlClient.setPlayer(player);
 
         lobby.runOnUiThread(() -> {
@@ -116,11 +117,12 @@ public class SessionListener extends Listener {
 
     private void readyApproved(Connection connection, SessionResponses.ReadyApproved object) {
         lobby.runOnUiThread(() -> {
-            GybomlClient.getPlayer().ready = lobby.readyButton.isChecked();
-            if (lobby.readyButton.isChecked())
-                lobby.exitButton.setVisibility(View.GONE);
-            else
-                lobby.exitButton.setVisibility(View.VISIBLE);
+            boolean ready = object.isReady;
+            GybomlClient.getPlayer().ready = ready;
+            lobby.readyButton.setChecked(ready);
+
+            if (ready) lobby.exitButton.setVisibility(View.GONE);
+            else lobby.exitButton.setVisibility(View.VISIBLE);
         });
     }
 }

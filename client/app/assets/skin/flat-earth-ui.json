@@ -56,7 +56,7 @@ com.badlogic.gdx.graphics.Color: {
 	window: {
 		r: 0.76862746
 		g: 0.4509804
-		b: 0
+		b: 0.2
 		a: 1
 	}
 }

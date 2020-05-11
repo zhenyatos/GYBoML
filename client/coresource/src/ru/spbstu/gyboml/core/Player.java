@@ -1,18 +1,21 @@
 package ru.spbstu.gyboml.core;
 
+import java.awt.Event;
+import java.lang.reflect.Method;
+
+import ru.spbstu.gyboml.core.event.Events;
+
 /**
  * Class represents player in game.
  * */
 public class Player {
-
-    // is now my turn
-    public boolean isTurn;
+    public static final int MAX_SCORE = 9999;
 
     // current number of points
     public int points;
 
-    // player unique id
-    public long id;
+    // player type
+    public PlayerType type;
 
     // session unique id
     public int sessionId;
@@ -26,52 +29,41 @@ public class Player {
     // default ctor
     public Player(){}
 
-    /**
-     * Class constructor.
-     * @param initialPoints - initial number of points
-     * @param isTurn - initial turn
-     * */
-    public Player(String name, int initialPoints, boolean isTurn) {
-        points = initialPoints;
-        this.isTurn = isTurn;
+    public Player(String name, int points) {
         this.name = name;
-    }
-
-    /**
-     * Player to string conversation
-     * @return string in format: player_name#player_id#player_session_id
-     */
-    @Override
-    public String toString() {
-        return name + "#" + id + "#" + sessionId;
-    }
-
-    /**
-     * Pass turn to other player.
-     * @param other - link to other player
-     * @return true if turn passed, false otherwise
-     * */
-    public boolean passTurn(Player other) {
-        if (isTurn) {
-            isTurn = false;
-            other.isTurn = true;
-            return true;
-        }
-        return false;
+        this.points = points;
     }
 
     // getters
-    public boolean isMyTurn() { return isTurn; }
     public String name() { return this.name; }
-    public long id() { return this.id; }
     public int sessionid() { return this.sessionId; }
     public boolean ready() {
         return this.ready;
     }
+    public PlayerType type() { return this.type; }
 
     // setters
     public void setName(String name) { this.name = name; }
     public void setReady(boolean ready) { this.ready = ready; }
-    public void setId(long id) { this.id = id; }
     public void setSessionId(int id) { this.sessionId = id; }
+    public void setType(PlayerType type) { this.type = type; }
+
+    public boolean spentPoints(int points) {
+        if (this.points - points < 0)
+            return false;
+        this.points -= points;
+
+        Method thisMethod = Events.get().find(Player.class, "spentPoints", int.class);
+        Events.get().emit(this, thisMethod, this.points);
+        return true;
+    }
+
+    public boolean gotPoints(int points) {
+        if (this.points + points > MAX_SCORE)
+            return false;
+        this.points += points;
+        Method thisMethod = Events.get().find(Player.class, "gotPoints", int.class);
+        Events.get().emit(this, thisMethod, this.points);
+        return true;
+    }
 }

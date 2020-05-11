@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import ru.spbstu.gyboml.MainActivityOffline;
 import ru.spbstu.gyboml.lobby.Lobby;
 import ru.spbstu.gyboml.R;
 
@@ -19,6 +20,7 @@ public class MainMenu extends AppCompatActivity {
     //Buttons
     private Button startButton;
     private Button exitButton;
+    private Button aboutButton;
 
     //Name of the field that contains player's name and gets transferred on Lobby's startup
     public static final String PLAYER_NAME = "ru.spbstu.gyboml.clientmenu.PLAYER_NAME";
@@ -31,11 +33,14 @@ public class MainMenu extends AppCompatActivity {
 
         startButton = findViewById(R.id.startButton);
         exitButton = findViewById(R.id.exitButton);
+        aboutButton = findViewById(R.id.aboutButton);
 
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                createDialogueWindow();
+                //createDialogueWindow();
+                Intent intent = new Intent(getApplicationContext(), MainActivityOffline.class);
+                startActivity(intent);
             }
         });
         exitButton.setOnClickListener(new View.OnClickListener() {
@@ -43,6 +48,13 @@ public class MainMenu extends AppCompatActivity {
             public void onClick(View v) {
                 finishAffinity();
                 System.exit(0);
+            }
+        });
+
+        aboutButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                createAboutWindow();
             }
         });
     }
@@ -70,6 +82,18 @@ public class MainMenu extends AppCompatActivity {
                 dialog.cancel();
             }
         });
+
+        builder.show();
+    }
+
+    private void createAboutWindow() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.MyDialogTheme);
+        builder.setTitle("About GYBoML");
+        builder.setMessage("A two-player game for Android. The goal is the destruction of " +
+                "your opponent's base by bombarding it with various missiles, and the protection of " +
+                "your own base by shielding it with constructions made of destructible blocks.");
+
+        builder.setPositiveButton("OK", null);
 
         builder.show();
     }
