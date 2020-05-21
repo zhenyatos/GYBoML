@@ -4,7 +4,9 @@ import org.jetbrains.annotations.NotNull;
 import ru.spbstu.gyboml.core.damage.Effect;
 import ru.spbstu.gyboml.core.damage.Damage;
 import ru.spbstu.gyboml.core.event.Events;
+import ru.spbstu.gyboml.core.physical.PhysicalBlock;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,6 +24,7 @@ public class Destructible {
     }
 
     public void handleDamage(@NotNull Damage damage) {
+        calcPoints(damage.value * (1 - material.getDefenceRatio()));
         HP -= damage.value;
         activeEffects.addAll(damage.getEffects());
         Events.get().emit(this,
@@ -36,5 +39,11 @@ public class Destructible {
 
     public float getHP() {
         return HP;
+    }
+
+    public void calcPoints(float dmgvalue) {
+        Method thisMethod = Events.get().find(PhysicalBlock.class, "calcPoints", float.class);
+        int points = (int)(dmgvalue * 0.5f);
+        Events.get().emit(this, thisMethod, points);
     }
 }
