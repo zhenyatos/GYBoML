@@ -15,6 +15,7 @@ import java.util.ListIterator;
 
 import ru.spbstu.gyboml.core.PlayerType;
 import ru.spbstu.gyboml.core.damage.Damage;
+import ru.spbstu.gyboml.core.destructible.Destructible;
 import ru.spbstu.gyboml.core.destructible.Material;
 import ru.spbstu.gyboml.core.event.Events;
 import ru.spbstu.gyboml.core.physical.CollisionHandler;
@@ -96,6 +97,7 @@ public class PhysicalSceneOffline {
         generatePhysicalTower(new Location(towerP1X, towerP1Y, 0, SceneConstants.TOWERS_SCALE), PlayerType.FIRST_PLAYER);
         generatePhysicalTower(new Location(towerP2X, towerP2Y, 0, SceneConstants.TOWERS_SCALE), PlayerType.SECOND_PLAYER);
         generateDefaultBlocks(castleP1X, castleP1Y, castleP2X, castleP2Y);
+        connectingScoreable();
     }
 
     private void generatePhysicalBackground(Location location) {
@@ -261,7 +263,6 @@ public class PhysicalSceneOffline {
             PhysicalBlock block = physicalBlocksP1Iterator.next();
             if (block.getHP() <= 0) {
                 world.destroyBody(block.getBody());
-                player2scores(block.getPoints());
                 movables.remove(block);
                 graphicalScene.removeObject(block);
                 physicalBlocksP1Iterator.remove();
@@ -272,8 +273,8 @@ public class PhysicalSceneOffline {
         while (physicalBlocksP2Iterator.hasNext()) {
             PhysicalBlock block = physicalBlocksP2Iterator.next();
             if (block.getHP() <= 0) {
+
                 world.destroyBody(block.getBody());
-                player1scores(block.getPoints());
                 movables.remove(block);
                 graphicalScene.removeObject(block);
                 physicalBlocksP2Iterator.remove();
@@ -344,5 +345,17 @@ public class PhysicalSceneOffline {
     public void player2scores(int points) {
         Method thisMethod = Events.get().find(PhysicalSceneOffline.class, "player2scores", int.class);
         Events.get().emit(this, thisMethod, points);
+    }
+
+    private void connectingScoreable() {
+        Method calcPoints = Events.get().find(Destructible.class, "calcPoints", float.class);
+        Method player1scores = Events.get().find(PhysicalSceneOffline.class, "player1scores", int.class);
+        Method player2scores = Events.get().find(PhysicalSceneOffline.class, "player2scores", int.class);
+        for (PhysicalBlock block : physicalBlocksP1)
+            Events.get().connect(block, calcPoints, this, player2scores);
+        for (PhysicalBlock block : physicalBlocksP2)
+            Events.get().connect(block, calcPoints, this, player1scores);
+        Events.get().connect(physicalCastleP1, calcPoints, this, player2scores);
+        Events.get().connect(physicalBlocksP2, calcPoints, this, player1scores);
     }
     }
