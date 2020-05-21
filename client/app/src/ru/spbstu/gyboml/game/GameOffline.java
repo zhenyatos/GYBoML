@@ -11,6 +11,8 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.input.GestureDetector;
+import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
@@ -52,7 +54,7 @@ import ru.spbstu.gyboml.core.Winnable;
  * implements methods that are invoked in the LibGDX game loop.
  * @since   2020-03-11
  */
-public class GameOffline extends ApplicationAdapter implements InputProcessor, Winnable {
+public class GameOffline extends ApplicationAdapter implements Winnable {
     //TODO: remove unnecessary
     private final MainActivityOffline activity;
 
@@ -71,6 +73,7 @@ public class GameOffline extends ApplicationAdapter implements InputProcessor, W
     private ExtendViewport viewport;
 
     //UI TODO: refactor
+    private GestureDetector gestureDetector;
     private final List<Button> buttons = new ArrayList<>();
     private Stage stageForUI;
     private Skin UISkin;
@@ -124,10 +127,17 @@ public class GameOffline extends ApplicationAdapter implements InputProcessor, W
         player1 = new Player("First", initPoints);
         player2 = new Player("Second", initPoints);
 
+        camera = new OrthographicCamera(SceneConstants.cameraWidth, SceneConstants.cameraHeight);
+        viewport = new ExtendViewport(camera.viewportWidth, camera.viewportHeight, camera);
+        camera.position.set(camera.viewportWidth / 2, camera.viewportHeight / 2, 0);
+        camera.zoom = 1.0f;
+        camera.update();
+
         stageForUI = new Stage(new ScreenViewport());
+        gestureDetector = new GestureDetector(new GestureProcessor(camera, viewport));
         InputMultiplexer inputMultiplexer = new InputMultiplexer();
         inputMultiplexer.addProcessor(stageForUI);
-        inputMultiplexer.addProcessor(this);
+        inputMultiplexer.addProcessor(gestureDetector);
         Gdx.input.setInputProcessor(inputMultiplexer);
 
         debugRenderer = new Box2DDebugRenderer();
@@ -142,10 +152,8 @@ public class GameOffline extends ApplicationAdapter implements InputProcessor, W
         // UI is setup after main game objects was created
         setUpUI();
 
-        camera = new OrthographicCamera(SceneConstants.minWidth, SceneConstants.minHeight);
-        viewport = new ExtendViewport(camera.viewportWidth, camera.viewportHeight, camera);
-        camera.position.set(camera.viewportWidth / 2, camera.viewportHeight / 2, 0);
-        camera.update();
+        /*camera.zoom = 2.0f;
+        camera.update();*/
     }
 
     /** This function sets up the UI. The name speaks for itself, really.
@@ -514,37 +522,6 @@ public class GameOffline extends ApplicationAdapter implements InputProcessor, W
         graphicalScene.dispose();
     }
 
-    /** Called when a finger or the mouse was dragged.
-     * Moves the camera in correspondence with the finger's movement.
-     * @param screenX the horizontal position of the finger in screen coordinates.
-     * @param screenY the vertical position of the finger in screen coordinates
-     * @param pointer the pointer for the event.
-     * @return whether the input was processed.
-     */
-    @Override
-    public boolean touchDragged(int screenX, int screenY, int pointer) {
-        float x = Gdx.input.getDeltaX() * SceneConstants.SCALE;
-        float y = Gdx.input.getDeltaY() * SceneConstants.SCALE;
-
-        float leftEdgePos = camera.position.x - SceneConstants.minWidth / 2;
-        float rightEdgePos = leftEdgePos + SceneConstants.minWidth;
-        if (leftEdgePos  - x < 0)
-            x = leftEdgePos;
-        else if (rightEdgePos - x > SceneConstants.worldWidth)
-            x = rightEdgePos - SceneConstants.worldWidth;
-
-        float topEdgePos = camera.position.y + SceneConstants.minHeight / 2;
-        float bottomEdgePos = topEdgePos - SceneConstants.minHeight;
-        if (topEdgePos + y > SceneConstants.worldHeight)
-            y = SceneConstants.worldHeight - topEdgePos;
-        else if (bottomEdgePos + y < 0)
-            y = -bottomEdgePos;
-
-        camera.position.add(-x, y, 0);
-        camera.update();
-
-        return true;
-    }
 
     /** Called when the application is resized. Updates the viewport.
      * @param width the new width in pixels.
@@ -578,28 +555,4 @@ public class GameOffline extends ApplicationAdapter implements InputProcessor, W
         Events.get().connect(player1, spentPoints, score1, changeValue);
         Events.get().connect(player2, spentPoints, score2, changeValue);
     }
-
-    /** Called when key is pressed, fires with P1 cannon
-     * @param keycode key code (one of the Input.Keys)
-     */
-    @Override
-    public boolean keyDown(int keycode) { return true; }
-
-    @Override
-    public boolean keyUp(int keycode) {return true;}
-
-    @Override
-    public boolean keyTyped(char character) {return true;}
-
-    @Override
-    public boolean touchDown(int screenX, int screenY, int pointer, int button) {return true;}
-
-    @Override
-    public boolean touchUp(int screenX, int screenY, int pointer, int button) {return true;}
-
-    @Override
-    public boolean mouseMoved(int screenX, int screenY) {return true;}
-
-    @Override
-    public boolean scrolled(int amount) { return true;}
 }
