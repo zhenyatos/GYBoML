@@ -34,6 +34,10 @@ public class SoundEffects {
         this.effectsVolume = effectsVolume;
     }
 
+    public float getEffectsVolume() {
+        return this.effectsVolume;
+    }
+
     public void playShot() { shot.play(effectsVolume); }
 
     public void playLoadShot() { loadShot.play(effectsVolume); }

@@ -76,9 +76,11 @@ public class GameOffline extends ApplicationAdapter implements InputProcessor, W
     private Skin UISkin;
     private Button fireButton;
     private Button armoryButton;
+    private Button soundOffButton;
     private ShotBar shotBar;
     private Table armoryCells;
     private boolean visibleArmory;
+    private ImageButtonStyle soundOffStyle, soundOnStyle;
     private ImageButtonStyle fireStyle;
     private ImageButtonStyle aimStyle;
     private Image shotBasicTexture;
@@ -266,6 +268,38 @@ public class GameOffline extends ApplicationAdapter implements InputProcessor, W
         bar2.getHealthBar().setPosition(Gdx.graphics.getWidth() - HPBar.width - 10,Gdx.graphics.getHeight() - 30);
         stageForUI.addActor(bar1.getHealthBar());
         stageForUI.addActor(bar2.getHealthBar());
+
+        // sound button
+        soundOffStyle      = new ImageButtonStyle();
+        soundOffStyle.up   = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("skin/buttons/sound_off.png"))));
+        soundOffStyle.down = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("skin/buttons/sound_off.png"))));
+
+        soundOnStyle       = new ImageButtonStyle();
+        soundOnStyle.up    = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("skin/buttons/sound_on.png"))));
+        soundOnStyle.down  = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("skin/buttons/sound_on.png"))));
+
+        soundOffButton = new ImageButton(soundOnStyle);
+
+        soundOffButton.addListener(new InputListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                return true;
+            }
+
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                float volume = 1.0f - soundEffects.getEffectsVolume();
+                soundEffects.setEffectsVolume(volume);
+                soundOffButton.setStyle(volume > 0.5 ? soundOnStyle : soundOffStyle);
+            }
+        });
+
+        float hbSize = bar1.getHealthBar().getHeight();
+        float soundOffSize = 3.5f * hbSize;
+        soundOffButton.setSize(soundOffSize, soundOffSize);
+        soundOffButton.setPosition(Gdx.graphics.getWidth() - soundOffSize, bar1.getHealthBar().getY() - soundOffSize);
+
+        stageForUI.addActor(soundOffButton);
 
         //Game over labels
         Label won1stPlayer = new Label("Player 1 wins!", UISkin, "title");
