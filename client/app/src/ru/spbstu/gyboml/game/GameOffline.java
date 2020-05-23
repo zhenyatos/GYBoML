@@ -181,10 +181,11 @@ public class GameOffline extends ApplicationAdapter implements Winnable {
                         }
                     }
                 };
-                // TODO: refactor scales
-                dialog.text("Are you sure you want to exit?").setScale(2f);
-                dialog.button("Yes", true).setWidth(2f);
-                dialog.button("No", false).setWidth(2f);
+                dialog.text("Are you sure you want to exit?");
+                dialog.setWidth(Gdx.graphics.getWidth() / 3.f);
+                dialog.setHeight(Gdx.graphics.getHeight() / 3.f);
+                dialog.button("Yes", true);
+                dialog.button("No", false);
                 dialog.show(stageForUI);
             }
 
