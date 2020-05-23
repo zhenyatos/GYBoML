@@ -19,6 +19,7 @@ import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.Cell;
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
@@ -181,9 +182,17 @@ public class GameOffline extends ApplicationAdapter implements Winnable {
                         }
                     }
                 };
-                dialog.text("Are you sure you want to exit?");
-                dialog.setWidth(Gdx.graphics.getWidth() / 3.f);
-                dialog.setHeight(Gdx.graphics.getHeight() / 3.f);
+                dialog.getTitleLabel().setScale(1.5f);
+                Label dialogLabel = new Label("Are you sure you want to exit?", UISkin, "title");
+                dialogLabel.setScale(1.2f);
+                dialog.text(dialogLabel);
+                float dialogWidth = Gdx.graphics.getWidth() / 2.f;
+                float dialogHeight = Gdx.graphics.getHeight() / 2.f;
+                dialog.getTitleLabel().setScale(10.f);
+                dialog.getButtonTable().defaults().width(dialogWidth / 3.f);
+                dialog.getButtonTable().defaults().height(dialogHeight / 3.f);
+                dialog.getBackground().setMinWidth(dialogWidth);
+                dialog.getBackground().setMinHeight(dialogHeight);
                 dialog.button("Yes", true);
                 dialog.button("No", false);
                 dialog.show(stageForUI);
