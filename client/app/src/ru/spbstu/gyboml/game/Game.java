@@ -12,6 +12,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
+import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -56,8 +57,8 @@ import ru.spbstu.gyboml.core.Winnable;
 public class Game extends ApplicationAdapter implements InputProcessor, Winnable {
     MainActivity mainActivity;
 
-    private static final float buttonWidth  = 200 / 1920.0f;
-    private static final float buttonHeight = 100 / 1080.0f;
+    private static final float buttonWidth  = 200 / Gdx.graphics.getWidth();
+    private static final float buttonHeight = 100 / Gdx.graphics.getHeight();
 
     private static final int armoryRowCount = 4;
     private static final int armoryColumnCount = 4;
@@ -74,6 +75,7 @@ public class Game extends ApplicationAdapter implements InputProcessor, Winnable
     private ExtendViewport viewport;
 
     //UI
+    private GestureDetector gestureDetector;
     private Stage stageForUI;
     private Table table;
     private final List<Button> buttons = new ArrayList<>();
@@ -102,8 +104,10 @@ public class Game extends ApplicationAdapter implements InputProcessor, Winnable
     @Override
     public void create() {
         stageForUI = new Stage(new ScreenViewport());
+        gestureDetector = new GestureDetector(new GestureProcessor(camera, viewport));
         InputMultiplexer inputMultiplexer = new InputMultiplexer();
         inputMultiplexer.addProcessor(stageForUI);
+        inputMultiplexer.addProcessor(gestureDetector);
         inputMultiplexer.addProcessor(this);
         Gdx.input.setInputProcessor(inputMultiplexer);
 
@@ -121,7 +125,7 @@ public class Game extends ApplicationAdapter implements InputProcessor, Winnable
         // UI is setup after main game objects was created
         setUpUI();
 
-        camera = new OrthographicCamera(SceneConstants.minWidth, SceneConstants.minHeight);
+        camera = new OrthographicCamera(SceneConstants.cameraWidth, SceneConstants.cameraHeight);
         viewport = new ExtendViewport(camera.viewportWidth, camera.viewportHeight, camera);
         camera.position.set(camera.viewportWidth / 2, camera.viewportHeight / 2, 0);
         camera.update();
@@ -350,15 +354,15 @@ public class Game extends ApplicationAdapter implements InputProcessor, Winnable
         float x = Gdx.input.getDeltaX() * SceneConstants.SCALE;
         float y = Gdx.input.getDeltaY() * SceneConstants.SCALE;
 
-        float leftEdgePos = camera.position.x - SceneConstants.minWidth / 2;
-        float rightEdgePos = leftEdgePos + SceneConstants.minWidth;
+        float leftEdgePos = camera.position.x - SceneConstants.cameraWidth / 2;
+        float rightEdgePos = leftEdgePos + SceneConstants.cameraWidth;
         if (leftEdgePos  - x < 0)
             x = leftEdgePos;
         else if (rightEdgePos - x > SceneConstants.worldWidth)
             x = rightEdgePos - SceneConstants.worldWidth;
 
-        float topEdgePos = camera.position.y + SceneConstants.minHeight / 2;
-        float bottomEdgePos = topEdgePos - SceneConstants.minHeight;
+        float topEdgePos = camera.position.y + SceneConstants.cameraHeight / 2;
+        float bottomEdgePos = topEdgePos - SceneConstants.cameraHeight;
         if (topEdgePos + y > SceneConstants.worldHeight)
             y = SceneConstants.worldHeight - topEdgePos;
         else if (bottomEdgePos + y < 0)

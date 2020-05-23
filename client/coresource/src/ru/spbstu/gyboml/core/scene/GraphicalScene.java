@@ -45,7 +45,10 @@ public class GraphicalScene {
     private Map<Physical, Drawable> objectsMap;
 
     // scene graphics
-    private TextureAtlas backgroundBack;
+    private TextureAtlas backgroundBlack;
+    private TextureAtlas backgroundSky;
+    private TextureAtlas backgroundDesert;
+    private TextureAtlas backgroundLand;
     private TextureAtlas backgroundFront;
     private TextureAtlas objects;
     private TextureAtlas texts;
@@ -59,8 +62,11 @@ public class GraphicalScene {
         animations = new ArrayList<>();
         objectsMap = new HashMap<>();
 
-        backgroundBack  = new TextureAtlas("sprites/background_1.txt");
-        backgroundFront = new TextureAtlas("sprites/background_2.txt");
+        backgroundBlack  = new TextureAtlas("sprites/bg_black.txt");
+        backgroundSky = new TextureAtlas("sprites/bg_sky.txt");
+        backgroundDesert = new TextureAtlas("sprites/bg_desert.txt");
+        backgroundLand = new TextureAtlas("sprites/bg_land.txt");
+        backgroundFront = new TextureAtlas("sprites/bg_front.txt");
         objects         = new TextureAtlas("sprites/objects.txt");
         texts           = new TextureAtlas("sprites/texts.txt");
 
@@ -85,21 +91,22 @@ public class GraphicalScene {
 
     void generateGraphicalBackground(PhysicalBackground physicalBackground) {
         GraphicalBackground graphicalBackground = new GraphicalBackground(
-                backgroundBack.createSprite("bg_sky"),
-                backgroundBack.createSprite("bg_desert"),
-                backgroundFront.createSprite("bg_land"),
+                backgroundBlack.createSprite("bg_black"),
+                backgroundSky.createSprite("bg_sky"),
+                backgroundDesert.createSprite("bg_desert"),
+                backgroundLand.createSprite("bg_land"),
                 SceneConstants.SCALE);
-        graphicalBackground.setSize(SceneConstants.canvasWidth, SceneConstants.canvasHeight);
+        graphicalBackground.setSize(SceneConstants.graphicalCanvasWidth, SceneConstants.graphicalCanvasHeight);
         graphicalBackground.setOrigin(0, 0);
-        graphicalBackground.setPosition(physicalBackground.getPosition().x, physicalBackground.getPosition().y);
+        graphicalBackground.setPosition(physicalBackground.getPosition().x, physicalBackground.getPosition().y - SceneConstants.graphicalYOffset);
         drawables.add(graphicalBackground);
     }
 
     void generateGraphicalForeground(PhysicalBackground physicalBackground) {
         GraphicalForeground graphicalForeground = new GraphicalForeground(backgroundFront.createSprite("bg_front"), SceneConstants.SCALE);
-        graphicalForeground.setSize(SceneConstants.canvasWidth, SceneConstants.canvasHeight);
+        graphicalForeground.setSize(SceneConstants.graphicalCanvasWidth, SceneConstants.graphicalCanvasHeight);
         graphicalForeground.setOrigin(0, 0);
-        graphicalForeground.setPosition(physicalBackground.getPosition().x, physicalBackground.getPosition().y);
+        graphicalForeground.setPosition(physicalBackground.getPosition().x, physicalBackground.getPosition().y - SceneConstants.graphicalYOffset);
         drawables.add(graphicalForeground);
     }
 
@@ -234,7 +241,10 @@ public class GraphicalScene {
     }
 
     public void dispose() {
-        backgroundBack.dispose();
+        backgroundBlack.dispose();
+        backgroundSky.dispose();
+        backgroundDesert.dispose();
+        backgroundLand.dispose();
         backgroundFront.dispose();
         objects.dispose();
     }

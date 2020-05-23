@@ -4,18 +4,22 @@ public class SceneConstants {
     private SceneConstants() {}
 
     // world / canvas constants
-    public static final float minRatio     = 3f / 2f;
-    public static final float minWidth     = 50;
-    public static final float minHeight    = minWidth / minRatio;
+    public static final float cameraRatio = 3f / 2f;
+    public static final float cameraWidth = 50;
+    public static final float cameraHeight = cameraWidth / cameraRatio;
     public static final float worldScale   = 1.5f;
-    public static final float worldWidth   = minWidth * worldScale;
-    public static final float worldHeight  = minHeight;
+    public static final float worldWidth   = cameraWidth * worldScale;
+    public static final float worldHeight  = cameraHeight;
     public static final float maxXRatio    = 19.5f / 9f;
     public static final float maxYRatio    = 4f / 3f;
-    public static final float canvasWidth  = worldWidth + minWidth * (maxXRatio / minRatio - 1);
-    public static final float canvasHeight = worldHeight + minHeight * (minRatio / maxYRatio - 1);
+    public static final float canvasWidth  = worldWidth + cameraWidth * (maxXRatio / cameraRatio - 1);
+    public static final float canvasHeight = worldHeight + cameraHeight * (cameraRatio / maxYRatio - 1);
+    public static final float graphicalCanvasWidth = canvasWidth;
+    public static final float graphicalCanvasHeight = worldHeight * worldScale + cameraHeight * (cameraRatio / maxYRatio - 1);
     public static final float backgroundX = 0 - (canvasWidth - worldWidth) / 2;
     public static final float backgroundY = 0 - (canvasHeight - worldHeight) / 2;
+    public static final float graphicalXOffset = 0;
+    public static final float graphicalYOffset = (graphicalCanvasHeight - canvasHeight) / 2;
 
     // objects parameters
     public static final int resolutionWidth = 3734;
