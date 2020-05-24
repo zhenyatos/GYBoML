@@ -27,7 +27,8 @@ public class GestureProcessor implements GestureDetector.GestureListener {
     private final Interpolation momentumLossInterpolation = getInterpolation("fade");
     private ScheduledFuture<?> currentVelocityTask;
     private static final long velocityUpdatePeriod = 15L;
-    private static final int interpolationIterationNum = 1000;
+    private static final float velocityReductionRate = 10 / 15f;
+    private static final float minVelocity = 1f;
 
     public GestureProcessor(OrthographicCamera camera, Viewport viewport) {
         this.camera = camera;
@@ -40,6 +41,7 @@ public class GestureProcessor implements GestureDetector.GestureListener {
     @Override
     public boolean touchDown(float x, float y, int pointer, int button) {
         currentZoom = camera.zoom;
+        cancelVelocityTask();
         return false;
     }
 
@@ -60,6 +62,8 @@ public class GestureProcessor implements GestureDetector.GestureListener {
         if (currentZoom == SceneConstants.worldScale)
             return false;
         float velocity = -velocityX * SceneConstants.SCALE / 15f;
+        if (Math.abs(velocity) < minVelocity)
+            return false;
         cancelVelocityTask();
         currentVelocityTask = momentumTimer.scheduleAtFixedRate(new Runnable() {
             private int interpolationCounter = 0;
@@ -69,11 +73,13 @@ public class GestureProcessor implements GestureDetector.GestureListener {
                     currentVelocityTask.cancel(true);
                     return;
                 }
-                float interpolationFactor = momentumLossInterpolation.apply((float)(interpolationIterationNum - interpolationCounter) / interpolationIterationNum);
-                move(velocity * interpolationFactor, 0);
+                int interpolationIterationNum = 500 + (int)(velocity / velocityReductionRate);
+                float currentVelocity = velocity * momentumLossInterpolation.
+                        apply((float)(interpolationIterationNum - interpolationCounter) / interpolationIterationNum);
+                move(currentVelocity, 0);
                 interpolationCounter++;
             }
-        }, 0, 15L, TimeUnit.MILLISECONDS);
+        }, 0, velocityUpdatePeriod, TimeUnit.MILLISECONDS);
         return true;
     }
 
@@ -81,14 +87,14 @@ public class GestureProcessor implements GestureDetector.GestureListener {
     @Override
     public boolean pan(float x, float y, float deltaX, float deltaY) {
         if (currentVelocityTask != null && !currentVelocityTask.isCancelled() || currentZoom == SceneConstants.worldScale)
-            return false;
+            return true;
         move(-deltaX * SceneConstants.SCALE * 1.5f, 0);
         return true;
     }
 
     @Override
     public boolean panStop(float x, float y, int pointer, int button) {
-
+        cancelVelocityTask();
         return false;
     }
 
