@@ -5,10 +5,15 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.World;
 
-import java.io.InputStream;
+import org.jetbrains.annotations.NotNull;
 
+import java.io.InputStream;
+import java.lang.reflect.Method;
+
+import ru.spbstu.gyboml.core.damage.Damage;
 import ru.spbstu.gyboml.core.destructible.Destructible;
 import ru.spbstu.gyboml.core.destructible.Material;
+import ru.spbstu.gyboml.core.event.Events;
 import ru.spbstu.gyboml.core.graphics.Updatable;
 import ru.spbstu.gyboml.core.util.PhysicsShapeCache;
 
@@ -16,11 +21,9 @@ public class PhysicalBlock extends Destructible implements Physical, Movable, In
     private static final float BASE_HP = 100;
     private Body body;
     private Updatable sprite;
-    private int points;
 
     public PhysicalBlock(Material material, Location location, World world) {
         super(BASE_HP, material);
-        setPointsValue();
         InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(PHYSICS_PATH_OBJECTS);
 
         PhysicsShapeCache physicsShapeCache = new PhysicsShapeCache(is);
@@ -66,20 +69,5 @@ public class PhysicalBlock extends Destructible implements Physical, Movable, In
 
     public Body getBody() {
         return body;
-    }
-
-    private void setPointsValue() {
-        switch (material) {
-            case WOOD:
-                points = 10;
-                break;
-            case STONE:
-                points = 20;
-                break;
-        }
-    }
-
-    public int getPoints() {
-        return points;
     }
 }

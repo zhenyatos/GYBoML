@@ -1,0 +1,12 @@
+bg_desert.png
+size: 3734, 2160
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+bg_desert
+  rotate: false
+  xy: 0, 0
+  size: 3734, 2160
+  orig: 3734, 2160
+  offset: 0, 0
+  index: -1
