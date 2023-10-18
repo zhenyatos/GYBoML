@@ -1,7 +1,7 @@
 # Get Your Bombs off My Lawn!
 Игра под платформу Android для двух игроков. Целью является уничтожение базы противника различным снарядами и защита своей базы путем застройки разрушаемыми блоками. 
 ![Игровой процесс](Documentation/gamedesign_image3.png)
-**Demo**
+**Demo** [link](https://github.com/zhenyatos/GYBoML/issues/177#issuecomment-1767665735)
 
 ![Demo](Documentation/GYBoML.gif)
 
