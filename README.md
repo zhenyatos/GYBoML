@@ -1,104 +1,98 @@
 # Get Your Bombs off My Lawn!
-Игра под платформу Android для двух игроков. Целью является уничтожение базы противника различным снарядами и защита своей базы путем застройки разрушаемыми блоками. 
+A two-player game for Android. The goal is the destruction of your opponent's base by bombarding it with various missiles, and the protection of your own base by shielding it with constructions made of destructible blocks.
 ![Игровой процесс](Documentation/gamedesign_image3.png)
 **Demo** [link](https://github.com/zhenyatos/GYBoML/issues/177#issuecomment-1767665735)
 
 ![Demo](Documentation/GYBoML.gif)
 
-**Ключевые особенности:** 
-1. Пошаговая стратегическая игра с физикой в реальном времени 
-2. Easy to learn, hard to master
-3. Гениальная механика со взрывающейся коровой которая интригует абсолютно всех
-
-A two-player game for Android. The goal is the destruction of your opponent's base by bombarding it with various missiles, and the protection of your own base by shielding it with constructions made of destructible blocks.
-
 **Key features:**
 1. Turn-based strategy with real-time physics
 2. Easy to learn, hard to master
-3. The nefariously ingenious exploding cow mechanic that won't leave anyone unmoved
 
-# Инструкция по установке и запуску (для пользователя)
-Для установки актуальной версии скачайте приложение в формате apk из прикреплённых файлов к последнему релизу.
-При установке Вам потребуется дать разрешение на установку приложений от сторонних (не Play market) источников. Можете смело делать это: наша программа чиста и не содержит вредоносных частей.
+# Installation and launch instructions (for the user)
+To install the latest version, download the application in the apk format from the attached files to the latest release. During installation, you will need to grant permission to install applications from third-party (non-Play Store) sources. You can confidently do this: our game is open-source and does not contain malicious components
 
-# Системные требования
-1. Целевая платформа - Android
-2. Версия Anroid - 7.0 и выше
-3. Минимальная оперативная память - 2 Гб
-4. Минимальное разрешение экрана - 480 х 800
+# System requirements
+1. Target platform - Android
+2. Android version - 7.0 and above
+3. Minimum RAM - 2 GB
+4. Minimum screen resolution - 480 x 800
 
-# Сравнение с похожими играми
-При создании мы вдохновлялись Angry Birds и Worms, рассмотрим подробнее чем же наш продукт отличается от указанных:
-| Продукт (Product)                                         | GYBoML | Angry Birds | Worms         |
+# Comparison with similar games
+We were inspired by Angry Birds и Worms, let's look at how our project stands out
+| Product                                        | GYBoML | Angry Birds | Worms         |
 |-----------------------------------------------------------|--------|-------------|---------------|
-| однопользовательский режим (single-player)                |    -   |      +      | +- (с ботами) |
-| многопользовательский режим (multi-player)                |    +   |      -      |       +       |
-| наличие внутриигровой экономики (in-game economy)         |    +   |      -      |       -       |
-| крутая физика (cool physics)                              |    +   |      +      |       -       |
-| вариативность игрового процесса (variativity in gameplay) |    +   |      -      |       +       |
+| single-player             |    -   |      +      | +- (bots) |
+| multi-player       |    +   |      -      |       +       |
+| in-game economy         |    +   |      -      |       -       |
+| cool physics                              |    +   |      +      |       -       |
+| variativity in gameplay |    +   |      -      |       +       |
 
 
-# Инструкция по установке для разработчиков
-Для скачивания исходного кода последнего релиза Вам потребуется:
-* В терминале (windows: git bash, unix: bash) выполнить команды:
-
+# Installation (for developers)
+Latest release:
 ``` bash
 	git clone https://github.com/zhenyatos/GYBoML/
 ```
 
-## Сборка клиентского приложения
-* Загрузить по [ссылке](https://developer.android.com/studio) Android Studio
-* В Android Studio:
+## Building client application
+* [Download](https://developer.android.com/studio) Android Studio
+* In Android Studio:
 	- Files...
 	- Open...
-	- Выбрать директорий *client* 
+	- Choose *client* directory
 	- Build (Ctrl + F9)
-	- Для отладки нажать Shift + F9, для запуска без отладки Shift + F10
+	- For debugging Shift + F9, without debugging Shift + F10
 
-## Сборка серверного приложения
+## Building server application
 ### Просмотр и отладка кода
-* Загрузить по [ссылке](https://www.jetbrains.com/ru-ru/idea/download/) Intellij Idea
-* В Intellij Idea:
+* [Download](https://www.jetbrains.com/ru-ru/idea/download/) Intellij Idea
+* In Intellij Idea:
 	- Files...
 	- Open...
-	- Выбрать директорий *server*
-	- Далее - см. 4 и 5 пункты инструкции по сборке клиентского приложения
+	- Choose *server* directory
+	- Next, proceed as for building client application
 
-Наибольший интерес представляет запуск сервера с подключением к нему нескольких клиентов. Для этого требуется собрать JAR-файл и запустить несколько instance'ов:
+### Building JAR executables for client and server
 
-### Сборка JAR-файлов для сетевого клиента и сервера
+* Install the [Maven](https://maven.apache.org/download.cgi) utility for your operating system.
+* Add the *apache_<version>/bin* directory address to the *PATH* environment variable.
+* Ensure that the *JAVA_HOME* environment variable exists and points to a JDK no older than version 8.
+* Navigate to the root of the project.
+* Execute the command `mvn package`.
+* Launch the network client:
+  - Navigate to the directory net-client/target.
+  - Execute the command:
+    ```bash
+    java -jar ???_WithDependencies.jar
+    ```
+    (The archive name is approximate and may change from version to version.)
+* Launch the server:
+  - Navigate to the directory server/target.
+  - Similarly to the network client, execute the appropriate command.
 
-* Установить утилиту [maven](https://maven.apache.org/download.cgi) для своей операционной системы
-* Добавить в переменную окружения *PATH* адрес директория *apache_<version>/bin*
-* Убедиться, что существует переменная окружения *JAVA_HOME*, указывающая на адрес JDK не старше 8
-* Перейти в корень проекта
-* Вызывать команду mvn package
-* Запуск сетевого клиента:
-	- Перейти в директорий net-client/target
-	- Вызвать команду:
-		```bash
-		java -jar ???_WithDependencies.jar
-		```
-	(имя архива указывается примерно, оно меняется от версии к версии)
-* Запуск сервера:
-	- Перейти в директорий server/target
-	- Далее аналогично сетевому клиенту
+To connect to the server, the client must send a request `req`. The server will then display information about the client connection in stdout.
 
-Для подключения к серверу клиент должен послать запрос req. При этом в stdout сервер отобразит информацию о подключении клиента
-
-Для передачи хода клиенту необходимо написать команду:
+To pass the turn to the client, write the command:
 ```bash
 pass
 ```
 
-Для отключения клиента и сервера необходимо написать в консоль:
+To disconnect the client and server, write the following in the console:
 ```bash
 q
 ```
 
-Актуальная версия кода лежит в ветке develop. Тем не менее, будьте осторожны: некоторые фичи могут быть нестабильными
+The current version of the code is located in the develop branch. However, be cautious: some features may be unstable.
 
-# Git workflow
+# Project team
+* [Evgenii Samutichev](https://github.com/zhenyatos) - team leader
+* [Konstantin Damaskinsky](https://github.com/kystyn) - tech lead
+* [Arsen Varisov](https://github.com/Jiija) 
+* [Grigory Petrunin](https://github.com/via8) 
+* [Makar Solomatin](https://github.com/MakarSolomatin)
+
+# Git workflow (in Russian)
 [Статья atlassian](https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow) и [статья на хабре](https://habr.com/ru/post/106912/)
 
 В репозитории есть две основные ветки - **origin/master** и **origin/develop**. Сливать с ветвями напрямую нельзя. Необходимо сделать pull request, который будет разрешать техлид. Также присутствуют ветви, соответствующие задаче, в них реализуемой.
@@ -195,10 +189,3 @@ void printEvenOddCount(int[] array) {
 	System.out.println(...); // печатаем количества
 }
 ```
-
-# Участники проекта 
-* [Самутичев Евгений](https://github.com/zhenyatos) - тимлид
-* [Дамаскинский Константин](https://github.com/kystyn) - техлид
-* [Варисов Арсен](https://github.com/Jiija) 
-* [Петрунин Григорий](https://github.com/via8) 
-* [Соломатин Макар](https://github.com/MakarSolomatin)
