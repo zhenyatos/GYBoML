@@ -1,9 +1,9 @@
 # Get Your Bombs off My Lawn!
 A two-player game for Android. The goal is the destruction of your opponent's base by bombarding it with various missiles, and the protection of your own base by shielding it with constructions made of destructible blocks.
-![Игровой процесс](Documentation/gamedesign_image3.png)
 **Demo** [link](https://github.com/zhenyatos/GYBoML/issues/177#issuecomment-1767665735)
 
 ![Demo](Documentation/GYBoML.gif)
+
 
 **Key features:**
 1. Turn-based strategy with real-time physics
